@@ -205,6 +205,7 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
 .cool{border-style:dashed}
 .cool .pw{height:4em}
 .sys{display:inline-flex;flex-direction:column;gap:.2em;border-left:2px solid var(--p-ink);border-radius:.5em 0 0 .5em;padding:.15em 0 .15em .6em;font-size:1.1em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mdl .ln{stroke:var(--p-onl);stroke-width:2.5}
 .mdl .dash{stroke-dasharray:5 4}
 .mdl .svt.sm{font-size:10.5px}
 .grp{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:8px 2px 0}
@@ -348,7 +349,7 @@ const sys=(a,b)=>`<span class="sys"><span>${a}</span><span>${b}</span></span>`;
 const TRIP=[[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15],[7,24,25],[20,21,29],[9,40,41]];
 function pTbl(xs,ys,show){return`<table class="rt"><tr><th>${V('x')}</th>${xs.map(x=>`<td>${I(x)}</td>`).join('')}</tr><tr><th>${V('y')}</th>${ys.map((y,i)=>!show||show[i]?`<td>${y}</td>`:`<td><span class="kv">${y}</span></td>`).join('')}</tr></table>`}
 const nyCode=c=>{const o=STD.find(x=>x.code===c);return o&&o.ny?o.ny:'NY-'+c.replace(/^(\d)\.([A-Z]+)\.[A-Z]\.(\d+[a-z]?)$/,'$1.$2.$3')};
-const IM_UNITS={1:{3:'Adding and Subtracting Within 20'},2:{2:'Adding and Subtracting within 100'},3:{2:'Area and Multiplication',3:'Wrapping Up Addition and Subtraction Within 1,000',4:'Relating Multiplication to Division',5:'Fractions as Numbers'},4:{2:'Fraction Equivalence and Comparison',6:'Multiplying and Dividing Multi-digit Numbers'},5:{1:'Finding Volume',5:'Place Value Patterns and Decimal Operations',6:'More Decimal and Fraction Operations'},6:{1:'Area and Surface Area',2:'Introducing Ratios',3:'Unit Rates and Percentages',4:'Dividing Fractions',5:'Arithmetic in Base Ten',6:'Expressions and Equations',7:'Rational Numbers',8:'Data Sets and Distributions'},7:{2:'Introducing Proportional Relationships',3:'Measuring Circles',4:'Proportional Relationships and Percentages',5:'Rational Number Arithmetic',6:'Expressions, Equations, and Inequalities',8:'Probability and Sampling'},8:{3:'Linear Relationships',4:'Linear Equations and Linear Systems',7:'Exponents and Scientific Notation',8:'Pythagorean Theorem and Irrational Numbers'}};
+const IM_UNITS={1:{3:'Adding and Subtracting Within 20'},2:{2:'Adding and Subtracting within 100'},3:{2:'Area and Multiplication',3:'Wrapping Up Addition and Subtraction Within 1,000',4:'Relating Multiplication to Division',5:'Fractions as Numbers'},4:{2:'Fraction Equivalence and Comparison',6:'Multiplying and Dividing Multi-digit Numbers'},5:{1:'Finding Volume',5:'Place Value Patterns and Decimal Operations',6:'More Decimal and Fraction Operations'},6:{1:'Area and Surface Area',2:'Introducing Ratios',3:'Unit Rates and Percentages',4:'Dividing Fractions',5:'Arithmetic in Base Ten',6:'Expressions and Equations',7:'Rational Numbers',8:'Data Sets and Distributions'},7:{1:'Scale Drawings',7:'Angles, Triangles, and Prisms',2:'Introducing Proportional Relationships',3:'Measuring Circles',4:'Proportional Relationships and Percentages',5:'Rational Number Arithmetic',6:'Expressions, Equations, and Inequalities',8:'Probability and Sampling'},8:{1:'Rigid Transformations and Congruence',2:'Dilations, Similarity, and Introducing Slope',5:'Functions and Volume',6:'Associations in Data',3:'Linear Relationships',4:'Linear Equations and Linear Systems',7:'Exponents and Scientific Notation',8:'Pythagorean Theorem and Irrational Numbers'}};
 const two=r=>{const a=r.pick(NAMES);let b;do{b=r.pick(NAMES)}while(b===a);return[a,b]};
 function until(gen,test,max=200){let v;for(let i=0;i<max;i++){v=gen();if(test(v))return v}return v}
 
@@ -445,11 +446,12 @@ function dnl(a,b,n,hide,l1,l2){const W=460,ox=110,st=(W-ox-16)/n;let s=`<svg cla
     s+=hide.has('b'+i)?`<rect x="${x-13}" y="76" width="26" height="16" class="un"/>`:`<text x="${x}" y="89" text-anchor="middle" class="svt">${b*i}</text>`}
   return s+'</svg>'}
 function nlMark(min,max,v,label){const W=460,p=14,st=(W-2*p)/(max-min),x=p+(v-min)*st;return numberLine(min,max).replace('</svg>',`<circle cx="${x}" cy="16" r="5" class="dot"/><text x="${x}" y="6" text-anchor="middle" class="svt sm">${label}</text></svg>`).replace('viewBox="0 0 460 46"','viewBox="0 -6 460 52"')}
-function coordGrid(R,pts,poly){const c=16,S=2*R*c+40,o=20,X=x=>o+(x+R)*c,Y=y=>o+(R-y)*c;let s=`<svg class="mdl" viewBox="0 0 ${S} ${S}" style="width:${(S/22).toFixed(1)}em" role="img" aria-label="Coordinate plane">`;
+function coordGrid(R,pts,poly,lines){const c=16,S=2*R*c+40,o=20,X=x=>o+(x+R)*c,Y=y=>o+(R-y)*c;let s=`<svg class="mdl" viewBox="0 0 ${S} ${S}" style="width:${(S/22).toFixed(1)}em" role="img" aria-label="Coordinate plane">`;
   for(let i=-R;i<=R;i++)s+=`<line x1="${X(i)}" y1="${Y(-R)}" x2="${X(i)}" y2="${Y(R)}" class="gl"/><line x1="${X(-R)}" y1="${Y(i)}" x2="${X(R)}" y2="${Y(i)}" class="gl"/>`;
   s+=`<line x1="${X(-R)}" y1="${Y(0)}" x2="${X(R)}" y2="${Y(0)}" class="stk"/><line x1="${X(0)}" y1="${Y(-R)}" x2="${X(0)}" y2="${Y(R)}" class="stk"/>`;
   for(let i=-R;i<=R;i+=2)if(i)s+=`<text x="${X(i)}" y="${Y(0)+13}" text-anchor="middle" class="svt sm">${I(i)}</text><text x="${X(0)-4}" y="${Y(i)+4}" text-anchor="end" class="svt sm">${I(i)}</text>`;
   if(poly)s+=`<polygon points="${poly.map(([x,y])=>X(x)+','+Y(y)).join(' ')}" class="fig" style="fill-opacity:.55"/>`;
+  (lines||[]).forEach(([m,b])=>{let x1=-R,x2=R;if(m){const a=(-R-b)/m,c=(R-b)/m;x1=Math.max(-R,Math.min(a,c));x2=Math.min(R,Math.max(a,c))}s+=`<line x1="${X(x1)}" y1="${Y(m*x1+b)}" x2="${X(x2)}" y2="${Y(m*x2+b)}" class="ln"/>`});
   pts.forEach(q=>{s+=`<circle cx="${X(q[0])}" cy="${Y(q[1])}" r="4" class="dot"/>`+(q[2]?`<text x="${X(q[0])+5}" y="${Y(q[1])-6}" class="svt">${q[2]}</text>`:'')});return s+'</svg>'}
 function dotPlot(data,min,max,label){const W=440,p=20,st=(W-2*p)/(max-min),c=counts(data),mx=Math.max(...Object.values(c)),H=mx*14+58,base=H-38;let s=`<svg class="mdl" viewBox="0 0 ${W} ${H}" style="width:22em" role="img" aria-label="Dot plot of ${label}"><line x1="${p}" y1="${base}" x2="${W-p}" y2="${base}" class="stk"/>`;
   for(let v=min;v<=max;v++){const x=p+(v-min)*st;s+=`<line x1="${x}" y1="${base}" x2="${x}" y2="${base+6}" class="stk"/><text x="${x}" y="${base+20}" text-anchor="middle" class="svt sm">${v}</text>`;for(let k=0;k<(c[v]||0);k++)s+=`<circle cx="${x}" cy="${base-9-k*14}" r="5.5" class="dot"/>`}
@@ -467,6 +469,50 @@ function trapFig(b1,b2,h,u){const s=Math.min(16,220/b1,110/h),B1=Math.max(b1*s,1
   return `<svg class="mdl" viewBox="0 0 ${W} ${SH}" style="width:${(W/19).toFixed(2)}em" role="img" aria-label="Trapezoid"><polygon points="${ox},${oy+H} ${ox+B1},${oy+H} ${tx+B2},${oy} ${tx},${oy}" class="fig"/><line x1="${tx}" y1="${oy}" x2="${tx}" y2="${oy+H}" class="stk dash"/><text x="${tx+B2/2}" y="${oy-8}" text-anchor="middle" class="svt">${b2} ${u}</text><text x="${ox+B1/2}" y="${oy+H+20}" text-anchor="middle" class="svt">${b1} ${u}</text><text x="${tx+6}" y="${oy+H/2+5}" class="svt">${h} ${u}</text></svg>`}
 function houseFig(w,h,th,u){const s=Math.min(16,200/w,150/(h+th)),Wd=w*s,H=h*s,T=th*s,ox=60,oy=8,W=ox+Wd+12,SH=oy+T+H+28;
   return `<svg class="mdl" viewBox="0 0 ${W} ${SH}" style="width:${(W/19).toFixed(2)}em" role="img" aria-label="Rectangle with a triangle on top"><polygon points="${ox},${oy+T} ${ox+Wd/2},${oy} ${ox+Wd},${oy+T}" class="fig"/><rect x="${ox}" y="${oy+T}" width="${Wd}" height="${H}" class="fig"/><line x1="${ox+Wd/2}" y1="${oy}" x2="${ox+Wd/2}" y2="${oy+T}" class="stk dash"/><text x="${ox+Wd/2+6}" y="${oy+T/2+8}" class="svt">${th} ${u}</text><text x="${ox+Wd/2}" y="${oy+T+H+20}" text-anchor="middle" class="svt">${w} ${u}</text><text x="${ox-8}" y="${oy+T+H/2+5}" text-anchor="end" class="svt">${h} ${u}</text></svg>`}
+
+/* grade 7–8 helpers */
+const ov=t=>`<span style="text-decoration:overline">${t}</span>`;
+const sci=(c,e)=>`${trim((+c).toFixed(3))} × 10<sup>${I(e)}</sup>`;
+const isTerm=d=>{while(d%2===0)d/=2;while(d%5===0)d/=5;return d===1};
+const primeF=n=>{const f=[];for(let p=2;n>1;p++)while(n%p===0){f.push(p);n/=p}return f.join(' × ')};
+function repDec(n,d){const w=Math.floor(n/d);let rem=n%d,dig='';const seen={};while(rem&&!(rem in seen)&&dig.length<12){seen[rem]=dig.length;rem*=10;dig+=Math.floor(rem/d);rem%=d}
+  if(!rem)return `${w}${dig?'.'+dig:''}`;const i=seen[rem];return `${w}.${dig.slice(0,i)}${ov(dig.slice(i))}`}
+const XS=[['rectangular prism','parallel to its base','a rectangle'],['cylinder','parallel to its base','a circle'],['cylinder','straight down through the center, perpendicular to its base','a rectangle'],['cone','parallel to its base','a circle'],['cone','straight down through its point (vertex)','a triangle'],['square pyramid','parallel to its base','a square'],['square pyramid','straight down through its top point','a triangle'],['sphere','anywhere','a circle'],['triangular prism','parallel to its triangular base','a triangle'],['triangular prism','perpendicular to its triangular base','a rectangle'],['cube','parallel to one face','a square'],['cube','through a corner, cutting off one corner','a triangle'],['hexagonal prism','parallel to its base','a hexagon'],['rectangular pyramid','parallel to its base','a rectangle']];
+const TRANS=[['reflected across the x-axis',(x,y)=>[x,-y]],['reflected across the y-axis',(x,y)=>[-x,y]],['rotated 90° counterclockwise about the origin',(x,y)=>[-y,x]],['rotated 90° clockwise about the origin',(x,y)=>[y,-x]],['rotated 180° about the origin',(x,y)=>[-x,-y]],['translated 3 units left and 2 units up',(x,y)=>[x-3,y+2]]];
+function five(r){const a=r.int(2,12),b=a+r.int(3,10),c=b+r.int(2,9),d=c+r.int(2,9),e=d+r.int(3,12);return[a,b,c,d,Math.min(e,60)]}
+const med=s=>{const n=s.length;return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2};
+function fiveNum(data){const s=data.slice().sort((a,b)=>a-b),n=s.length,lo=s.slice(0,Math.floor(n/2)),hi=s.slice(Math.ceil(n/2));return[s[0],med(lo),med(s),med(hi),s[n-1]]}
+function boxPlot(f,label,outs){const W=440,p=20,lo=0,hi=Math.max(70,...(outs||[])),X=v=>p+(v-lo)/(hi-lo)*(W-2*p),y=30;let s=`<svg class="mdl" viewBox="0 0 ${W} 92" style="width:22em" role="img" aria-label="Box plot of ${label}">`;
+  s+=`<line x1="${X(f[0])}" y1="${y}" x2="${X(f[1])}" y2="${y}" class="stk"/><line x1="${X(f[3])}" y1="${y}" x2="${X(f[4])}" y2="${y}" class="stk"/><rect x="${X(f[1])}" y="${y-14}" width="${X(f[3])-X(f[1])}" height="28" class="sh1"/><line x1="${X(f[2])}" y1="${y-14}" x2="${X(f[2])}" y2="${y+14}" class="stk" style="stroke-width:2.5"/><line x1="${X(f[0])}" y1="${y-8}" x2="${X(f[0])}" y2="${y+8}" class="stk"/><line x1="${X(f[4])}" y1="${y-8}" x2="${X(f[4])}" y2="${y+8}" class="stk"/>`;
+  (outs||[]).forEach(o=>{s+=`<circle cx="${X(o)}" cy="${y}" r="4" class="dot"/>`});
+  s+=`<line x1="${p}" y1="62" x2="${W-p}" y2="62" class="stk"/>`;for(let v=lo;v<=hi;v+=5)s+=`<line x1="${X(v)}" y1="62" x2="${X(v)}" y2="${v%10?65:68}" class="stk"/>`+(v%10?'':`<text x="${X(v)}" y="79" text-anchor="middle" class="svt sm">${v}</text>`);
+  return s+`<text x="${W/2}" y="91" text-anchor="middle" class="svt sm">${label}</text></svg>`}
+function twoGroups(r,n,far){const c1=r.int(20,40),c2=c1+(far?r.pick([r.int(2,5),r.int(12,20)]):r.int(-6,6)),g=c=>Array.from({length:n},()=>Math.max(0,c+r.int(-6,6)));return[g(c1),g(c2)]}
+const meanOf=d=>d.reduce((a,b)=>a+b,0)/d.length;
+const centerOf=d=>SET==='ccss'?meanOf(d):med(d.slice().sort((a,b)=>a-b));
+const spreadOf=d=>{if(SET==='ccss'){const m=meanOf(d);return d.reduce((a,v)=>a+Math.abs(v-m),0)/d.length}const f=fiveNum(d);return f[3]-f[1]};
+function crossFig(a,L){const cx=110,cy=70,R=62,rad=a*Math.PI/180,dx=Math.cos(rad)*R,dy=Math.sin(rad)*R,o={TR:[22,-8,'start'],TL:[-22,-8,'end'],BL:[-22,18,'end'],BR:[22,18,'start']};
+  let s=`<svg class="mdl" viewBox="0 0 220 140" style="width:11em" role="img" aria-label="Two intersecting lines"><line x1="${cx-R-10}" y1="${cy}" x2="${cx+R+10}" y2="${cy}" class="stk"/><line x1="${cx-dx}" y1="${cy+dy}" x2="${cx+dx}" y2="${cy-dy}" class="stk"/>`;
+  for(const k in L){const[ox,oy,an]=o[k];s+=`<text x="${cx+ox}" y="${cy+oy}" text-anchor="${an}" class="svt">${L[k]==='x'?'<tspan font-style="italic">x</tspan>':L[k]}</text>`}return s+'</svg>'}
+function parFig(a,g,t,tl){const W=300,y1=45,y2=125,rad=a*Math.PI/180,k=1/Math.tan(rad),x1=130,x2=x1-(y2-y1)*k,o={TR:[16,-7,'start'],TL:[-16,-7,'end'],BL:[-16,18,'end'],BR:[16,18,'start']},val=q=>['TR','BL'].includes(q)?a:180-a;
+  let s=`<svg class="mdl" viewBox="0 0 ${W} 170" style="width:15em" role="img" aria-label="Parallel lines cut by a transversal"><line x1="10" y1="${y1}" x2="${W-30}" y2="${y1}" class="stk"/><line x1="10" y1="${y2}" x2="${W-30}" y2="${y2}" class="stk"/><text x="${W-24}" y="${y1+4}" class="svt">ℓ</text><text x="${W-24}" y="${y2+4}" class="svt">m</text><line x1="${x1+(y1-10)*k}" y1="10" x2="${x2-(160-y2)*k}" y2="160" class="stk"/>`;
+  const lab=(cx,cy,q,txt)=>{const[ox,oy,an]=o[q];return`<text x="${cx+ox}" y="${cy+oy}" text-anchor="${an}" class="svt">${txt}</text>`};
+  const gi=tl?[x1,y1]:[x2,y2],ti=tl?[x2,y2]:[x1,y1];s+=lab(...gi,g,`${val(g)}°`);s+=lab(...ti,t,'<tspan font-style="italic">x</tspan>');return s+'</svg>'}
+function cylFig(rr,h,u){const R=Math.min(55,20+rr*6),H=Math.min(120,40+h*7),cx=80,ry=R*.3,top=24+ry;return `<svg class="mdl" viewBox="0 0 200 ${top+H+ry+10}" style="width:9.5em" role="img" aria-label="Cylinder"><path d="M${cx-R},${top} L${cx-R},${top+H} A${R},${ry} 0 0 0 ${cx+R},${top+H} L${cx+R},${top}" class="fig"/><ellipse cx="${cx}" cy="${top}" rx="${R}" ry="${ry}" class="top"/><line x1="${cx}" y1="${top}" x2="${cx+R}" y2="${top}" class="stk"/><text x="${cx+R/2}" y="${top-ry-5}" text-anchor="middle" class="svt sm">${rr} ${u}</text><text x="${cx+R+6}" y="${top+H/2}" class="svt sm">${h} ${u}</text></svg>`}
+function coneFig(rr,h,u){const R=Math.min(55,20+rr*6),H=Math.min(120,40+h*5),cx=80,ry=R*.3,b=10+H;return `<svg class="mdl" viewBox="0 0 200 ${b+ry+10}" style="width:9.5em" role="img" aria-label="Cone"><path d="M${cx},10 L${cx-R},${b} A${R},${ry} 0 0 0 ${cx+R},${b} Z" class="fig"/><ellipse cx="${cx}" cy="${b}" rx="${R}" ry="${ry}" class="stk dash"/><line x1="${cx}" y1="10" x2="${cx}" y2="${b}" class="stk dash"/><line x1="${cx}" y1="${b}" x2="${cx+R}" y2="${b}" class="stk"/><text x="${cx+R/2}" y="${b-5}" text-anchor="middle" class="svt sm">${rr} ${u}</text><text x="${cx+5}" y="${10+H/2}" class="svt sm">${h} ${u}</text></svg>`}
+function sphereFig(rr,u){const R=55,cx=80,cy=65;return `<svg class="mdl" viewBox="0 0 170 135" style="width:8.5em" role="img" aria-label="Sphere"><circle cx="${cx}" cy="${cy}" r="${R}" class="fig"/><ellipse cx="${cx}" cy="${cy}" rx="${R}" ry="${R*.28}" class="stk dash"/><circle cx="${cx}" cy="${cy}" r="3" class="dot"/><line x1="${cx}" y1="${cy}" x2="${cx+R}" y2="${cy}" class="stk"/><text x="${cx+R/2}" y="${cy+R*.28+14}" text-anchor="middle" class="svt sm">${rr} ${u}</text></svg>`}
+function pieces(r){const n=r.int(3,4),segs=[];let y=0;for(let i=0;i<n;i++){const dx=r.int(2,4);let dy;if(i===n-1&&y>0)dy=-y;else{const k=r.pick(y<=0?[1,1,0]:[1,0,-1]);dy=k===0?0:k>0?r.int(1,4):-r.int(1,y)}y+=dy;segs.push([dx,dy])}return segs}
+const segDesc=s=>s[1]>0?'increasing':s[1]<0?'decreasing':'constant';
+function pieceGraph(segs){const W=360,H=200,ox=40,oy=170,tx=segs.reduce((a,s)=>a+s[0],0),ymax=Math.max(4,...segs.reduce((a,s)=>{a.push((a[a.length-1]||0)+s[1]);return a},[])),sx=(W-ox-20)/tx,sy=(oy-20)/ymax;
+  let s=`<svg class="mdl" viewBox="0 0 ${W} ${H}" style="width:18em" role="img" aria-label="Distance-time graph"><line x1="${ox}" y1="${oy}" x2="${W-10}" y2="${oy}" class="stk"/><line x1="${ox}" y1="${oy}" x2="${ox}" y2="10" class="stk"/><text x="${(W+ox)/2}" y="${H-6}" text-anchor="middle" class="svt sm">Time</text><text x="14" y="${oy/2}" text-anchor="middle" class="svt sm" transform="rotate(-90 14 ${oy/2})">Distance from home</text>`;
+  let x=0,y=0;segs.forEach((g,i)=>{const X1=ox+x*sx,Y1=oy-y*sy,X2=ox+(x+g[0])*sx,Y2=oy-(y+g[1])*sy;s+=`<line x1="${X1}" y1="${Y1}" x2="${X2}" y2="${Y2}" class="ln"/><text x="${(X1+X2)/2}" y="${Math.min(Y1,Y2)-8}" text-anchor="middle" class="svt">${'ABCD'[i]}</text>`;x+=g[0];y+=g[1]});return s+'</svg>'}
+function scatterPts(r,k,n,strong){return Array.from({length:n},()=>{const x=r.int(1,9),base=k===0?r.int(1,9):k>0?x:10-x,y=Math.max(1,Math.min(9,base+r.int(strong?-1:-2,strong?1:2)));return[x,y]})}
+function scatterFig(pts,xl,yl){const W=300,H=240,ox=40,oy=200,s_=(W-ox-20)/10,t=(oy-20)/10;let s=`<svg class="mdl" viewBox="0 0 ${W} ${H}" style="width:15em" role="img" aria-label="Scatter plot"><line x1="${ox}" y1="${oy}" x2="${W-10}" y2="${oy}" class="stk"/><line x1="${ox}" y1="${oy}" x2="${ox}" y2="10" class="stk"/>`;
+  for(let i=2;i<=10;i+=2)s+=`<text x="${ox+i*s_}" y="${oy+14}" text-anchor="middle" class="svt sm">${i}</text><text x="${ox-5}" y="${oy-i*t+4}" text-anchor="end" class="svt sm">${i}</text>`;
+  pts.forEach(([x,y])=>{s+=`<circle cx="${ox+x*s_}" cy="${oy-y*t}" r="4.5" class="dot"/>`});
+  return s+`<text x="${(W+ox)/2}" y="${H-6}" text-anchor="middle" class="svt sm">${xl}</text><text x="12" y="${oy/2}" text-anchor="middle" class="svt sm" transform="rotate(-90 12 ${oy/2})">${yl}</text></svg>`}
+function twoWay(r){const c=[[r.int(8,30),r.int(5,25)],[r.int(5,25),r.int(8,40)]],R=['Plays an instrument','No instrument'],C=['Plays a sport','No sport'],i=r.int(0,1),j=r.int(0,1);
+  return{c,ask:`${i?'do not play an instrument':'play an instrument'} and ${j?'do not play a sport':'play a sport'}`,ans:c[i][j],html:`<table class="rt"><tr><th></th><th>${C[0]}</th><th>${C[1]}</th><th>Total</th></tr>${c.map((row,k)=>`<tr><th>${R[k]}</th><td>${row[0]}</td><td>${row[1]}</td><td>${row[0]+row[1]}</td></tr>`).join('')}<tr><th>Total</th><td>${c[0][0]+c[1][0]}</td><td>${c[0][1]+c[1][1]}</td><td>${c[0][0]+c[0][1]+c[1][0]+c[1][1]}</td></tr></table>`}}
 const ldiv=(d,n)=>`<span class="ldiv"><span class="dvs">${d}</span><span class="dvd">${n}</span></span>`;
 const parts=n=>{const s=String(n);return[...s].map((c,i)=>+c*10**(s.length-1-i)).filter(x=>x>0)};
 const areaModel=(a,b)=>{const p=parts(a);return`<table class="amod"><tr><th>×</th>${p.map(x=>`<th>${x}</th>`).join('')}</tr><tr><th>${b}</th>${p.map(x=>`<td><span class="kv">${x*b}</span></td>`).join('')}</tr></table>`};
@@ -1353,9 +1399,441 @@ const STD=[
    const[l,w,h,d]=r.pick([[2,3,6,7],[1,4,8,9],[2,6,9,11],[4,4,7,9],[6,6,7,11]]);return W(`A box is ${l} ft long, ${w} ft wide and ${h} ft tall. How long is the longest straight pole that fits inside, from one bottom corner to the opposite top corner?`,`${d} ft`)},
  worked(r){const[a,b,c]=r.pick(TRIP.slice(0,5));return{q:`Legs ${a} and ${b}. Hypotenuse?`,steps:[`${a}<sup>2</sup> + ${b}<sup>2</sup> = ${V('c')}<sup>2</sup>`,`${a*a} + ${b*b} = ${c*c}`,`${V('c')} = √${c*c} = ${c}`],a:c}},
  challenge(r){const[a,b,c]=r.pick(TRIP),right=r.chance(.5),cc=right?c:c+1;return{q:`Can a triangle with side lengths ${a}, ${b} and ${cc} be a right triangle? Use the Pythagorean theorem to explain.`,a:`${a*a} + ${b*b} = ${a*a+b*b}, and ${cc}² = ${cc*cc}. ${right?'They are equal, so yes.':'They are not equal, so no.'}`}}}
+,
+/* ---------- Grade 7: full set ---------- */
+{grade:7,code:'7.RP.A.1',im:4,domain:'Ratios & Proportional Relationships',title:'Unit rates with fractions',
+ ican:'find unit rates when the quantities are fractions.',
+ diff:['A fraction of a mile in a fraction of an hour, with a hint to find 1 hour','Rates where both quantities are fractions','Comparing rates with fractions and mixed numbers'],
+ support(r){const d=r.pick([2,3,4]),[a,b]=r.pick([[1,2],[3,4],[1,3],[2,3],[1,4]]),[p]=two(r);return{...W(`${p} walks ${F(a,b)} mile in ${F(1,d)} hour. At this rate, how far does ${p} walk in 1 hour?`,`${fr(a*d,b)} miles`),hint:`There are ${d} groups of ${F(1,d)} hour in 1 hour. Multiply by ${d}.`}},
+ onlevel(r){const[a,b]=r.pick([[1,2],[3,4],[2,3],[5,6],[3,8]]),[c,d]=r.pick([[1,3],[1,4],[2,5],[3,4],[1,6]]);
+   if(r.chance(.5))return W(`A recipe uses ${F(a,b)} cup of sugar for every ${F(c,d)} cup of flour. How much sugar is that per cup of flour?`,`${fr(a*d,b*c)} cup of sugar`);
+   return W(`A painter covers ${F(a,b)} of a wall in ${F(c,d)} hour. How much of the wall does the painter cover per hour?`,`${fr(a*d,b*c)} of a wall`)},
+ stretch(r){const[p,q]=two(r),R1=[r.pick([1,2,3]),r.pick([2,3,4])],T1=[1,r.pick([2,3,4,6])],R2=[r.pick([1,3,5]),r.pick([2,4,6])],T2=[1,r.pick([2,3,5])],s1=R1[0]*T1[1]/R1[1],s2=R2[0]*T2[1]/R2[1];
+   if(s1!==s2&&r.chance(.6))return W(`${p} jogs ${F(...R1)} mile in ${F(...T1)} hour. ${q} jogs ${F(...R2)} mile in ${F(...T2)} hour. Who jogs faster? By how much, in miles per hour?`,`${s1>s2?p:q}, by ${fr(Math.round(Math.abs(s1-s2)*60),60)} mph (${fr(R1[0]*T1[1],R1[1])} vs ${fr(R2[0]*T2[1],R2[1])} mph)`);
+   const w=r.int(1,3);return W(`A machine fills ${MX(w,1,2)} buckets in ${F(3,4)} of a minute. How many buckets does it fill per minute?`,`${fr((2*w+1)*4,6)} buckets per minute`)},
+ worked(r){return{q:`${F(1,2)} mile in ${F(1,4)} hour`,steps:[`Unit rate = ${F(1,2)} ÷ ${F(1,4)}`,`= ${F(1,2)} × 4`,'= 2 miles per hour'],a:''}},
+ challenge(r){return{q:`Explain why dividing ${F(1,2)} by ${F(1,4)} gives the distance traveled in 1 hour. Draw a double number line to show it.`,a:'There are four 1/4-hours in an hour, so the distance is 4 × 1/2 = 2 miles.'}}},
 
+{grade:7,code:'7.NS.A.2',im:5,domain:'The Number System',title:'Multiply and divide rational numbers',
+ ican:'multiply and divide positive and negative numbers, including fractions and decimals.',
+ diff:['Integer products and quotients with a sign-rule hint','Two negatives, three factors, and signed fractions and decimals','Multi-step expressions with signed fractions and powers'],
+ support(r){const a=r.int(2,9),b=r.int(2,9),neg=r.pick([[1,0],[0,1],[1,1]]),x=neg[0]?-a:a,y=neg[1]?-b:b;
+   if(r.chance(.6))return{q:EQ(`${I(x)} × ${P(y)} = ${BL()}`),a:I(x*y),hint:'Same signs make a positive product. Different signs make a negative product.'};
+   return{q:EQ(`${I(x*y)} ÷ ${P(x)} = ${BL()}`),a:I(y),hint:'Division follows the same sign rules as multiplication.'}},
+ onlevel(r){const t=r.int(0,3);
+   if(t===0){const a=-r.int(2,12),b=-r.int(2,12);return{q:EQ(`${I(a)} × ${P(b)} = ${BL()}`),a:a*b}}
+   if(t===1){const a=r.int(2,5)*r.pick([1,-1]),b=r.int(2,5)*r.pick([1,-1]),c=r.int(2,4)*r.pick([1,-1]);return{q:EQ(`${I(a)} × ${P(b)} × ${P(c)} = ${BL()}`),a:I(a*b*c)}}
+   if(t===2){const[a,b]=r.pick([[2,3],[3,4],[1,2],[4,5],[5,6]]),[c,d]=r.pick([[3,8],[2,5],[1,3],[3,4]]),s=r.pick([1,-1]);return{q:EQ(`${SF(-a,b)} × ${s<0?`(${SF(-c,d)})`:F(c,d)} = ${BL()}`),a:SF(-a*c*s,b*d),space:'m'}}
+   const q=r.int(2,30)*r.pick([1,-1]),d=r.int(2,9);return{q:EQ(`${D(q*d/10)} ÷ ${P(-d)} = ${BL()}`),a:D(-q/10),space:'m'}},
+ stretch(r){const t=r.int(0,2);
+   if(t===0){const[a,b]=r.pick([[3,4],[2,3],[5,6]]),[c,d]=r.pick([[8,9],[3,5],[4,7]]),[e,f]=r.pick([[2,3],[1,2],[3,4]]);return{q:EQ(`${SF(-a,b)} × ${F(c,d)} ÷ (${SF(-e,f)}) = ${BL()}`),a:SF(a*c*f,b*d*e),space:'m'}}
+   if(t===1){const b=r.int(2,4),e=r.pick([2,3,4,5]);return{q:EQ(`(${I(-b)})<sup>${e}</sup> = ${BL()}`),a:I((-b)**e)}}
+   const a=r.int(2,6),b=r.int(2,5),c=r.int(2,9);return{q:EQ(`${I(-a)} × ${b} − ${c} ÷ (${I(-1)}) = ${BL()}`),a:I(-a*b+c),space:'m'}},
+ worked(r){const a=r.int(2,6),b=r.int(2,6);return{q:`${I(-a)} × ${I(-b)}`,steps:[`${a} × ${b} = ${a*b}`,'Both factors are negative: same signs.',`${I(-a)} × ${P(-b)} = ${a*b}`],a:a*b}},
+ challenge(r){return{q:`Use the pattern 3 × (−2) = −6, 2 × (−2) = −4, 1 × (−2) = −2, 0 × (−2) = 0 to explain why (−1) × (−2) must be positive.`,a:'Each step adds 2, so the next product is 0 + 2 = 2.'}}},
+
+{grade:7,code:'7.NS.A.2d',im:5,domain:'The Number System',title:'Fractions as decimals',
+ ican:'convert a fraction to a decimal using long division, and tell whether it terminates or repeats.',
+ diff:['Fractions with denominators like 4, 5, 20 and 25, with a hint to scale to 10 or 100','Long division with repeating decimals, and terminating or repeating?','Predicting from the denominator, and comparing fractions as decimals'],
+ support(r){const d=r.pick([2,4,5,8,10,20,25,50]),n=until(()=>r.int(1,d-1),x=>gcd(x,d)===1||d===10);return{q:EQ(`${F(n,d)} = ${BL(3)}`),a:repDec(n,d),hint:d===8?'Divide: 8 goes into 1.000.':`Make an equivalent fraction with a denominator of 10 or 100.`}},
+ onlevel(r){const d=r.pick([3,6,9,11,12,15]),n=until(()=>r.int(1,d-1),x=>gcd(x,d)===1);if(r.chance(.6))return{q:EQ(`${F(n,d)} = ${BL(3)}`),a:repDec(n,d),space:'m'};
+   const D2=r.pick([3,4,6,7,8,16,20,9]),N=until(()=>r.int(1,D2-1),x=>gcd(x,D2)===1);return{q:`Does ${F(N,D2)} make a terminating or repeating decimal? Show how you know.`,a:`${isTerm(D2)?'Terminating':'Repeating'}: ${repDec(N,D2)}`,space:'m'}},
+ stretch(r){const t=r.int(0,2);
+   if(t===0){const d=r.pick([12,15,24,30,40,45,48,60]);return W(`Without dividing, decide whether ${F(1,d)} makes a terminating decimal. Explain using the prime factors of ${d}.`,`${isTerm(d)?'Terminating':'Repeating'}: ${d} = ${primeF(d)}`)}
+   if(t===1){const n=r.int(1,6);return{q:`Write ${F(n,7)} as a decimal. How many digits repeat?`,a:`${repDec(n,7)}; 6 digits repeat`,space:'l'}}
+   const[a,b]=r.pick([[5,9],[7,11],[4,7],[2,3]]),[c,d]=r.pick([[3,5],[5,8],[7,12],[11,20]]);return{q:`Use decimals to compare: ${EQ(`${F(a,b)}${CMP}${F(c,d)}`)}`,a:`${sym(a,b,c,d)} (${repDec(a,b)} and ${repDec(c,d)})`,space:'m'}},
+ worked(r){return{q:`${F(2,3)} as a decimal`,steps:['Divide 2 by 3: 3 goes into 20 six times, remainder 2.','The remainder 2 keeps coming back, so 6 repeats.',`${F(2,3)} = 0.${ov('6')}`],a:''}},
+ challenge(r){return{q:`Find a fraction that makes a decimal where two digits repeat, and one where three digits repeat. Show your division.`,a:'Answers vary, for example 1/11 = 0.0909… and 1/27 = 0.037037…'}}},
+
+{grade:7,code:'7.NS.A.3',im:5,domain:'The Number System',title:'Rational number word problems',
+ ican:'solve real-world problems with positive and negative numbers.',
+ diff:['One-step stories about temperature, elevation and money, with a hint','Two-step stories with integers, decimals and fractions','Multi-step stories that combine all four operations'],
+ support(r){const t=r.int(0,2),[p]=two(r);
+   if(t===0){const d=r.int(2,6),h=r.int(3,8);return{...W(`The temperature dropped ${d}°F every hour for ${h} hours. What was the total change in temperature?`,`${I(-d*h)}°F`),hint:'A drop is negative. Multiply the change per hour by the number of hours.'}}
+   if(t===1){const a=r.int(10,60),n=r.int(2,5);return{...W(`${p} owes $${a*n} to ${n} friends, the same amount to each. Write the amount owed to each friend as a signed number.`,`${I(-a)} dollars`),hint:'Money owed is negative. Share it equally.'}}
+   const d=r.int(20,90),u=r.int(5,30);return{...W(`A submarine is at ${I(-d)} meters. It rises ${u} meters. What is its new depth?`,`${I(-d+u)} meters`),hint:'Rising means adding a positive number.'}},
+ onlevel(r){const t=r.int(0,2),[p]=two(r);
+   if(t===0){const s=-r.int(2,10),ch=-r.int(10,25)/10,h=r.int(3,6);return W(`At noon the temperature was ${I(s)}°C. It fell ${D(-ch)}°C each hour for ${h} hours. What was the temperature then?`,`${D(s+ch*h)}°C`)}
+   if(t===1){const b=r.int(40,120),c=r.int(15,40),n=r.int(2,4);return W(`${p}'s account has $${b}. ${p} pays ${n} bills of $${c}.50 each. What is the new balance?`,money(b*100-n*(c*100+50)).replace('$-','−$'))}
+   const d=r.int(2,5),f=r.pick([2,3,4]),k=r.int(2,6)*f;return W(`A diver descends ${MX(d,1,f)} meters every minute for ${k} minutes. What is the diver's change in elevation?`,`${I(-(d*f+1)*k/f)} meters`)},
+ stretch(r){const[p]=two(r),days=[0,1,2,3,4].map(()=>r.int(-8,6)),s=days.reduce((a,b)=>a+b,0);
+   if(r.chance(.5))return W(`The low temperatures in Watertown for five days were ${days.map(I).join(', ')} °F. What was the mean low temperature?`,`${D(s/5)}°F`);
+   const st=r.int(1200,2400),dr=r.int(150,400),h=r.int(3,6),cl=r.int(80,200);return W(`A hiker starts at ${st} feet, descends ${dr} feet per hour for ${h} hours, and then climbs ${cl} feet. Write one expression for the hiker's final elevation, then find it.`,`${st} + ${h}(${I(-dr)}) + ${cl} = ${st-dr*h+cl} feet`)},
+ worked(r){const d=r.int(2,5),h=r.int(3,6);return{q:`Drops ${d}°F per hour for ${h} hours`,steps:[`Change per hour: ${I(-d)}`,`${h} × (${I(-d)})`,`= ${I(-d*h)}°F`],a:''}},
+ challenge(r){return{q:'Write a story problem that uses multiplying a negative number by a positive number, and one that uses dividing a negative number by a positive number. Solve both.',a:'Answers vary.'}}},
+
+{grade:7,code:'7.EE.A.1',im:6,domain:'Expressions & Equations',title:'Expand, factor and combine linear expressions',
+ ican:'add, subtract, factor and expand linear expressions with rational coefficients.',
+ diff:['Combining like terms and distributing with integers, with a hint','Negative factors, fractional coefficients, factoring, and subtracting expressions','Decimals and fractions in multi-step simplifying, and factoring out a fraction'],
+ support(r){if(r.chance(.5)){const a=r.int(4,9),b=r.int(1,a-1),c=r.int(1,15);return{q:`Simplify: ${EQ(`${a}${V('x')} − ${b}${V('x')} + ${c}`)}`,a:lin(a-b,c),hint:`${a}${V('x')} and ${b}${V('x')} are like terms. Combine them.`}}
+   const a=r.int(2,6),b=r.int(1,9);return{q:`Expand: ${EQ(`${a}(${V('x')} − ${b})`)}`,a:lin(a,-a*b),hint:`Multiply ${a} by both terms inside the parentheses.`}},
+ onlevel(r){const t=r.int(0,3);
+   if(t===0){const a=r.int(2,6),b=r.int(2,5),c=r.int(1,9);return{q:`Expand: ${EQ(`${I(-a)}(${b}${V('x')} − ${c})`)}`,a:lin(-a*b,a*c),space:'m'}}
+   if(t===1){const[a,b]=r.pick([[1,2],[1,3],[3,4],[2,5]]),[c,d]=r.pick([[1,4],[1,6],[1,2],[3,10]]),n=a*d+c*b,m=b*d;return{q:`Simplify: ${EQ(`${F(a,b)}${V('x')} + ${F(c,d)}${V('x')}`)}`,a:`${fr(n,m)}${V('x')}`,space:'m'}}
+   if(t===2){const g=r.int(2,6),m=r.int(2,7),n=until(()=>r.int(1,9),v=>gcd(v,m)===1);return{q:`Factor: ${EQ(lin(g*m,-g*n))}`,a:`${g}(${lin(m,-n)})`,space:'m'}}
+   const a=r.int(3,9),b=r.int(1,9),c=r.int(1,a-1),d=r.int(1,9);return{q:`Simplify: ${EQ(`(${lin(a,b)}) − (${lin(c,-d)})`)}`,a:lin(a-c,b+d),space:'m'}},
+ stretch(r){const t=r.int(0,2);
+   if(t===0){const a=r.int(4,8),b=r.int(1,6),c=r.int(1,3);return{q:`Simplify: ${EQ(`0.5(${2*a}${V('x')} − ${2*b}) − ${c}(${V('x')} + 1.5)`)}`,a:`${lin(a-c,0)} − ${trim((b+1.5*c).toFixed(1))}`,space:'m'}}
+   if(t===1){const k=r.int(2,9);return{q:`Factor out ${F(1,2)}: ${EQ(`${F(1,2)}${V('x')} + ${k}`)}`,a:`${F(1,2)}(${V('x')} + ${2*k})`,space:'m'}}
+   const a=r.int(2,5),b=r.int(2,5),c=r.int(1,9),d=r.int(1,9);return{q:`Simplify: ${EQ(`${a}(${V('x')} − ${c}) − ${b}(${d} − ${V('x')})`)}`,a:lin(a+b,-a*c-b*d),space:'m'}},
+ worked(r){const a=r.int(2,5),b=r.int(2,5),c=r.int(1,9);return{q:`${I(-a)}(${b}${V('x')} − ${c})`,steps:[`${I(-a)} × ${b}${V('x')} = ${I(-a*b)}${V('x')}`,`${I(-a)} × (${I(-c)}) = ${a*c}`,`Result: ${lin(-a*b,a*c)}`],a:''}},
+ challenge(r){return{q:`Write three different expressions that are equivalent to ${EQ(`6${V('x')} − 9`)}: one factored, one with three terms, and one that uses a fraction.`,a:'Examples: 3(2x − 3), 4x − 9 + 2x, ½(12x − 18).'}}},
+
+{grade:7,code:'7.EE.A.2',im:4,domain:'Expressions & Equations',title:'Rewrite expressions in context',
+ ican:'rewrite an expression in a different form to see how quantities are related.',
+ diff:['Combining a price and a percent of it, with a hint that p means 1p','Discounts, increases and perimeter written two ways','Explaining what a rewritten form shows, and combined changes'],
+ support(r){const p=r.pick([3,4,5,6,7,8,9,10,12,15,18,20,25,30,40]),v=r.pick(['p','c','n','m']),up=r.chance(.6);return{q:`An amount ${V(v)} goes ${up?'up':'down'} by ${p}%. Write ${EQ(`${V(v)} ${up?'+':'−'} ${trim((p/100).toFixed(2))}${V(v)}`)} as one term.`,a:`${trim((1+(up?p:-p)/100).toFixed(2))}${V(v)}`,hint:`${V('p')} is the same as 1${V('p')}. Add the coefficients.`,wide:true}},
+ onlevel(r){const t=r.int(0,2),d=r.pick([5,10,12,15,18,20,25,30,35,40,45,60]);
+   if(t===0)return W(`A jacket costs ${V('j')} dollars and is ${d}% off. Write two expressions for the sale price.`,`${V('j')} − ${trim((d/100).toFixed(2))}${V('j')} and ${trim((1-d/100).toFixed(2))}${V('j')}`);
+   if(t===1)return W(`A town's population ${V('n')} grows by ${d}%. Write two expressions for the new population.`,`${V('n')} + ${trim((d/100).toFixed(2))}${V('n')} and ${trim((1+d/100).toFixed(2))}${V('n')}`);
+   return W(`A rectangle has length ${V('l')} and width ${V('w')}. Write its perimeter two ways. What does each form tell you?`,`2${V('l')} + 2${V('w')} (two lengths plus two widths) and 2(${V('l')} + ${V('w')}) (twice one length plus one width)`)},
+ stretch(r){const a=r.pick([10,20,25,30,40,50]),b=r.pick([10,20,25,30,40,50]);
+   if(r.chance(.5))return W(`A store raises a price ${V('p')} by ${a}% and later lowers the new price by ${b}%. Write an expression for the final price as a single term. Is it the same as ${V('p')}?`,`${trim(((1+a/100)*(1-b/100)).toFixed(4))}${V('p')}; ${(1+a/100)*(1-b/100)>1?'no, it is more':(1+a/100)*(1-b/100)<1?'no, it is less':'yes, the same'} than ${V('p')}`);
+   const d=r.pick([10,20,25,30]),tx=r.pick([4,7,8]);return W(`A sweater costs ${V('s')} dollars. ${EQ(`${trim((1-d/100).toFixed(2))}${V('s')} + ${trim((tx/100).toFixed(2))}(${trim((1-d/100).toFixed(2))}${V('s')})`)} gives the total cost. Describe the discount and the tax, and rewrite the expression as one term.`,`${d}% off, then ${tx}% tax; ${trim(((1-d/100)*(1+tx/100)).toFixed(4))}${V('s')}`)},
+ worked(r){return{q:`${V('p')} + 0.06${V('p')}`,steps:[`${V('p')} = 1${V('p')}`,`1${V('p')} + 0.06${V('p')} = 1.06${V('p')}`,'1.06p shows the new price is 106% of the original.'],a:''}},
+ challenge(r){return{q:`Explain why "increase by 50%, then decrease by 50%" does not get you back to the starting amount. Use expressions to show it.`,a:'1.5 × 0.5 = 0.75, so you end at 75% of the start.'}}},
+
+{grade:7,code:'7.EE.B.3',im:6,domain:'Expressions & Equations',title:'Multi-step problems with estimation',
+ ican:'solve multi-step problems with whole numbers, fractions, decimals and percents, and check that my answer makes sense.',
+ diff:['Two-step money and measurement stories, with an "estimate first" hint','Stories that mix fractions, decimals and percents','Multi-step stories with an estimate and an exact answer'],
+ support(r){const[p]=two(r),w=r.int(12,30),pc=r.pick([10,20]);return{...W(`${p} earns $${w} per hour and gets a ${pc}% raise. What is the new hourly pay?`,money(w*(100+pc))),hint:`Estimate first: ${pc}% of $${w} is about $${Math.round(w*pc/100)}.`}},
+ onlevel(r){const t=r.int(0,2),[p]=two(r);
+   if(t===0){const c=r.int(16,60)*50,f=r.pick([[1,5],[1,4],[1,10]]);return W(`A shirt costs ${money(c)}. It is ${F(...f)} off. What is the sale price?`,money(c-c*f[0]/f[1]))}
+   if(t===1){const L=r.int(6,12),pcs=r.pick([2,3,4]);return W(`A board is ${MX(L,3,4)} feet long. ${p} cuts it into ${pcs} equal pieces. How long is each piece?`,`${fr((L*4+3),4*pcs)} feet`)}
+   const n=r.int(3,6),c=r.int(225,875),tx=8;return W(`${p} buys ${n} items that cost ${money(c)} each. The sales tax is ${tx}%. What is the total cost?`,money(Math.round(n*c*1.08)))},
+ stretch(r){const[p]=two(r),w=r.int(15,25),h=r.int(10,20)+.5,pc=r.pick([10,15,20]);
+   return W(`${p} earns $${w} per hour and works ${h} hours a week. ${p} saves ${pc}% of each paycheck. Estimate the weekly savings, then find the exact amount.`,`About $${Math.round(w*h*pc/100)}; exactly ${money(Math.round(w*h*pc))}`)},
+ worked(r){const c=r.int(20,40);return{q:`$${c} shirt, 25% off`,steps:[`Estimate: 25% of $${c} is about $${Math.round(c/4)}.`,`Exact: 0.25 × ${c} = ${trim((c/4).toFixed(2))}`,`Sale price: ${money(c*75)}`],a:''}},
+ challenge(r){return{q:'A student says 25% off a $40 item, then 10% off the sale price, is the same as 35% off. Check the claim with an estimate and an exact answer.',a:'Not the same: $27.00 vs $26.00.'}}},
+
+{grade:7,code:'7.EE.B.4b',im:6,domain:'Expressions & Equations',title:'Solve two-step inequalities',
+ ican:'solve inequalities like px + q > r and describe their solutions.',
+ diff:['Positive coefficients, with a hint for the order of steps','Negative coefficients (the sign flips) and real-world inequalities','Graphing and interpreting solutions, and fractional coefficients'],
+ support(r){const p=r.int(2,6),x=r.int(1,10),q=r.int(1,12),[s,n]=r.pick([['&gt;','&gt;'],['≥','≥'],['&lt;','&lt;'],['≤','≤']]);return{q:EQ(`${p}${V('x')} + ${q} ${s} ${p*x+q}`),a:`${V('x')} ${n} ${x}`,hint:`Subtract ${q} from both sides, then divide by ${p}.`,space:'m'}},
+ onlevel(r){if(r.chance(.5)){const p=-r.int(2,6),x=r.int(-6,8),q=r.int(-10,10),[s,n]=r.pick([['&gt;','&lt;'],['≥','≤'],['&lt;','&gt;'],['≤','≥']]);return{q:EQ(`${I(p)}${V('x')} ${sg(q)} ${s} ${I(p*x+q)}`),a:`${V('x')} ${n} ${I(x)}`,space:'m'}}
+   const[p]=two(r),base=r.int(30,80),per=r.int(3,9),goal=base+per*r.int(8,20)+r.int(1,per-1);return W(`${p} earns $${base} plus $${per} for each sale. ${p} wants to earn at least $${goal}. Write and solve an inequality. What is the least number of sales needed?`,`${base} + ${per}${V('s')} ≥ ${goal}; ${V('s')} ≥ ${trim(((goal-base)/per).toFixed(2))}; ${Math.ceil((goal-base)/per)} sales`)},
+ stretch(r){if(r.chance(.5)){const[n,d]=r.pick([[1,2],[2,3],[3,4]]),k=r.int(2,6),q=r.int(1,9);return{q:`Solve and graph: ${EQ(`${F(n,d)}${V('x')} − ${q} ≤ ${n*k-q}`)}`,model:numberLine(-10,10),a:`${V('x')} ≤ ${d*k}`,wide:true}}
+   const L=r.int(10,20),P=2*L+2*r.int(5,L-2)+r.int(1,6);return W(`A rectangle has a length of ${L} cm. Its perimeter must be no more than ${P} cm. Write and solve an inequality for the width ${V('w')}.`,`2${V('w')} + ${2*L} ≤ ${P}; ${V('w')} ≤ ${trim(((P-2*L)/2).toFixed(1))} cm`)},
+ worked(r){const p=r.int(2,4),x=r.int(2,6),q=r.int(3,9);return{q:`${I(-p)}${V('x')} + ${q} &gt; ${-p*x+q}`,steps:[`Subtract ${q}: ${I(-p)}${V('x')} &gt; ${I(-p*x)}`,`Divide by ${I(-p)} and flip the sign: ${V('x')} &lt; ${x}`,`Check ${x-1}: ${I(-p)}(${x-1}) + ${q} = ${-p*(x-1)+q} &gt; ${-p*x+q} ✓`],a:''}},
+ challenge(r){return{q:'Explain with an example why the inequality sign flips when you multiply or divide both sides by a negative number.',a:'Answers vary. For example, 2 < 5 but −2 > −5.'}}},
+
+{grade:7,code:'7.G.A.1',im:1,domain:'Geometry',title:'Scale drawings',
+ ican:'use a scale to find actual lengths and areas from a scale drawing.',
+ diff:['Actual lengths from a drawing, with the scale given and a hint','Drawing lengths from actual lengths, finding the scale, and scaling area','Map distances, changing scales, and actual area from a drawing'],
+ support(r){const k=r.pick([2,3,4,5,10]),a=r.int(2,12),[thing]=r.pick([['garden'],['classroom'],['patio']]);return{q:`A scale drawing of a ${thing} uses 1 cm to ${k} m. A wall is ${a} cm long in the drawing. How long is the actual wall?`,a:`${a*k} m`,hint:`Each centimeter stands for ${k} meters. Multiply by ${k}.`,wide:true}},
+ onlevel(r){const t=r.int(0,2),k=r.pick([2,4,5,8,10]);
+   if(t===0){const n=r.int(3,15);return W(`On a blueprint, 1 inch represents ${k} feet. A room is ${n*k} feet long. How long is it on the blueprint?`,`${n} inches`)}
+   if(t===1){const d=r.int(2,8),a=d*k;return W(`A model car is ${d} inches long. The real car is ${a} inches long. What is the scale?`,`1 inch to ${k} inches (scale factor ${k})`)}
+   const l=r.int(2,6),w=r.int(2,5);return W(`A rectangle in a drawing is ${l} cm by ${w} cm. The scale is 1 cm to ${k} m. What is the actual area?`,`${l*k} m × ${w*k} m = ${l*w*k*k} square meters`)},
+ stretch(r){if(r.chance(.5)){const d=r.int(3,12)+.5,s=r.pick([2.5,4,12.5]);return W(`On a map of New York, 1 inch represents ${s} miles. Two towns are ${d} inches apart on the map. How far apart are they?`,`${trim((d*s).toFixed(2))} miles`)}
+   const a=r.int(4,16)*2,k1=r.pick([2,4]);return W(`A drawing uses 1 cm to ${k1} m, and a hallway is ${a} cm long in it. You redraw it so 1 cm represents ${k1*2} m. How long is the hallway in the new drawing?`,`${a/2} cm`)},
+ worked(r){const k=r.pick([3,5]),a=r.int(4,9);return{q:`Scale 1 cm to ${k} m; drawing length ${a} cm`,steps:[`1 cm → ${k} m`,`${a} cm → ${a} × ${k} m`,`Actual length: ${a*k} m`],a:''}},
+ challenge(r){return{q:'If a scale drawing makes every length 3 times as long, what happens to the area? Draw an example and explain.',a:'The area becomes 9 times as large.'}}},
+
+{grade:7,code:'7.G.A.2',im:7,domain:'Geometry',title:'Triangles from given conditions',
+ ican:'decide whether given side lengths or angles make one triangle, more than one, or none.',
+ diff:['Can these three side lengths make a triangle? With a hint','One, many or no triangles from given sides or angles','The range for a third side, and missing angles'],
+ support(r){const a=r.int(2,9),b=r.int(2,9),ok=r.chance(.5),c=ok?r.int(Math.abs(a-b)+1,a+b-1):a+b+r.int(0,4);return{q:`Can side lengths ${a}, ${b} and ${c} make a triangle?`,a:ok?'Yes':'No',hint:'The two shorter sides must add up to more than the longest side.'}},
+ onlevel(r){const t=r.int(0,2);
+   if(t===0){const A=r.int(30,80),B=r.int(30,80),ok=r.chance(.5),C=ok?180-A-B:180-A-B+r.pick([10,-10]);return{q:`How many triangles have angles of ${A}°, ${B}° and ${C}°: one, more than one, or none?`,a:ok?'More than one (same shape, any size)':'None, because the angles do not add to 180°',wide:true,space:'m'}}
+   if(t===1){const a=r.int(3,9),b=r.int(3,9),c=r.int(Math.abs(a-b)+1,a+b-1);return{q:`How many triangles have side lengths ${a} cm, ${b} cm and ${c} cm: one, more than one, or none?`,a:'Exactly one',wide:true,space:'m'}}
+   const a=r.int(3,9),b=r.int(3,9),A=r.int(30,120);return{q:`How many triangles have sides of ${a} cm and ${b} cm with a ${A}° angle between them?`,a:'Exactly one',wide:true,space:'m'}},
+ stretch(r){if(r.chance(.5)){const a=r.int(4,15),b=r.int(4,15);return W(`Two sides of a triangle are ${a} cm and ${b} cm. What lengths could the third side be? Write an inequality.`,`${Math.abs(a-b)} &lt; ${V('c')} &lt; ${a+b}`)}
+   const A=r.int(25,70),k=r.int(2,3),x=(180-A)/(k+1);return W(`One angle of a triangle is ${A}°. Another angle is ${k} times the third angle. Find the two missing angles.`,`${trim(x.toFixed(1))}° and ${trim((k*x).toFixed(1))}°`)},
+ worked(r){return{q:'Sides 3, 4 and 8',steps:['The two shorter sides are 3 and 4.','3 + 4 = 7, which is less than 8.','They cannot reach, so no triangle.'],a:''}},
+ challenge(r){return{q:'Find three side lengths that make a triangle with exactly two equal sides, and three side lengths that almost make a triangle but do not. Explain the difference.',a:'Answers vary.'}}},
+
+{grade:7,code:'7.G.A.3',im:7,domain:'Geometry',title:'Cross sections of solids',
+ ican:'describe the shape you get when a plane slices a three-dimensional figure.',
+ diff:['Naming the cross section for a described slice, with a hint','Cross sections of prisms, pyramids, cylinders and cones, both ways','Unusual cross sections of a cube, and explaining them'],
+ support(r){const[s,c,a]=r.pick(XS);return{q:`A ${s} is sliced ${c}. What shape is the cross section?`,a,hint:'Imagine slicing it like a loaf of bread. What shape is the cut face?',wide:true}},
+ onlevel(r){const[s,c,a]=r.pick(XS);if(r.chance(.6))return{q:`A ${s} is sliced ${c}. What shape is the cross section? Sketch it.`,a,wide:true,space:'m'};return{q:`Name a solid that can have a cross section shaped like a ${a.replace(/^an? /,'')}, and describe the slice.`,a:`Example: a ${s} sliced ${c}`,wide:true,space:'m'}},
+ stretch(r){const[so,sh,ok]=r.pick(XS2);return W(`Can a slice of a ${so} make a cross section that is a ${sh}? Explain or sketch.`,ok?'Yes':'No')},
+ worked(r){return{q:'A cylinder sliced parallel to its base',steps:['The slice is flat and parallel to the circle at the bottom.','Every point on the cut is the same distance from the center.','The cross section is a circle.'],a:''}},
+ challenge(r){return{q:'Describe how to slice a cube so that the cross section is a triangle. Then describe a slice that makes a hexagon.',a:'Cut off a corner for a triangle; slice through the midpoints of six edges for a hexagon.'}}},
+
+{grade:7,code:'7.G.B.5',im:7,domain:'Geometry',title:'Angle relationships',
+ ican:'use supplementary, complementary, vertical and adjacent angles to find unknown angles.',
+ diff:['A missing complementary, supplementary or vertical angle, with a hint','Writing and solving equations for angle relationships','Three or more angles together, and expressions on both angles'],
+ support(r){const t=r.int(0,2),a=r.int(20,70);
+   if(t===0)return{q:`Two angles are complementary. One measures ${a}°. What is the other angle?`,a:`${90-a}°`,hint:'Complementary angles add to 90°.'};
+   if(t===1){const b=r.int(30,150);return{q:`Two angles are supplementary. One measures ${b}°. What is the other angle?`,a:`${180-b}°`,hint:'Supplementary angles add to 180°.'}}
+   return{q:`Find the value of ${V('x')}.`,model:crossFig(a,{TR:`${a}°`,BL:'x'}),a:`${a}°`,hint:'Vertical angles are across from each other. They are equal.'}},
+ onlevel(r){const t=r.int(0,2),x=r.int(15,40);
+   if(t===0){const k=r.int(2,3),c=180-k*x-x;return W(`Two angles are supplementary. One measures ${V('x')}° and the other measures (${k}${V('x')} + ${c})°. Find ${V('x')} and both angles.`,`${V('x')} = ${x}; ${x}° and ${k*x+c}°`)}
+   if(t===1){const c=90-2*x;return c>0?W(`Two angles are complementary. They measure ${V('x')}° and (${V('x')} + ${c})°. Find ${V('x')}.`,`${V('x')} = ${x}`):W(`Two angles are complementary. One is ${x}°. What is the other?`,`${90-x}°`)}
+   const a=r.int(40,140),c=r.int(1,20);return{q:`The angles are vertical angles. Find ${V('x')}.`,model:crossFig(a<90?a:180-a,{TR:`${a<90?a:180-a}°`,BL:`(x + ${c})°`}),a:`${V('x')} = ${(a<90?a:180-a)-c}`,space:'m'}},
+ stretch(r){if(r.chance(.5)){const a=r.int(20,60),b=r.int(20,60),c=180-a-b;return W(`Three angles together make a straight line. Two of them are ${a}° and ${b}°. The third is ${c%2?`(2${V('x')} + 1)°`:`2${V('x')}°`}. Find ${V('x')}.`,`${V('x')} = ${(c-c%2)/2}`)}
+   const x=r.int(10,25);return W(`Angles A and B are vertical angles. Angle A is (3${V('x')} + 10)° and angle B is (5${V('x')} − ${2*x-10})°. Find ${V('x')} and the measure of each angle.`,`${V('x')} = ${x}; both are ${3*x+10}°`)},
+ worked(r){const a=r.int(25,65);return{q:`Complement of ${a}°`,steps:['Complementary angles add to 90°.',`${a} + ${V('x')} = 90`,`${V('x')} = ${90-a}°`],a:''}},
+ challenge(r){return{q:'Can two angles be both vertical and supplementary? Explain what their measures would have to be.',a:'Yes, if both are 90°.'}}},
+
+{grade:7,code:'7.G.B.6',im:7,domain:'Geometry',title:'Area, volume and surface area',
+ ican:'solve problems with area, volume and surface area of figures made of polygons and prisms.',
+ diff:['Volume from base area × height, and areas of shapes made of rectangles','Surface area and volume of rectangular and triangular prisms','Composite prisms, hollow boxes and cost stories'],
+ support(r){if(r.chance(.5)){const B=r.int(6,40),h=r.int(2,12),u=r.pick(UNITS);return{q:`A prism has a base with an area of ${B} sq ${u} and a height of ${h} ${u}. What is its volume?`,a:`${B*h} cubic ${u}`,hint:'Volume = area of the base × height.',wide:true}}
+   const W_=r.int(6,12),H=r.int(5,10),cw=r.int(2,W_-3),ch=r.int(2,H-2),u=r.pick(UNITS);return{q:`Find the area. ${BL(4)} sq ${u}`,a:`${W_*H-cw*ch} sq ${u}`,model:lFig(W_,H,cw,ch,u),hint:'Split the shape into two rectangles, or subtract the missing corner.',wide:true}},
+ onlevel(r){const u=r.pick(UNITS);if(r.chance(.5)){const l=r.int(2,12),w=r.int(2,8),h=r.int(2,9);return{q:'Find the volume and the surface area.',model:prism(l,w,h,u),a:`V = ${l*w*h} cubic ${u}; SA = ${2*(l*w+l*h+w*h)} sq ${u}`,space:'m'}}
+   const[a,b,c]=r.pick([[3,4,5],[6,8,10],[5,12,13]]),L=r.int(4,12);return W(`A triangular prism has right-triangle bases with legs ${a} and ${b} ${u} and hypotenuse ${c} ${u}. It is ${L} ${u} long. Find its volume and surface area.`,`V = ${a*b/2*L} cubic ${u}; SA = ${a*b+(a+b+c)*L} sq ${u}`)},
+ stretch(r){if(r.chance(.5)){const l=r.int(8,14),w=r.int(6,10),h=r.int(4,8),s=r.int(2,3);return W(`A wooden block is ${l} in by ${w} in by ${h} in. A ${s}-inch by ${s}-inch square hole is drilled straight through from top to bottom. What volume of wood is left?`,`${l*w*h} − ${s*s*h} = ${l*w*h-s*s*h} cubic in`)}
+   const l=r.int(4,10),w=r.int(3,8),h=r.int(2,6),c=r.pick([12,15,25]);return W(`An open-top box (no lid) is ${l} ft long, ${w} ft wide and ${h} ft tall. Paint costs $${(c/100).toFixed(2)} per square foot. How much will it cost to paint the outside?`,`${l*w+2*l*h+2*w*h} sq ft; ${money((l*w+2*l*h+2*w*h)*c)}`)},
+ worked(r){const B=r.int(10,24),h=r.int(3,8);return{q:`Base area ${B} sq cm, height ${h} cm`,steps:['V = B × h',`V = ${B} × ${h}`,`V = ${B*h} cubic cm`],a:''}},
+ challenge(r){return{q:'Two rectangular prisms have the same volume. Must they have the same surface area? Find an example to support your answer.',a:'No. 1 × 1 × 12 has SA 50; 2 × 2 × 3 has SA 32.'}}},
+
+{grade:7,code:'7.SP.1',ny:'NY-7.SP.1',only:'ny',im:8,img:6,domain:'Statistics & Probability',title:'Box plots and interquartile range',
+ ican:'read and make box plots, and find the interquartile range.',
+ diff:['Reading the median, quartiles and IQR from a box plot, with a hint','The five-number summary and IQR from data, and what percent of the data each part holds','Comparing two box plots, and reading box plots with outliers'],
+ support(r){const d=five(r),[lab]=r.pick([['Minutes of reading'],['Test scores'],['Heights (in)']]),t=r.int(0,2);
+   if(t===0)return{q:'What is the median?',model:boxPlot(d,lab),a:d[2],hint:'The median is the line inside the box.',wide:true};
+   if(t===1)return{q:'What is the interquartile range (IQR)?',model:boxPlot(d,lab),a:`${d[3]} − ${d[1]} = ${d[3]-d[1]}`,hint:'IQR = third quartile − first quartile. That is the width of the box.',wide:true};
+   return{q:'What is the range?',model:boxPlot(d,lab),a:`${d[4]} − ${d[0]} = ${d[4]-d[0]}`,hint:'Range = maximum − minimum. Use the ends of the whiskers.',wide:true}},
+ onlevel(r){if(r.chance(.6)){const n=r.pick([7,9,10,11,12]),data=Array.from({length:n},()=>r.int(2,40)),f=fiveNum(data);return W(`Find the five-number summary and the IQR: ${data.join(', ')}`,`Min ${f[0]}, Q1 ${f[1]}, median ${f[2]}, Q3 ${f[3]}, max ${f[4]}; IQR ${trim((f[3]-f[1]).toFixed(1))}`)}
+   const d=five(r),[part,ans]=r.pick([[`between ${d[1]} and ${d[3]}`,'50%'],[`below ${d[1]}`,'25%'],[`above ${d[2]}`,'50%'],[`above ${d[1]}`,'75%']]);return{q:`About what percent of the data is ${part}?`,model:boxPlot(d,'Scores'),a:ans,wide:true}},
+ stretch(r){const A=five(r),B=five(r);
+   if(r.chance(.6))return{q:'Compare the two box plots. Which group has the greater median? Which group is more spread out in the middle half? Explain.',model:`${boxPlot(A,'Class A')}${boxPlot(B,'Class B')}`,a:`Greater median: ${A[2]>B[2]?'Class A':A[2]<B[2]?'Class B':'same'}. Larger IQR: ${A[3]-A[1]>B[3]-B[1]?'Class A':A[3]-A[1]<B[3]-B[1]?'Class B':'same'} (${A[3]-A[1]} vs ${B[3]-B[1]})`,wide:true,space:'m'};
+   const d=five(r),o=d[4]+r.int(15,30);return{q:'The dot past the whisker is an outlier. What is it? Describe the middle 50% of the data without it.',model:boxPlot(d,'Points scored',[o]),a:`Outlier ${o}; middle 50% from ${d[1]} to ${d[3]}`,wide:true,space:'m'}},
+ worked(r){return{q:'Reading a box plot',steps:['The box goes from Q1 to Q3. The line inside is the median.','The whiskers reach the minimum and maximum.','IQR = Q3 − Q1, the spread of the middle half.'],a:''}},
+ challenge(r){return{q:'Make a data set of 9 numbers with a median of 20 and an IQR of 10. Then draw its box plot.',a:'Answers vary, for example 10, 14, 15, 18, 20, 22, 25, 26, 30.'}}},
+
+{grade:7,code:'7.SP.B.3–4',ny:'NY-7.SP.3–4',im:8,domain:'Statistics & Probability',title:'Comparing two populations',
+ ican:'compare two groups using their centers and their spread.',
+ diff:['Which group has the greater center? From two data sets','Comparing centers and spread with numbers','Deciding whether the difference between groups is meaningful'],
+ support(r){const[A,B]=twoGroups(r,7),[la,lb]=r.pick([['Team A','Team B'],['Grade 7','Grade 8']]),cA=centerOf(A),cB=centerOf(B);return{q:`${la}: ${A.join(', ')}<br>${lb}: ${B.join(', ')}<br>Which group has the greater ${SET==='ccss'?'mean':'median'}?`,a:`${cA>cB?la:cA<cB?lb:'Same'} (${n2(cA)} vs ${n2(cB)})`,hint:SET==='ccss'?'Find the mean of each group: add, then divide by 7.':'Put each list in order and find the middle number.',wide:true,space:'m'}},
+ onlevel(r){const[A,B]=twoGroups(r,9),cA=centerOf(A),cB=centerOf(B),sA=spreadOf(A),sB=spreadOf(B),m=SET==='ccss'?'mean and mean absolute deviation (MAD)':'median and IQR';return W(`Plant heights (cm) with fertilizer: ${A.join(', ')}. Without fertilizer: ${B.join(', ')}. Find the ${m} of each group. Which group's heights vary more?`,`With: ${n2(cA)}, ${n2(sA)}. Without: ${n2(cB)}, ${n2(sB)}. ${sA>sB?'With fertilizer':sA<sB?'Without fertilizer':'Same'} varies more.`)},
+ stretch(r){const[A,B]=twoGroups(r,9,true),cA=centerOf(A),cB=centerOf(B),s=Math.max(spreadOf(A),spreadOf(B)),k=Math.abs(cA-cB)/s;return W(`Group 1: ${A.join(', ')}. Group 2: ${B.join(', ')}. How many ${SET==='ccss'?'MADs':'IQRs'} apart are the ${SET==='ccss'?'means':'medians'}? Is the difference between the groups meaningful? Explain.`,`About ${n2(k)}. ${k>=2?'Yes, the groups barely overlap.':'Not strongly; the groups overlap a lot.'}`)},
+ worked(r){return{q:'Comparing two groups',steps:[`Find a center for each group (${SET==='ccss'?'mean':'median'}).`,`Find a spread for each group (${SET==='ccss'?'MAD':'IQR'}).`,'Divide the difference in centers by the spread to see how far apart the groups are.'],a:''}},
+ challenge(r){return{q:'Write two data sets of 8 values that have the same center but very different spreads. Explain how a dot plot of each would look.',a:'Answers vary.'}}},
+
+{grade:7,code:'7.SP.C.8',ny:'NY-7.SP.8',im:8,domain:'Statistics & Probability',title:'Probability of compound events',
+ ican:'find probabilities of compound events using lists, tables and tree diagrams.',
+ diff:['A coin and a number cube, with a hint to list the outcomes','Two spinners, two coins and outfit choices','“At least one” problems, and designing a simulation'],
+ support(r){const f=r.int(1,6),c=r.pick(['heads','tails']);return{q:`You flip a coin and roll a number cube. What is the probability of ${c} and a ${f}?`,a:`${F(1,12)} (12 equally likely outcomes)`,hint:'Make a list or tree: 2 coin results × 6 cube results.',wide:true}},
+ onlevel(r){const t=r.int(0,2);
+   if(t===0){const a=r.int(2,5),b=r.int(2,5);return W(`Spinner A has ${a} equal sections numbered 1 to ${a}. Spinner B has ${b} equal sections numbered 1 to ${b}. You spin both. What is the probability that both land on 1?`,F(1,a*b))}
+   if(t===1){const s=r.int(2,4),p=r.int(2,4),h=r.int(1,3);return W(`An outfit is ${s} shirts, ${p} pants and ${h} hats to choose from. How many outfits are possible? If one is chosen at random, what is the probability it uses your favorite shirt?`,`${s*p*h} outfits; ${F(1,s)}`)}
+   return W('You flip a coin twice. List the sample space. What is the probability of getting one heads and one tails?',`HH, HT, TH, TT; ${F(1,2)}`)},
+ stretch(r){const t=r.int(0,2);
+   if(t===0){const n=r.pick([2,3]);return W(`You flip a coin ${n} times. What is the probability of getting at least one heads?`,fr(2**n-1,2**n))}
+   if(t===1)return W('You roll two number cubes. What is the probability that both numbers are even? What is the probability that the sum is 7?',`${F(1,4)}; ${F(1,6)}`);
+   if(r.chance(.5)){const k=r.int(3,11),ways=6-Math.abs(7-k);return W(`You roll two number cubes. What is the probability that the sum is ${k}? Show the sample space.`,fr(ways,36))}
+   const n=r.pick([3,4,5,6,8,10]);return W(`About 1 in ${n} cereal boxes has a prize. Describe how to use a spinner or random numbers to simulate buying boxes until you get a prize.`,`Answers vary, for example a spinner with ${n} equal parts, 1 marked "prize".`)},
+ worked(r){return{q:'Coin and number cube: heads and 4',steps:['Coin: 2 outcomes. Cube: 6 outcomes.','2 × 6 = 12 equally likely outcomes.','Only one is heads and 4, so P = 1/12.'],a:''}},
+ challenge(r){return{q:'Design a game with two spinners where the probability of winning is exactly 1/6. Explain why.',a:'Answers vary, for example spinners with 2 and 3 equal parts, win on 1 and 1.'}}},
+
+/* ---------- Grade 8: full set ---------- */
+{grade:8,code:'8.EE.A.2',im:8,domain:'Expressions & Equations',title:'Square roots and cube roots',
+ ican:'use square and cube roots to solve equations like x² = p and x³ = p.',
+ diff:['Square and cube roots of perfect squares and cubes, with an area or volume hint','Solving x² = p and x³ = p, and roots of fractions','Irrational solutions, negative cube roots, and area and volume stories'],
+ support(r){const s=r.int(2,12);if(r.chance(.6))return{q:EQ(`√${s*s} = ${BL()}`),a:s,hint:`Which number times itself is ${s*s}? Think of a square with area ${s*s}.`};
+   const c=r.int(2,5);return{q:EQ(`∛${c**3} = ${BL()}`),a:c,hint:`Which number used as a factor 3 times is ${c**3}?`}},
+ onlevel(r){const t=r.int(0,2),s=r.int(2,12);
+   if(t===0)return{q:`Solve: ${EQ(`${V('x')}<sup>2</sup> = ${s*s}`)}`,a:`${V('x')} = ${s} or ${V('x')} = −${s}`};
+   if(t===1){const c=r.int(2,6);return{q:`Solve: ${EQ(`${V('x')}<sup>3</sup> = ${c**3}`)}`,a:`${V('x')} = ${c}`}}
+   const[a,b]=r.pick([[4,9],[1,16],[9,25],[16,49],[1,4]]);return{q:EQ(`√${F(a,b)} = ${BL()}`),a:F(Math.sqrt(a),Math.sqrt(b))}},
+ stretch(r){const t=r.int(0,2);
+   if(t===0){const p=until(()=>r.int(5,60),v=>!Number.isInteger(Math.sqrt(v)));return{q:`Solve: ${EQ(`${V('x')}<sup>2</sup> = ${p}`)}`,a:`${V('x')} = √${p} or ${V('x')} = −√${p}`}}
+   if(t===1){const c=r.int(2,5);return{q:EQ(`∛(${I(-(c**3))}) = ${BL()}`),a:I(-c)}}
+   const c=r.int(2,9);return W(`A cube-shaped tank holds ${c**3} cubic feet of water. How long is each edge? What is the area of one face?`,`${c} ft; ${c*c} sq ft`)},
+ worked(r){const s=r.int(4,9);return{q:`${V('x')}<sup>2</sup> = ${s*s}`,steps:[`${s} × ${s} = ${s*s}`,`(−${s}) × (−${s}) = ${s*s} too`,`${V('x')} = ${s} or −${s}`],a:''}},
+ challenge(r){return{q:`Explain why ${EQ(`${V('x')}<sup>2</sup> = −9`)} has no solution with real numbers, but ${EQ(`${V('x')}<sup>3</sup> = −8`)} does.`,a:'A square is never negative; (−2)³ = −8.'}}},
+
+{grade:8,code:'8.EE.A.3',im:7,domain:'Expressions & Equations',title:'Scientific notation and estimation',
+ ican:'write very large and very small numbers in scientific notation and compare them.',
+ diff:['Large round numbers as a single digit times a power of 10, with a hint','Large and small numbers both ways, and how many times as large','Real-world comparisons with estimates'],
+ support(r){const c=r.int(2,9),e=r.int(3,9);return{q:EQ(`${(c*10**e).toLocaleString('en-US')} = ${c} × 10<sup>${BOX}</sup>`),a:e,hint:'Count how many places the decimal point moves to the left.'}},
+ onlevel(r){const t=r.int(0,2);
+   if(t===0){const c=r.int(11,99)/10,e=r.int(4,9);return{q:`Write in scientific notation: ${EQ(Math.round(c*10**e).toLocaleString('en-US'))}`,a:sci(c,e)}}
+   if(t===1){const c=r.int(2,9),e=r.int(2,6);return{q:`Write in scientific notation: ${EQ((c/10**e).toFixed(e))}`,a:sci(c,-e)}}
+   const a=r.int(2,9),e1=r.int(6,10),e2=r.int(2,e1-2);return{q:`About how many times as large is ${EQ(sci(a,e1))} as ${EQ(sci(1,e2))}?`,a:`${a} × 10<sup>${e1-e2}</sup>`,space:'m'}},
+ stretch(r){const t=r.int(0,1);
+   if(t===0){const[n1,v1,n2,v2]=r.pick([['the United States','3 × 10<sup>8</sup>','New York City','8 × 10<sup>6</sup>'],['the world','8 × 10<sup>9</sup>','the United States','3 × 10<sup>8</sup>'],['New York State','2 × 10<sup>7</sup>','Buffalo','3 × 10<sup>5</sup>']]);return W(`The population of ${n1} is about ${v1}. The population of ${n2} is about ${v2}. About how many times as many people live in ${n1}?`,{'3 × 10<sup>8</sup>':'about 40 times','8 × 10<sup>9</sup>':'about 27 times','2 × 10<sup>7</sup>':'about 67 times'}[v1])}
+   const a=r.int(2,9),m=r.int(3,6),n=r.int(1,m-1),[small,big]=r.pick([['a grain of sand','a beach ball'],['a bacterium','a human hair'],['a red blood cell','a pinhead']]);return W(`${small[0].toUpperCase()+small.slice(1)} is about ${sci(a,-m)} meters across. ${big[0].toUpperCase()+big.slice(1)} is about ${sci(a,-n)} meters across. About how many times as wide is ${big}?`,`About 10<sup>${m-n}</sup> = ${(10**(m-n)).toLocaleString('en-US')} times`)},
+ worked(r){const c=r.int(2,9),e=r.int(5,8);return{q:(c*10**e).toLocaleString('en-US'),steps:[`Put the point after the first digit: ${c}.`,`It moved ${e} places to the left.`,`${sci(c,e)}`],a:''}},
+ challenge(r){return{q:'Which is greater: 9 × 10<sup>5</sup> or 1 × 10<sup>6</sup>? Explain without writing the numbers out in full.',a:'1 × 10⁶ is greater; it is 10 × 10⁵, and 10 > 9.'}}},
+
+{grade:8,code:'8.EE.A.4',im:7,domain:'Expressions & Equations',title:'Operations with scientific notation',
+ ican:'multiply, divide, add and subtract numbers in scientific notation.',
+ diff:['Multiplying where the product stays under 10, with a hint','Multiplying and dividing with regrouping, and adding with the same exponent','Adding and subtracting with different exponents, and real-world quantities'],
+ support(r){const a=r.int(1,3),b=r.int(1,3),m=r.int(2,6),n=r.int(2,6);return{q:EQ(`(${sci(a,m)}) × (${sci(b,n)}) = ${BL(5)}`),a:sci(a*b,m+n),hint:'Multiply the numbers. Add the exponents.'}},
+ onlevel(r){const t=r.int(0,2);
+   if(t===0){const a=r.int(3,9),b=r.int(3,9),m=r.int(2,8),n=r.int(2,8),p=a*b;return{q:EQ(`(${sci(a,m)}) × (${sci(b,n)}) = ${BL(5)}`),a:p>=10?sci(p/10,m+n+1):sci(p,m+n),space:'m'}}
+   if(t===1){const b=r.int(2,4),q=r.int(2,4),m=r.int(6,12),n=r.int(2,5);return{q:EQ(`(${sci(b*q,m)}) ÷ (${sci(b,n)}) = ${BL(5)}`),a:sci(q,m-n),space:'m'}}
+   const a=r.int(11,40)/10,b=r.int(11,40)/10,e=r.int(3,8);return{q:EQ(`${sci(a,e)} + ${sci(b,e)} = ${BL(5)}`),a:sci(Math.round((a+b)*10)/10,e),space:'m'}},
+ stretch(r){if(r.chance(.5)){const a=r.int(2,9),b=r.int(2,9),e=r.int(4,7);return{q:EQ(`${sci(a,e+1)} − ${sci(b,e)} = ${BL(5)}`),a:sci((a*10-b)/10,e+1),space:'m'}}
+   return W('Light travels about 3 × 10<sup>5</sup> km per second. The sun is about 1.5 × 10<sup>8</sup> km away. About how many seconds does sunlight take to reach Earth?','5 × 10<sup>2</sup> = 500 seconds')},
+ worked(r){const a=2,b=4,m=r.int(3,5),n=r.int(2,4);return{q:`(${sci(a,m)}) × (${sci(b,n)})`,steps:[`${a} × ${b} = ${a*b}`,`10<sup>${m}</sup> × 10<sup>${n}</sup> = 10<sup>${m+n}</sup>`,`${sci(a*b,m+n)}`],a:''}},
+ challenge(r){return{q:'Explain why (5 × 10<sup>3</sup>) × (4 × 10<sup>2</sup>) is not 20 × 10<sup>5</sup> in scientific notation, and fix it.',a:'20 is not between 1 and 10. It is 2 × 10⁶.'}}},
+
+{grade:8,code:'8.EE.B.5',im:3,domain:'Expressions & Equations',title:'Graphing proportional relationships',
+ ican:'graph proportional relationships, read the unit rate as the slope, and compare relationships.',
+ diff:['The unit rate from a graph through the origin, with a hint','Comparing a graph with an equation or table','Interpreting graphs and equations in stories'],
+ support(r){const[kn,kd]=r.pick([[1,1],[2,1],[3,1],[4,1],[1,2],[3,2],[5,2],[1,4],[3,4]]),k=kn/kd,x=kd*r.int(1,Math.max(1,Math.floor(8/Math.max(kd,kn))));return{q:'The graph shows a proportional relationship. What is the unit rate (the slope)?',model:coordGrid(8,[[x,k*x,''],[0,0,'']],null,[[k,0]]),a:fr(kn,kd),hint:'Find the point where x = 1. Its y-value is the unit rate.',wide:true}},
+ onlevel(r){const k1=r.int(2,6),k2=until(()=>r.int(2,9),v=>v!==k1),[p,q]=two(r);
+   if(r.chance(.5))return W(`${p}'s savings follow ${EQ(`${V('y')} = ${k1}${V('x')}`)}, where ${V('x')} is weeks. ${q} saved $${k2*4} in 4 weeks at a steady rate. Who saves faster?`,`${k1>k2?p:q} ($${k1} vs $${k2} per week)`);
+   return{q:`Line A is graphed. Line B is ${EQ(`${V('y')} = ${k2}${V('x')}`)}. Which has the greater rate of change?`,model:coordGrid(8,[],null,[[k1/2,0]]),a:`${k1/2>k2?'Line A':'Line B'} (A: ${n2(k1/2)}, B: ${k2})`,wide:true,space:'m'}},
+ stretch(r){const k1=r.int(5,9),k2=r.int(4,8)+.5,[p,q]=two(r);return W(`${p} runs at a steady pace, shown by ${EQ(`${V('d')} = ${k1}${V('t')}`)} (miles, hours). ${q} runs ${n2(k2*3)} miles in 3 hours. Who is faster? Sketch both graphs on the same axes. Which line is steeper?`,`${k1>k2?p:q}; that line is steeper`)},
+ worked(r){const k=r.int(2,5);return{q:`Line through (0, 0) and (2, ${2*k})`,steps:['Find the point where x = 1.',`(1, ${k})`,`Unit rate = slope = ${k}`],a:''}},
+ challenge(r){return{q:'Explain why every proportional relationship’s graph goes through (0, 0), and why the point (1, k) shows the unit rate.',a:'Zero of one quantity means zero of the other; y = k when x = 1.'}}},
+
+{grade:8,code:'8.EE.B.6',im:2,domain:'Expressions & Equations',title:'Slope and y = mx + b',
+ ican:'find the slope of a line and write its equation as y = mx + b.',
+ diff:['Counting rise over run on a graph, with a hint','Writing y = mx + b from a graph','Fractional slopes from graphs, and explaining slope with similar triangles'],
+ support(r){const m=until(()=>r.int(-3,3),v=>v!==0),b=r.int(-3,3);return{q:'What is the slope of the line?',model:coordGrid(8,[],null,[[m,b]]),a:I(m),hint:'Pick two points where the line crosses grid corners. Count up or down, then right.',wide:true}},
+ onlevel(r){const m=until(()=>r.int(-3,3),v=>v!==0),b=r.int(-5,5);return{q:`Write an equation of the line in the form ${EQ(`${V('y')} = ${V('m')}${V('x')} + ${V('b')}`)}.`,model:coordGrid(8,[],null,[[m,b]]),a:`${V('y')} = ${lin(m,b)}`,wide:true,space:'m'}},
+ stretch(r){if(r.chance(.6)){const[n,d]=r.pick([[1,2],[2,3],[-1,2],[3,4],[-2,3]]),b=r.int(-3,3);return{q:'Write an equation of the line.',model:coordGrid(8,[],null,[[n/d,b]]),a:`${V('y')} = ${SF(n,d)}${V('x')}${b?` ${sg(b)}`:''}`,wide:true,space:'m'}}
+   return W('Use similar triangles to explain why the slope between any two points on a line is the same.','The slope triangles have equal angles, so they are similar and their rise-to-run ratios are equal.')},
+ worked(r){const m=r.int(1,3),b=r.int(-2,3);return{q:`Line through (0, ${I(b)}) and (1, ${I(m+b)})`,steps:[`Rise: ${m}. Run: 1. Slope ${V('m')} = ${m}.`,`It crosses the y-axis at ${I(b)}, so ${V('b')} = ${I(b)}.`,`${V('y')} = ${lin(m,b)}`],a:''}},
+ challenge(r){return{q:'Draw two different lines that both have a slope of 2/3. How are their equations alike, and how are they different?',a:'Same m (2/3), different b.'}}},
+
+{grade:8,code:'8.F.A.1',im:5,domain:'Functions',title:'What is a function?',
+ ican:'decide whether a relationship is a function and explain why.',
+ diff:['Is this table a function? With a hint about repeated inputs','Ordered pairs, graphs and rules','Real-world relationships, and building a non-function'],
+ support(r){const xs=r.shuffle([1,2,3,4,5,6]).slice(0,4).sort((a,b)=>a-b),fn=r.chance(.5),ys=xs.map(()=>r.int(1,9));if(!fn)xs[2]=xs[1];return{q:'Is this a function?',model:pTbl(xs,ys),a:fn?'Yes, each input has one output':`No, the input ${xs[1]} has two outputs`,hint:'A function gives exactly one output for each input. Look for a repeated input.'}},
+ onlevel(r){const t=r.int(0,1);
+   if(t===0){const fn=r.chance(.5),pts=Array.from({length:4},(_,i)=>[i-1+r.int(0,1)*0,r.int(-4,4)]);if(!fn){pts[3][0]=pts[1][0];if(pts[3][1]===pts[1][1])pts[3][1]+=pts[3][1]<4?1:-1}const S=pts.map(([x,y])=>`(${I(x)}, ${I(y)})`).join(', ');return{q:`Is this set of ordered pairs a function? {${S}}`,a:fn?'Yes':'No, an input repeats with a different output',space:'m',wide:true}}
+   const fn=r.chance(.5),pts=fn?[[-3,2],[-1,4],[1,1],[3,-2]]:[[-2,3],[-2,-1],[1,2],[3,0]];return{q:'Do these points represent a function?',model:coordGrid(6,pts.map(p=>[...p,''])),a:fn?'Yes':'No, two points share an x-value',wide:true}},
+ stretch(r){if(r.chance(.35)){const k=r.int(2,9),b=r.int(-9,9),n=r.int(-5,9);return W(`A rule takes an input, multiplies it by ${k}, then adds ${I(b)}. Is the rule a function? What is the output for an input of ${I(n)}? Write the rule as an equation.`,`Yes; ${I(k*n+b)}; ${V('y')} = ${lin(k,b)}`)}if(r.chance(.3))return W(`Make a table with 4 inputs and outputs that is NOT a function. Then change one number so that it is a function.`,'Answers vary; a repeated input with two outputs is not a function.');const[q,a]=r.pick([['Is the temperature a function of the time of day, for one day in Albany?','Yes, each moment has one temperature.'],['Is the time of day a function of the temperature, for one day?','No, the same temperature can happen at different times.'],['Is the number of wheels a function of the number of bikes in a rack?','Yes, w = 2b.'],['Is a person’s age a function of their grade in school?','No, students in one grade have different ages.'],['Is the cost of gas a function of the number of gallons bought?','Yes, each amount of gas has one cost.'],['Is a student’s height a function of their age, for all students in a school?','No, students of the same age have different heights.'],['Is the area of a square a function of its side length?','Yes, A = s².'],['Is a person’s name a function of their birthday?','No, many people share a birthday.']]);return W(q+' Explain.',a)},
+ worked(r){return{q:'Inputs 1, 2, 2, 3 with outputs 4, 5, 6, 7',steps:['Check each input.','Input 2 goes to both 5 and 6.','Not a function.'],a:''}},
+ challenge(r){return{q:'Describe a real situation that is a function and one that is not. For each one, say which quantity is the input.',a:'Answers vary.'}}},
+
+{grade:8,code:'8.F.A.2',im:5,domain:'Functions',title:'Comparing functions',
+ ican:'compare two functions shown in different ways: equations, tables, graphs and words.',
+ diff:['Which function has the greater rate of change? With a hint','Rates of change and initial values across representations','Stories where you decide when two functions are equal'],
+ support(r){const m1=r.int(2,6),m2=until(()=>r.int(2,8),v=>v!==m1),b2=r.int(0,5),xs=[0,1,2,3];return{q:`Function A: ${EQ(`${V('y')} = ${m1}${V('x')} + ${r.int(1,9)}`)}. Function B is in the table. Which has the greater rate of change?`,model:pTbl(xs,xs.map(x=>m2*x+b2)),a:`${m1>m2?'A':'B'} (${m1} vs ${m2})`,hint:'In the table, see how much y changes when x goes up by 1.',wide:true}},
+ onlevel(r){const m1=r.int(-4,5),b1=r.int(-5,8),m2=until(()=>r.int(-3,3),v=>v!==m1&&v!==0),b2=until(()=>r.int(-4,4),v=>v!==b1);return{q:`Function A is ${EQ(`${V('y')} = ${lin(m1,b1)}`)}. Function B is graphed. Which has the greater rate of change? Which has the greater initial value?`,model:coordGrid(8,[],null,[[m2,b2]]),a:`Rate: ${m1>m2?'A':'B'} (${I(m1)} vs ${I(m2)}). Initial value: ${b1>b2?'A':'B'} (${I(b1)} vs ${I(b2)})`,wide:true,space:'m'}},
+ stretch(r){const f1=r.int(20,60),m1=r.int(8,15),m2=r.int(m1+3,m1+12),n=r.int(3,9),f2=f1+(m1-m2)*n;return f2>=0?W(`Plan A costs $${f1} plus $${m1} per month. Plan B is shown by ${EQ(`${V('c')} = ${m2}${V('m')} + ${f2}`)}. After how many months do they cost the same? Which plan is cheaper after that?`,`${n} months; Plan A`):W(`Plan A costs $${f1} plus $${m1} per month. Plan B costs $${m2} per month and nothing to join. Which plan costs less for 12 months?`,`${f1+m1*12<m2*12?'A':'B'} (A: $${f1+m1*12}, B: $${m2*12})`)},
+ worked(r){return{q:'y = 3x + 2 vs table where y goes up 5 each time',steps:['Rate of A: 3.','Rate of B: 5.','B has the greater rate of change.'],a:''}},
+ challenge(r){return{q:'Make a table for a function that has a greater rate of change than y = 2x + 10 but a smaller value when x = 3.',a:'Answers vary, for example y = 4x.'}}},
+
+{grade:8,code:'8.F.A.3',im:5,domain:'Functions',title:'Linear and nonlinear functions',
+ ican:'tell whether a function is linear from its equation, table or graph.',
+ diff:['Checking a table for a constant change, with a hint','Equations and tables: linear or not?','Real-world relationships, with a justification'],
+ support(r){const xs=[0,1,2,3,4],lin_=r.chance(.5),m=r.int(2,5),b=r.int(0,5),ys=xs.map(x=>lin_?m*x+b:x*x+b);return{q:'Is the function in the table linear?',model:pTbl(xs,ys),a:lin_?`Yes, y goes up by ${m} each time`:'No, the change in y is not constant',hint:'Find how much y changes each time x goes up by 1.'}},
+ onlevel(r){if(r.chance(.45)){const xs=[0,1,2,3,4],k=r.int(0,3),m=r.int(2,6),b=r.int(-3,6),fs=[x=>m*x+b,x=>x*x+b,x=>2**x+b,x=>-m*x+b],ys=xs.map(fs[k]);return{q:'Is the function in the table linear? Explain.',model:pTbl(xs,ys.map(I)),a:k===0||k===3?'Linear: constant change':'Nonlinear: the change is not constant',space:'m'}}const opts=[[`${V('y')} = 3${V('x')} − 2`,1],[`${V('y')} = ${r.int(2,9)}${V('x')} + ${r.int(1,9)}`,1],[`${V('y')} = ${V('x')}<sup>3</sup>`,0],[`${V('y')} = ${V('x')}<sup>2</sup> + 1`,0],[`${V('y')} = ${F(1,2)}${V('x')}`,1],[`${V('y')} = 2<sup>${V('x')}</sup>`,0],[`${V('y')} = ${F(6,V('x'))}`,0],[`${V('y')} = −${V('x')} + 4`,1],[`${V('y')} = 5`,1],[`${V('y')} = ${V('x')}(${V('x')} + 1)`,0]],[e,ok]=r.pick(opts);return{q:`Is ${EQ(e)} linear or nonlinear?`,a:ok?'Linear':'Nonlinear'}},
+ stretch(r){const[q,a]=r.pick([['the area of a square and its side length','Nonlinear: A = s²'],['the perimeter of a square and its side length','Linear: P = 4s'],['the cost of apples at $1.20 per pound and the number of pounds','Linear: c = 1.2p'],['the number of bacteria that doubles every hour and the time','Nonlinear: it doubles, not a constant change'],['the distance a car travels at 50 mph and the time','Linear: d = 50t'],['the volume of a cube and its edge length','Nonlinear: V = s³'],['a phone plan cost of $20 plus $5 per gigabyte and the gigabytes used','Linear: c = 5g + 20'],['the area of a circle and its radius','Nonlinear: A = πr²'],['the height of a candle that burns 1 cm per hour and the time','Linear: h = start − t'],['the value of money that grows 10% each year and the number of years','Nonlinear: it is multiplied by 1.1 each year']]);if(r.chance(.4)){const xs=[0,1,2,3,4],k=r.int(0,3),m=r.int(2,6),b=r.int(-3,6),fs=[x=>m*x+b,x=>x*x+b,x=>2**x+b,x=>-m*x+b];return{q:'Is the function in the table linear? If it is, write its equation. If not, explain how you know.',model:pTbl(xs,xs.map(fs[k]).map(I)),a:k===0?`Linear: ${V('y')} = ${lin(m,b)}`:k===3?`Linear: ${V('y')} = ${lin(-m,b)}`:'Nonlinear: the change is not constant',space:'m'}}return W(`Is the relationship between ${q} linear or nonlinear? Justify with a table or equation.`,a)},
+ worked(r){return{q:'x: 0, 1, 2, 3 and y: 1, 2, 5, 10',steps:['Changes in y: 1, 3, 5.','They are not constant.','Nonlinear.'],a:''}},
+ challenge(r){return{q:'Write a nonlinear function whose table has the same y-values as y = 2x for x = 0 and x = 2. Show its table.',a:'Answers vary, for example y = x² (0, 1, 4 → 0 and 4 match).'}}},
+
+{grade:8,code:'8.F.B.5',im:5,domain:'Functions',title:'Describing graphs',
+ ican:'describe how a quantity changes by looking at a graph, and sketch a graph from a story.',
+ diff:['Is this part of the graph increasing, decreasing or constant? With a hint','Finding the steepest part and matching stories to graphs','Sketching a graph for a story'],
+ support(r){const segs=pieces(r),i=r.int(0,segs.length-1),L='ABCD'[i];return{q:`The graph shows distance from home over time. During part ${L}, is the distance increasing, decreasing or constant?`,model:pieceGraph(segs),a:segDesc(segs[i]),hint:'Uphill means increasing, downhill means decreasing, flat means constant.',wide:true}},
+ onlevel(r){const segs=pieces(r);if(r.chance(.5)){const st=segs.map(s=>Math.abs(s[1]/s[0])),i=st.indexOf(Math.max(...st));return{q:'During which part does the distance change fastest? How do you know?',model:pieceGraph(segs),a:`Part ${'ABCD'[i]}, the steepest part`,wide:true,space:'m'}}
+   return{q:'Write a story about a walk that matches this graph.',model:pieceGraph(segs),a:segs.map((s,i)=>`${'ABCD'[i]}: ${segDesc(s)}`).join('; '),wide:true,space:'l'}},
+ stretch(r){const[p,q]=two(r),[st,ans]=r.pick(STORIES);return W(st.replace(/#/g,p).replace(/@/g,q)+' Sketch a graph and label each part.',ans)},
+ worked(r){return{q:'A graph that goes up, then flat, then down',steps:['Up: distance is increasing (moving away).','Flat: distance is constant (stopped).','Down: distance is decreasing (coming back).'],a:''}},
+ challenge(r){return{q:'Sketch a graph of the height of water in a bathtub while it fills, while someone takes a bath, and while it drains. Explain each part.',a:'Answers vary.'}}},
+
+{grade:8,code:'8.G.A.3',im:1,domain:'Geometry',title:'Transformations on the coordinate plane',
+ ican:'describe the effect of translations, reflections and rotations on coordinates.',
+ diff:['Translating a point, with a hint about adding to each coordinate','Reflections and rotations of points and triangles','Sequences of transformations'],
+ support(r){const x=r.int(-5,5),y=r.int(-5,5),a=until(()=>r.int(-4,4),v=>v!==0),b=r.int(-4,4);return{q:`Point A is translated ${Math.abs(a)} units ${a>0?'right':'left'}${b?` and ${Math.abs(b)} units ${b>0?'up':'down'}`:''}. What are the coordinates of its image?`,model:coordGrid(8,[[x,y,'A']]),a:`(${I(x+a)}, ${I(y+b)})`,hint:'Right and left change x. Up and down change y.',wide:true}},
+ onlevel(r){const x=until(()=>r.int(-6,6),v=>v!==0),y=until(()=>r.int(-6,6),v=>v!==0),[name,f]=r.pick(TRANS);return{q:`Point (${I(x)}, ${I(y)}) is ${name}. What are the coordinates of the image?`,a:`(${I(f(x,y)[0])}, ${I(f(x,y)[1])})`,space:'m'}},
+ stretch(r){const P=[[1,1],[4,1],[1,3]].map(([a,b])=>[a+r.int(-1,1),b+r.int(-1,1)]),[n1,f1]=r.pick(TRANS),[n2,f2]=r.pick(TRANS.filter(t=>t[0]!==n1)),img=P.map(([x,y])=>f2(...f1(x,y)));return W(`Triangle ABC has vertices ${P.map(([x,y],i)=>`${'ABC'[i]}(${I(x)}, ${I(y)})`).join(', ')}. It is ${n1}, then ${n2}. Find the coordinates of the final image.`,img.map(([x,y],i)=>`${'ABC'[i]}′(${I(x)}, ${I(y)})`).join(', '))},
+ worked(r){const x=r.int(1,5),y=r.int(1,5);return{q:`(${x}, ${y}) rotated 90° counterclockwise about the origin`,steps:['Rule: (x, y) → (−y, x)',`(${x}, ${y}) → (${I(-y)}, ${x})`,'Check on the grid: the point turned a quarter turn.'],a:''}},
+ challenge(r){return{q:'Find two different sequences of transformations that move (2, 3) to (−2, −3). Explain why both work.',a:'Examples: rotate 180° about the origin; or reflect across the x-axis, then the y-axis.'}}},
+
+{grade:8,code:'8.G.A.4',im:2,domain:'Geometry',title:'Dilations and similar figures',
+ ican:'use dilations and scale factors to find side lengths in similar figures.',
+ diff:['Dilating a point from the origin, with a hint to multiply','Scale factors and missing sides in similar figures','Shadow problems, and how area changes under a dilation'],
+ support(r){const x=r.int(-4,4),y=r.int(-4,4),k=r.pick([2,3]);return{q:`Point (${I(x)}, ${I(y)}) is dilated by a scale factor of ${k} with the center at the origin. What is the image?`,a:`(${I(k*x)}, ${I(k*y)})`,hint:`Multiply both coordinates by ${k}.`}},
+ onlevel(r){if(r.chance(.5)){const a=r.int(2,9),k=r.pick([2,3,1.5,0.5]);return W(`Two triangles are similar. A side of the small triangle is ${a} cm, and the matching side of the large triangle is ${n2(a*k<a?a/k:a*k)} cm. What is the scale factor from small to large?`,n2(k<1?1/k:k))}
+   const a=r.int(2,8),b=r.int(2,8),k=r.int(2,4);return W(`Rectangle A is ${a} by ${b}. Rectangle B is similar, and its short side is ${Math.min(a,b)*k}. What is B's long side?`,`${Math.max(a,b)*k}`)},
+ stretch(r){if(r.chance(.5)){const h=r.int(5,7),s=r.int(3,8),T=r.int(12,40);return W(`A ${h}-foot person casts a ${s}-foot shadow. At the same time, a tree casts a ${T}-foot shadow. How tall is the tree?`,`${n2(h*T/s)} feet`)}const k=r.int(2,4),A=r.int(6,20);return W(`A shape with an area of ${A} square units is dilated by a scale factor of ${k}. What is the new area? Explain.`,`${A*k*k} square units; area scales by ${k}² = ${k*k}`)},
+ worked(r){const k=2,a=r.int(3,6),b=r.int(4,9);return{q:`Similar rectangles: ${a} by ${b} and ${a*k} by ?`,steps:[`Scale factor: ${a*k} ÷ ${a} = ${k}`,`Multiply the other side: ${b} × ${k}`,`Missing side: ${b*k}`],a:''}},
+ challenge(r){return{q:'Is every pair of squares similar? Every pair of rectangles? Every pair of circles? Explain each.',a:'Squares and circles: yes. Rectangles: no.'}}},
+
+{grade:8,code:'8.G.A.5',im:1,domain:'Geometry',title:'Angles in triangles and parallel lines',
+ ican:'use facts about triangle angles, exterior angles and parallel lines cut by a transversal.',
+ diff:['A missing angle in a triangle, with a hint','Exterior angles, and angles made by parallel lines and a transversal','Writing and solving equations from angle relationships'],
+ support(r){const A=r.int(30,80),B=r.int(30,180-A-20);return{q:`A triangle has angles of ${A}° and ${B}°. What is the third angle?`,a:`${180-A-B}°`,hint:'The angles of a triangle add to 180°.'}},
+ onlevel(r){if(r.chance(.4)){const A=r.int(30,70),B=r.int(30,70);return{q:`In a triangle, two interior angles are ${A}° and ${B}°. What is the exterior angle at the third vertex?`,a:`${A+B}°`,space:'m'}}
+   const a=r.int(40,80),pos=['TR','TL','BL','BR'],g=r.pick(pos),t=r.pick(pos),tl=r.int(0,1);return{q:`Lines ℓ and m are parallel. Find ${V('x')}.`,model:parFig(a,g,t,tl),a:`${['TR','BL'].includes(g)===['TR','BL'].includes(t)?(['TR','BL'].includes(g)?a:180-a):(['TR','BL'].includes(g)?180-a:a)}°`,wide:true}},
+ stretch(r){if(r.chance(.5)){const x=r.int(10,30),q=r.int(5,20),p=x+q;return W(`Two parallel lines are cut by a transversal. Alternate interior angles measure (2${V('x')} + ${p})° and (3${V('x')} + ${q})°. Find ${V('x')} and the angle measure.`,`${V('x')} = ${x}; ${2*x+p}°`)}
+   const k=r.pick([[1,2,3],[2,3,4],[1,1,2],[2,3,5]]),x=180/k.reduce((a,b)=>a+b);return W(`The angles of a triangle are in the ratio ${k.join(' : ')}. Find all three angles.`,k.map(v=>`${n2(v*x)}°`).join(', '))},
+ worked(r){const A=r.int(40,70),B=r.int(40,70);return{q:`Triangle with ${A}° and ${B}°`,steps:['Angles in a triangle add to 180°.',`${A} + ${B} = ${A+B}`,`180 − ${A+B} = ${180-A-B}°`],a:''}},
+ challenge(r){return{q:'Tear the three corners off a paper triangle and line them up. Explain why they always make a straight line.',a:'The angles add to 180°, the measure of a straight angle.'}}},
+
+{grade:8,code:'8.G.B.8',im:8,domain:'Geometry',title:'Distance between two points',
+ ican:'use the Pythagorean theorem to find the distance between two points.',
+ diff:['Two points on a grid with whole-number distances, with a right-triangle hint','Distances from coordinates, including rounding','Perimeters of triangles on the plane, and checking for right triangles'],
+ support(r){const[a,b,c]=r.pick([[3,4,5],[6,8,10]]),x=r.int(-6,6-a),y=r.int(-6,6-b);return{q:'How far apart are points A and B?',model:coordGrid(8,[[x,y,'A'],[x+a,y+b,'B']]),a:`${c} units`,hint:'Draw a right triangle. Count its legs, then use a² + b² = c².',wide:true}},
+ onlevel(r){if(r.chance(.6)){const[a,b,c]=r.pick(TRIP.slice(0,5)),x=r.int(-8,2),y=r.int(-8,2),s=r.chance(.5)?1:-1;return{q:`Find the distance between (${I(x)}, ${I(y)}) and (${I(x+a)}, ${I(y+s*b)}).`,a:`${c} units`,space:'m'}}
+   const x=r.int(-5,2),y=r.int(-5,2),a=r.int(1,6),b=until(()=>r.int(1,6),v=>!Number.isInteger(Math.sqrt(a*a+v*v)));return{q:`Find the distance between (${I(x)}, ${I(y)}) and (${I(x+a)}, ${I(y+b)}). Round to the nearest tenth.`,a:`√${a*a+b*b} ≈ ${Math.sqrt(a*a+b*b).toFixed(1)} units`,space:'m'}},
+ stretch(r){const A=[0,0],B=[r.int(3,6),0],C=[0,r.int(3,6)],sh=[r.int(-4,2),r.int(-4,2)],P=[A,B,C].map(([x,y])=>[x+sh[0],y+sh[1]]),h=Math.sqrt(B[0]**2+C[1]**2);return W(`A triangle has vertices (${P.map(([x,y])=>`${I(x)}, ${I(y)}`).join('), (')}). Find its perimeter to the nearest tenth.`,`${n2(B[0]+C[1]+h)} units`)},
+ worked(r){return{q:'(1, 2) and (4, 6)',steps:['Horizontal leg: 4 − 1 = 3. Vertical leg: 6 − 2 = 4.','3² + 4² = 9 + 16 = 25','Distance = √25 = 5'],a:''}},
+ challenge(r){return{q:'Find all the points with whole-number coordinates that are exactly 5 units from the origin.',a:'(±5, 0), (0, ±5), (±3, ±4), (±4, ±3): 12 points.'}}},
+
+{grade:8,code:'8.G.C.9',im:5,domain:'Geometry',title:'Volume of cylinders, cones and spheres',
+ ican:'use formulas to find the volume of cylinders, cones and spheres.',
+ diff:['Cylinders with the formula written in','Cylinders, cones and spheres, in terms of π and as decimals','Missing dimensions and combined solids'],
+ support(r){const rr=r.int(1,6),h=r.int(2,10),u=r.pick(UNITS);return{q:`${EQ(`V = π${V('r')}<sup>2</sup>${V('h')} = π × ${BL(1.4)}<sup>2</sup> × ${BL(1.4)} = ${BL(3)}`)} cubic ${u}`,a:`${rr*rr*h}π ≈ ${n2(3.14*rr*rr*h)} cubic ${u}`,model:cylFig(rr,h,u),hint:'Square the radius, multiply by the height, then by π.',wide:true}},
+ onlevel(r){const t=r.int(0,2),rr=r.int(2,9),h=r.int(3,12)*(t===1?3:1),u=r.pick(UNITS);
+   if(t===0)return{q:'Find the volume of the cylinder. Give your answer in terms of π.',model:cylFig(rr,h,u),a:`${rr*rr*h}π cubic ${u}`,space:'m'};
+   if(t===1)return{q:'Find the volume of the cone. Give your answer in terms of π.',model:coneFig(rr,h,u),a:`${rr*rr*h/3}π cubic ${u}`,space:'m'};
+   const s=r.pick([3,6,9]);return{q:'Find the volume of the sphere. Give your answer in terms of π.',model:sphereFig(s,u),a:`${4*s**3/3}π cubic ${u}`,space:'m'}},
+ stretch(r){const t=r.int(0,2),u=r.pick(UNITS);
+   if(t===0){const rr=r.int(2,6),h=r.int(3,10);return W(`A cylinder has a volume of ${rr*rr*h}π cubic ${u} and a radius of ${rr} ${u}. What is its height?`,`${h} ${u}`)}
+   if(t===1){const rr=r.int(1,3)*3,h=r.int(2,6)*3;return W(`An ice cream cone has a radius of ${rr} cm and a height of ${h} cm. It is topped with a half-sphere of ice cream with the same radius. What is the total volume, in terms of π?`,`${rr*rr*h/3}π + ${2*rr**3/3}π = ${rr*rr*h/3+2*rr**3/3}π cubic cm`)}
+   const rr=r.int(2,5),h=2*rr;return W(`A sphere fits exactly inside a cylinder with radius ${rr} and height ${h}. Find both volumes. What fraction of the cylinder does the sphere fill?`,`Cylinder ${rr*rr*h}π, sphere ${n2(4*rr**3/3)}π; ${F(2,3)}`)},
+ worked(r){const rr=r.int(2,4),h=r.int(3,6);return{q:`Cylinder: r = ${rr}, h = ${h}`,steps:[`V = π × ${rr}<sup>2</sup> × ${h}`,`= π × ${rr*rr} × ${h} = ${rr*rr*h}π`,`≈ ${n2(3.14*rr*rr*h)} cubic units`],a:''}},
+ challenge(r){return{q:'A cone and a cylinder have the same radius and height. How many cones of water fill the cylinder? Explain with the formulas.',a:'3, because the cone formula is ⅓πr²h.'}}},
+
+{grade:8,code:'8.NS.A.1',im:8,domain:'The Number System',title:'Rational and irrational numbers',
+ ican:'tell rational from irrational numbers, and write repeating decimals as fractions.',
+ diff:['Sorting numbers into rational and irrational, with a hint','Writing repeating decimals as fractions','Two- and three-digit repeating blocks, and reasoning about sums'],
+ support(r){const[x,ok]=r.pick([['√16',1],['√7',0],['0.75',1],['π',0],[F(1,3),1],['−5',1],['√2',0],[`0.${ov('3')}`,1],['√25',1],['√10',0],['1.414213…, which never repeats',0]]);return{q:`Is ${x} rational or irrational?`,a:ok?'Rational':'Irrational',hint:'Rational numbers can be written as a fraction of integers. Their decimals end or repeat.'}},
+ onlevel(r){const t=r.int(0,1);if(t===0){const d=r.int(1,8);return{q:`Write as a fraction: ${EQ(`0.${ov(String(d))}`)}`,a:fr(d,9),space:'m'}}
+   const n=r.int(1,98),g=gcd(n,99);return{q:`Write as a fraction: ${EQ(`0.${ov(String(n).padStart(2,'0'))}`)}`,a:fr(n,99),space:'m'}},
+ stretch(r){const t=r.int(0,2);
+   if(t===0){const n=r.int(101,998);return{q:`Write as a fraction: ${EQ(`0.${ov(String(n))}`)}`,a:fr(n,999),space:'m'}}
+   if(t===1){const a=r.int(1,9),b=r.int(1,9);return{q:`Write as a fraction: ${EQ(`0.${a}${ov(String(b))}`)}`,a:fr(9*a+b,90),space:'m'}}
+   return W('Is the sum of a rational number and an irrational number rational or irrational? Explain with an example.','Irrational, for example 1 + √2.')},
+ worked(r){return{q:`0.${ov('27')}`,steps:[`Let ${V('x')} = 0.2727…`,`100${V('x')} = 27.2727…`,`99${V('x')} = 27, so ${V('x')} = ${F(27,99)} = ${F(3,11)}`],a:''}},
+ challenge(r){return{q:`Show that 0.${ov('9')} = 1 in two different ways.`,a:'1/3 = 0.333…, so 3/3 = 0.999…; or 10x − x = 9 gives x = 1.'}}},
+
+{grade:8,code:'8.NS.A.2',im:8,domain:'The Number System',title:'Approximating irrational numbers',
+ ican:'estimate irrational numbers and place them on a number line.',
+ diff:['Which two whole numbers is a square root between? With a hint','Estimating to the nearest tenth, and ordering','Estimating to the hundredth, and comparing expressions'],
+ support(r){const n=until(()=>r.int(2,99),v=>!Number.isInteger(Math.sqrt(v))),lo=Math.floor(Math.sqrt(n));return{q:`√${n} is between which two whole numbers?`,a:`${lo} and ${lo+1}`,hint:`Find the perfect squares just below and just above ${n}.`}},
+ onlevel(r){if(r.chance(.5)){const n=until(()=>r.int(2,99),v=>!Number.isInteger(Math.sqrt(v)));return{q:`Estimate √${n} to the nearest tenth.`,a:Math.sqrt(n).toFixed(1),space:'m'}}
+   const a=until(()=>r.int(5,60),v=>!Number.isInteger(Math.sqrt(v))),nn=until(()=>r.int(10,30),v=>v%4!==0),vals=[{s:`√${a}`,v:Math.sqrt(a)},{s:'π',v:Math.PI},{s:String(Math.floor(Math.sqrt(a))+.5),v:Math.floor(Math.sqrt(a))+.5},{s:F(nn,4),v:nn/4}];return{q:`Order from least to greatest: ${r.shuffle(vals).map(o=>o.s).join(', ')}`,a:vals.slice().sort((x,y)=>x.v-y.v).map(o=>o.s).join(', '),wide:true,space:'m'}},
+ stretch(r){if(r.chance(.5)){const n=until(()=>r.int(2,30),v=>!Number.isInteger(Math.sqrt(v)));return{q:`Estimate √${n} to the nearest hundredth without a calculator. Show how you narrowed it down.`,a:Math.sqrt(n).toFixed(2),space:'l'}}
+   return W('Which is greater: π² or 10? Explain using estimates.','10 is greater; π² ≈ 9.87.')},
+ worked(r){return{q:'√30',steps:['25 < 30 < 36, so √30 is between 5 and 6.','5.5² = 30.25, a little too big.','√30 ≈ 5.5 (more exactly 5.48)'],a:''}},
+ challenge(r){return{q:'Find an irrational number between 3 and 4, another between 3.1 and 3.2, and another between 3.14 and 3.15. Explain how you know each one is irrational.',a:'Answers vary, for example √10 (between 3 and 4), √9.8 (between 3.1 and 3.2), and π (between 3.14 and 3.15).'}}},
+
+{grade:8,code:'8.SP.A.1',im:6,domain:'Statistics & Probability',title:'Scatter plots and association',
+ ican:'make and read scatter plots, and describe patterns like positive, negative or no association.',
+ diff:['Positive, negative or no association? With a hint','Strong or weak, linear or nonlinear, and outliers','Explaining what an association means in context'],
+ support(r){const k=r.pick([1,-1,0]),pts=scatterPts(r,k,10),[xl,yl]=r.pick({1:[['Hours studied','Test score'],['Height (in)','Shoe size'],['Hours practiced','Shots made']],'-1':[['Temperature (°F)','Hot drinks sold'],['Age of car (years)','Value'],['Hours of screen time','Hours of sleep']],0:[['Shoe size','Test score'],['Day of the month','Rainfall (in)'],['Birth month','Height (in)']]}[k]);return{q:'Does the scatter plot show a positive association, a negative association, or no association?',model:scatterFig(pts,xl,yl),a:['Negative','None','Positive'][k+1],hint:'Up to the right means positive. Down to the right means negative.',wide:true}},
+ onlevel(r){const k=r.pick([1,-1]),pts=scatterPts(r,k,12,true),o=[r.int(1,9),k>0?r.int(1,2):r.int(8,9)];pts.push(o);return{q:'Describe the association (direction and strength). Which point is an outlier?',model:scatterFig(pts,'x','y'),a:`${k>0?'Positive':'Negative'}, fairly strong, linear; outlier near (${o[0]}, ${o[1]})`,wide:true,space:'m'}},
+ stretch(r){if(r.chance(.35)){const k=r.pick([1,-1]),pts=scatterPts(r,k,12,true);return{q:'Describe the association. Then use the pattern to estimate y when x = 5. Explain your estimate.',model:scatterFig(pts,'x','y'),a:`${k>0?'Positive':'Negative'}, linear; about 5`,wide:true,space:'m'}}if(r.chance(.5)){const[x,y,k]=r.pick(ASSOC);return W(`Would you expect a scatter plot of ${x} and ${y} to show a positive association, a negative association, or no association? Explain.`,k)}const[q,a]=r.pick([['A scatter plot of hours of screen time and hours of sleep for students shows a negative association. What does that mean? Does it prove screen time causes less sleep?','Students with more screen time tend to sleep less. No, association does not prove cause.'],['A scatter plot of a car’s age and its value shows a negative association. Describe what that means for a 10-year-old car.','Older cars tend to be worth less, so a 10-year-old car is likely worth less than a newer one.']]);return W(q,a)},
+ worked(r){return{q:'Reading a scatter plot',steps:['Each point is one pair of values.','If the points rise to the right, the association is positive.','If they cluster tightly around a line, it is strong.'],a:''}},
+ challenge(r){return{q:'Describe two quantities you think would have a negative association, and two with no association. Explain your thinking.',a:'Answers vary.'}}},
+
+{grade:8,code:'8.SP.A.3',ny:'NY-8.SP.2–3',im:6,domain:'Statistics & Probability',title:'Lines of fit and linear models',
+ ican:'use a line of fit to make predictions and explain what its slope and intercept mean.',
+ diff:['Predicting from a given model, with a hint to substitute','Explaining the slope and y-intercept of a model in context','Writing a line of fit from two points and judging predictions'],
+ support(r){const m=r.int(2,8),b=r.int(40,70),x=r.int(2,8);return{q:`A line of fit for test scores is ${EQ(`${V('y')} = ${m}${V('x')} + ${b}`)}, where ${V('x')} is hours studied. Predict the score for ${x} hours.`,a:m*x+b,hint:`Replace ${V('x')} with ${x}.`,wide:true}},
+ onlevel(r){const m=r.int(15,40)/10,b=r.int(5,25);return W(`A line of fit for plant height (cm) after ${V('w')} weeks is ${EQ(`${V('h')} = ${m}${V('w')} + ${b}`)}. What do ${m} and ${b} mean in this situation?`,`The plant grows about ${m} cm per week; it was about ${b} cm tall at week 0.`)},
+ stretch(r){const x1=r.int(1,3),x2=x1+r.int(3,5),m=r.int(3,9),b=r.int(10,40);return W(`A line of fit passes through (${x1}, ${m*x1+b}) and (${x2}, ${m*x2+b}). Write its equation. Use it to predict y when x = ${x2+4}. Would you trust a prediction for x = 100? Why?`,`${V('y')} = ${m}${V('x')} + ${b}; ${m*(x2+4)+b}; probably not, it is far outside the data`)},
+ worked(r){return{q:'y = 5x + 60 for hours studied (x) and score (y)',steps:['Slope 5: each extra hour adds about 5 points.','Intercept 60: about 60 points with no studying.','For 4 hours: 5(4) + 60 = 80.'],a:''}},
+ challenge(r){return{q:'Describe how you would draw a good line of fit through a scatter plot. What makes one line better than another?',a:'Answers vary; about as many points above as below, following the trend.'}}},
+
+{grade:8,code:'8.SP.A.4',only:'ccss',im:6,domain:'Statistics & Probability',title:'Two-way tables',
+ ican:'read two-way tables and use relative frequencies to look for an association.',
+ diff:['Reading counts from a two-way table, with a hint','Row and column totals, and relative frequencies','Deciding whether there is an association'],
+ support(r){const T=twoWay(r);return{q:`How many students ${T.ask}?`,model:T.html,a:T.ans,hint:'Find the row and column that match, and read the cell where they meet.',wide:true}},
+ onlevel(r){const T=twoWay(r);return{q:`What percent of the students who play an instrument also play a sport?`,model:T.html,a:`${n2(T.c[0][0]*100/(T.c[0][0]+T.c[0][1]))}%`,wide:true,space:'m'}},
+ stretch(r){const T=twoWay(r),a=T.c[0][0]/(T.c[0][0]+T.c[0][1]),b=T.c[1][0]/(T.c[1][0]+T.c[1][1]);return{q:'Is there an association between playing an instrument and playing a sport? Use relative frequencies to explain.',model:T.html,a:`${n2(a*100)}% vs ${n2(b*100)}%. ${Math.abs(a-b)>.15?'Yes, the percents are quite different.':'Not much; the percents are close.'}`,wide:true,space:'m'}},
+ worked(r){return{q:'Reading a two-way table',steps:['Rows show one category; columns show another.','Each cell counts students in both.','Divide a cell by its row total to compare groups.'],a:''}},
+ challenge(r){return{q:'Make a two-way table for 50 students that shows a strong association between two yes/no questions.',a:'Answers vary.'}}}
 ];
 
+{const a=STD.find(s=>s.code==='6.SP.1b'),b=STD.find(s=>s.code==='6.SP.8');
+ STD.push({...a,grade:7,code:'7.SP.A.1–2',ny:undefined,only:'ccss',img:undefined,im:8});
+ STD.push({...b,grade:7,code:'7.SP.C.5–7',ny:undefined,only:'ccss',img:undefined,im:8});}
 function W(q,a){return{q,a,wide:true,space:'l',aline:true}}
 function story1(r,max,types){const t=r.pick(types),[p,q]=two(r),th=r.pick(THINGS),J='You are putting groups together, so add.',S='Some are taken away, so subtract.';let o;
   if(t==='join'){const a=r.int(5,max-15),b=r.int(3,max-a);o=[`${p} has ${a} ${th}. ${q} gives ${p} ${b} more. How many ${th} does ${p} have now?`,`${a+b} ${th}`,J]}
@@ -1398,6 +1876,17 @@ const WARMS={
  '6.SP.A.1':r=>{const L=r.shuffle(SQ).slice(0,3),N=r.pick(NSQ)[0],i=r.int(0,3);L.splice(i,0,N);return wodb(L.map(q=>`"${q}"`),i)},
  '6.SP.1b':r=>{const[p]=two(r),L=r.shuffle(SAMPLES).slice(0,3);return tfw(r,L.map(([t,ok])=>[t.replace(/#/g,p)+' This sample is representative.',ok]))}
 };
+
+const XS2=[['cube','triangle',1],['cube','rectangle that is not a square',1],['cube','hexagon',1],['cube','pentagon',1],['cube','circle',0],['cube','octagon',0],['cube','trapezoid',1],['cube','right triangle',0],['cylinder','rectangle',1],['cylinder','triangle',0],['cylinder','oval (ellipse)',1],['sphere','square',0],['cone','triangle',1],['cone','rectangle',0],['square pyramid','trapezoid',1],['square pyramid','circle',0]];
+const STORIES=[['# rides a bike away from home at a steady speed, stops at a friend’s house for a while, then rides home faster than before.','Rising line, flat segment, then a steeper falling line back to 0.'],['# walks to the library, stays for an hour, then walks halfway home and stops to talk with @.','Rising line, flat, falling line to the halfway height, then flat.'],['# jogs away from home, slowly at first and then faster, then walks straight home.','Rising line that gets steeper, then a falling line back to 0.'],['# drives to a store, realizes the wallet is at home, drives back, then drives to the store again.','Up, down to 0, then up again to the store distance.'],['# leaves home on a scooter and goes faster and faster down a long hill.','A curve that gets steeper as time goes on.'],['# walks from school to a friend’s house that is farther from home, then gets a ride home.','Starts above 0, rises, then falls quickly to 0.']];
+const ASSOC=[['outside temperature','hot chocolate sales','Negative: colder days, more sales'],['hours of practice','free throws made','Positive: more practice, more shots made'],['shoe size','test scores','No association'],['the age of a car','its price','Negative: older cars tend to cost less'],['height','arm span','Positive: taller people tend to have longer arm spans'],['the day of the month','rainfall','No association'],['the number of people in a family','the grocery bill','Positive: bigger families tend to spend more']];
+WARMS['7.NS.A.2d']=r=>tfw(r,[[`${F(1,4)} = 0.25`,1],[`${F(1,3)} = 0.3`,0],[`${F(2,5)} = 0.4`,1],[`${F(1,8)} = 0.18`,0],[`${F(2,3)} = 0.${ov('6')}`,1]]);
+WARMS['7.EE.A.1']=r=>{const a=r.int(2,5),x=V('x');return tfw(r,[[`${a}(${x} − 3) = ${a}${x} − ${3*a}`,1],[`${a}(${x} − 3) = ${a}${x} − 3`,0],[`−(${x} + 4) = −${x} − 4`,1],[`5${x} − 2${x} = 3`,0],[`${F(1,2)}${x} + ${F(1,2)}${x} = ${x}`,1]])};
+WARMS['8.EE.A.2']=r=>tfw(r,[['√49 = 7',1],['√9 = 4.5',0],['∛27 = 3',1],['∛8 = 4',0],['√16 = −4',0],['∛(−8) = −2',1]]);
+WARMS['8.EE.A.3']=r=>tfw(r,[[`4,000 = 4 × 10<sup>3</sup>`,1],[`500,000 = 5 × 10<sup>6</sup>`,0],[`0.03 = 3 × 10<sup>−2</sup>`,1],[`10<sup>5</sup> is 10 times as large as 10<sup>4</sup>`,1],[`25 × 10<sup>4</sup> is written in scientific notation`,0]]);
+WARMS['8.EE.A.4']=WARMS['8.EE.A.3'];
+WARMS['8.G.A.5']=r=>({type:'Notice and Wonder',prompt:'What do you notice? What do you wonder?',model:parFig(r.int(45,75),'TR','BL',1)});
+WARMS['8.NS.A.1']=r=>wodb([EQ('√16'),EQ('√7'),EQ('0.75'),EQ(F(1,3))],1);
 function warmup(std,seed){
   const r=RNG(hash(std.code+'warm')^seed),items=[],seen=new Set(),T='Decide if each statement is true or false. Be prepared to explain your reasoning.';
   if(std.warm)return std.warm(r);
