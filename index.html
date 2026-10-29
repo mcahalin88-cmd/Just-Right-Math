@@ -349,7 +349,7 @@ const sys=(a,b)=>`<span class="sys"><span>${a}</span><span>${b}</span></span>`;
 const TRIP=[[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15],[7,24,25],[20,21,29],[9,40,41]];
 function pTbl(xs,ys,show){return`<table class="rt"><tr><th>${V('x')}</th>${xs.map(x=>`<td>${I(x)}</td>`).join('')}</tr><tr><th>${V('y')}</th>${ys.map((y,i)=>!show||show[i]?`<td>${y}</td>`:`<td><span class="kv">${y}</span></td>`).join('')}</tr></table>`}
 const nyCode=c=>{const o=STD.find(x=>x.code===c);return o&&o.ny?o.ny:'NY-'+c.replace(/^(\d)\.([A-Z]+)\.[A-Z]\.(\d+[a-z]?)$/,'$1.$2.$3')};
-const IM_UNITS={1:{3:'Adding and Subtracting Within 20'},2:{2:'Adding and Subtracting within 100'},3:{2:'Area and Multiplication',3:'Wrapping Up Addition and Subtraction Within 1,000',4:'Relating Multiplication to Division',5:'Fractions as Numbers'},4:{2:'Fraction Equivalence and Comparison',6:'Multiplying and Dividing Multi-digit Numbers'},5:{1:'Finding Volume',5:'Place Value Patterns and Decimal Operations',6:'More Decimal and Fraction Operations'},6:{1:'Area and Surface Area',2:'Introducing Ratios',3:'Unit Rates and Percentages',4:'Dividing Fractions',5:'Arithmetic in Base Ten',6:'Expressions and Equations',7:'Rational Numbers',8:'Data Sets and Distributions'},7:{1:'Scale Drawings',7:'Angles, Triangles, and Prisms',2:'Introducing Proportional Relationships',3:'Measuring Circles',4:'Proportional Relationships and Percentages',5:'Rational Number Arithmetic',6:'Expressions, Equations, and Inequalities',8:'Probability and Sampling'},8:{1:'Rigid Transformations and Congruence',2:'Dilations, Similarity, and Introducing Slope',5:'Functions and Volume',6:'Associations in Data',3:'Linear Relationships',4:'Linear Equations and Linear Systems',7:'Exponents and Scientific Notation',8:'Pythagorean Theorem and Irrational Numbers'}};
+const IM_UNITS={1:{1:'Adding, Subtracting, and Working with Data',2:'Addition and Subtraction Story Problems',3:'Adding and Subtracting Within 20',4:'Numbers to 99',5:'Adding Within 100',6:'Length Measurements Within 120 Units',7:'Geometry and Time'},2:{1:'Adding, Subtracting, and Working with Data',2:'Adding and Subtracting within 100',3:'Measuring Length',4:'Addition and Subtraction on the Number Line',5:'Numbers to 1,000',6:'Geometry, Time, and Money',7:'Adding and Subtracting within 1,000',8:'Equal Groups'},3:{1:'Introducing Multiplication',2:'Area and Multiplication',3:'Wrapping Up Addition and Subtraction Within 1,000',4:'Relating Multiplication to Division',5:'Fractions as Numbers',6:'Measuring Length, Time, Liquid Volume, and Weight',7:'Two-dimensional Shapes and Perimeter'},4:{1:'Factors and Multiples',2:'Fraction Equivalence and Comparison',3:'Extending Operations to Fractions',4:'From Hundredths to Hundred-thousands',5:'Multiplicative Comparison and Measurement',6:'Multiplying and Dividing Multi-digit Numbers',7:'Angles and Angle Measurement'},5:{1:'Finding Volume',2:'Fractions as Quotients and Fraction Multiplication',3:'Multiplying and Dividing Fractions',4:'Wrapping Up Multiplication and Division with Multi-digit Numbers',5:'Place Value Patterns and Decimal Operations',6:'More Decimal and Fraction Operations',7:'Shapes on the Coordinate Plane'},6:{1:'Area and Surface Area',2:'Introducing Ratios',3:'Unit Rates and Percentages',4:'Dividing Fractions',5:'Arithmetic in Base Ten',6:'Expressions and Equations',7:'Rational Numbers',8:'Data Sets and Distributions'},7:{1:'Scale Drawings',7:'Angles, Triangles, and Prisms',2:'Introducing Proportional Relationships',3:'Measuring Circles',4:'Proportional Relationships and Percentages',5:'Rational Number Arithmetic',6:'Expressions, Equations, and Inequalities',8:'Probability and Sampling'},8:{1:'Rigid Transformations and Congruence',2:'Dilations, Similarity, and Introducing Slope',5:'Functions and Volume',6:'Associations in Data',3:'Linear Relationships',4:'Linear Equations and Linear Systems',7:'Exponents and Scientific Notation',8:'Pythagorean Theorem and Irrational Numbers'}};
 const two=r=>{const a=r.pick(NAMES);let b;do{b=r.pick(NAMES)}while(b===a);return[a,b]};
 function until(gen,test,max=200){let v;for(let i=0;i<max;i++){v=gen();if(test(v))return v}return v}
 
@@ -513,6 +513,64 @@ function scatterFig(pts,xl,yl){const W=300,H=240,ox=40,oy=200,s_=(W-ox-20)/10,t=
   return s+`<text x="${(W+ox)/2}" y="${H-6}" text-anchor="middle" class="svt sm">${xl}</text><text x="12" y="${oy/2}" text-anchor="middle" class="svt sm" transform="rotate(-90 12 ${oy/2})">${yl}</text></svg>`}
 function twoWay(r){const c=[[r.int(8,30),r.int(5,25)],[r.int(5,25),r.int(8,40)]],R=['Plays an instrument','No instrument'],C=['Plays a sport','No sport'],i=r.int(0,1),j=r.int(0,1);
   return{c,ask:`${i?'do not play an instrument':'play an instrument'} and ${j?'do not play a sport':'play a sport'}`,ans:c[i][j],html:`<table class="rt"><tr><th></th><th>${C[0]}</th><th>${C[1]}</th><th>Total</th></tr>${c.map((row,k)=>`<tr><th>${R[k]}</th><td>${row[0]}</td><td>${row[1]}</td><td>${row[0]+row[1]}</td></tr>`).join('')}<tr><th>Total</th><td>${c[0][0]+c[1][0]}</td><td>${c[0][1]+c[1][1]}</td><td>${c[0][0]+c[0][1]+c[1][0]+c[1][1]}</td></tr></table>`}}
+
+/* grade 1–5 helpers */
+function qGrid(R,pts,poly){const c=18,S=R*c+40,o=26,X=x=>o+x*c,Y=y=>S-o-y*c+10;let s=`<svg class="mdl" viewBox="0 0 ${S} ${S}" style="width:${(S/22).toFixed(1)}em" role="img" aria-label="Coordinate grid">`;
+  for(let i=0;i<=R;i++)s+=`<line x1="${X(i)}" y1="${Y(0)}" x2="${X(i)}" y2="${Y(R)}" class="gl"/><line x1="${X(0)}" y1="${Y(i)}" x2="${X(R)}" y2="${Y(i)}" class="gl"/><text x="${X(i)}" y="${Y(0)+14}" text-anchor="middle" class="svt sm">${i}</text>`+(i?`<text x="${X(0)-5}" y="${Y(i)+4}" text-anchor="end" class="svt sm">${i}</text>`:'');
+  s+=`<line x1="${X(0)}" y1="${Y(0)}" x2="${X(R)}" y2="${Y(0)}" class="stk"/><line x1="${X(0)}" y1="${Y(0)}" x2="${X(0)}" y2="${Y(R)}" class="stk"/>`;
+  if(poly)s+=`<polygon points="${poly.map(([x,y])=>X(x)+','+Y(y)).join(' ')}" class="fig" style="fill-opacity:.55"/>`;
+  pts.forEach(q=>{s+=`<circle cx="${X(q[0])}" cy="${Y(q[1])}" r="4" class="dot"/>`+(q[2]?`<text x="${X(q[0])+5}" y="${Y(q[1])-6}" class="svt">${q[2]}</text>`:'')});return s+'</svg>'}
+function prismCubes(l,w,h){const s=26,dx=s*.55,dy=s*.4,ox=10,oy=10+w*dy,W=ox+l*s+w*dx+10,H=oy+h*s+10;let g=`<svg class="mdl" viewBox="0 0 ${W} ${H}" style="width:${(W/22).toFixed(2)}em" role="img" aria-label="Prism made of ${l*w*h} unit cubes">`;
+  for(let i=0;i<l;i++)for(let j=0;j<h;j++)g+=`<rect x="${ox+i*s}" y="${oy+j*s}" width="${s}" height="${s}" class="fig"/>`;
+  for(let i=0;i<l;i++)for(let k=0;k<w;k++){const x=ox+i*s+k*dx,y=oy-k*dy;g+=`<polygon points="${x},${y} ${x+s},${y} ${x+s+dx},${y-dy} ${x+dx},${y-dy}" class="top"/>`}
+  for(let k=0;k<w;k++)for(let j=0;j<h;j++){const x=ox+l*s+k*dx,y=oy+j*s-k*dy;g+=`<polygon points="${x},${y} ${x+dx},${y-dy} ${x+dx},${y-dy+s} ${x},${y+s}" class="side"/>`}
+  return g+'</svg>'}
+function dotPlotF(data,den,lo,hi,label){const W=440,p=24,n=(hi-lo)*den,st=(W-2*p)/n,c=counts(data.map(v=>Math.round(v*den))),mx=Math.max(...Object.values(c)),H=mx*14+64,base=H-44;let s=`<svg class="mdl" viewBox="0 0 ${W} ${H}" style="width:22em" role="img" aria-label="Line plot of ${label}"><line x1="${p}" y1="${base}" x2="${W-p}" y2="${base}" class="stk"/>`;
+  for(let k=0;k<=n;k++){const x=p+k*st,v=lo*den+k,w=Math.floor(v/den),f=v%den,g=gcd(f,den);s+=`<line x1="${x}" y1="${base}" x2="${x}" y2="${base+6}" class="stk"/><text x="${x}" y="${base+20}" text-anchor="middle" class="svt sm">${f?(w?w+' ':'')+f/g+'/'+den/g:w}</text>`;for(let q=0;q<(c[v]||0);q++)s+=`<text x="${x}" y="${base-6-q*14}" text-anchor="middle" class="svt">×</text>`}
+  return s+`<text x="${W/2}" y="${H-6}" text-anchor="middle" class="svt sm">${label}</text></svg>`}
+function clockFig(h,m){const cx=70,cy=70,R=58,ma=m*6*Math.PI/180,ha=((h%12)+m/60)*30*Math.PI/180;let s=`<svg class="mdl" viewBox="0 0 140 140" style="width:7.5em" role="img" aria-label="Clock"><circle cx="${cx}" cy="${cy}" r="${R}" class="un" style="stroke-width:2.5"/>`;
+  for(let i=1;i<=12;i++){const a=i*30*Math.PI/180;s+=`<text x="${cx+Math.sin(a)*(R-14)}" y="${cy-Math.cos(a)*(R-14)+5}" text-anchor="middle" class="svt">${i}</text>`}
+  for(let i=0;i<60;i++){const a=i*6*Math.PI/180,r1=i%5?R-4:R-7;s+=`<line x1="${cx+Math.sin(a)*r1}" y1="${cy-Math.cos(a)*r1}" x2="${cx+Math.sin(a)*R}" y2="${cy-Math.cos(a)*R}" class="stk" style="stroke-width:1"/>`}
+  return s+`<line x1="${cx}" y1="${cy}" x2="${cx+Math.sin(ha)*24}" y2="${cy-Math.cos(ha)*24}" class="stk" style="stroke-width:4;stroke-linecap:round"/><line x1="${cx}" y1="${cy}" x2="${cx+Math.sin(ma)*36}" y2="${cy-Math.cos(ma)*36}" class="stk" style="stroke-width:2.5;stroke-linecap:round"/><circle cx="${cx}" cy="${cy}" r="3.5" class="dot"/></svg>`}
+const COIN={1:['penny',15,'1¢'],5:['nickel',18,'5¢'],10:['dime',13,'10¢'],25:['quarter',21,'25¢']};
+function coinsFig(list){let x=6,s='';list.forEach(v=>{const[,r,t]=COIN[v];s+=`<circle cx="${x+r}" cy="26" r="${r}" class="${v===1?'top':'un'}" style="stroke-width:2"/><text x="${x+r}" y="30" text-anchor="middle" class="svt sm">${t}</text>`;x+=2*r+6});return `<svg class="mdl" viewBox="0 0 ${x} 52" style="width:${(x/13).toFixed(2)}em" role="img" aria-label="Coins">${s}</svg>`}
+function blocksFig(h,t,o){let x=6,s='';for(let i=0;i<h;i++){s+=`<rect x="${x}" y="6" width="50" height="50" class="sh1"/>`;for(let k=1;k<10;k++)s+=`<line x1="${x+k*5}" y1="6" x2="${x+k*5}" y2="56" class="gl"/><line x1="${x}" y1="${6+k*5}" x2="${x+50}" y2="${6+k*5}" class="gl"/>`;x+=56}
+  for(let i=0;i<t;i++){s+=`<rect x="${x}" y="6" width="6" height="50" class="sh1"/>`;for(let k=1;k<10;k++)s+=`<line x1="${x}" y1="${6+k*5}" x2="${x+6}" y2="${6+k*5}" class="gl"/>`;x+=10}
+  x+=4;for(let i=0;i<o;i++){s+=`<rect x="${x+(i%2)*9}" y="${46-Math.floor(i/2)*9}" width="7" height="7" class="sh1"/>`}x+=o?24:0;return `<svg class="mdl" viewBox="0 0 ${x} 62" style="width:${(x/20).toFixed(2)}em" role="img" aria-label="Base-ten blocks">${s}</svg>`}
+function barGraph(cats,vals,title,scale){const W=360,H=200,ox=34,oy=160,mx=Math.ceil(Math.max(...vals)/scale)*scale,sy=(oy-24)/mx,bw=(W-ox-16)/cats.length;let s=`<svg class="mdl" viewBox="0 0 ${W} ${H}" style="width:18em" role="img" aria-label="Bar graph: ${title}"><text x="${W/2}" y="12" text-anchor="middle" class="svt sm">${title}</text>`;
+  for(let v=0;v<=mx;v+=scale){const y=oy-v*sy;s+=`<line x1="${ox}" y1="${y}" x2="${W-10}" y2="${y}" class="gl"/><text x="${ox-5}" y="${y+4}" text-anchor="end" class="svt sm">${v}</text>`}
+  cats.forEach((c,i)=>{s+=`<rect x="${ox+i*bw+bw*.18}" y="${oy-vals[i]*sy}" width="${bw*.64}" height="${vals[i]*sy}" class="sh1"/><text x="${ox+i*bw+bw/2}" y="${oy+15}" text-anchor="middle" class="svt sm">${c}</text>`});
+  return s+`<line x1="${ox}" y1="${oy}" x2="${W-10}" y2="${oy}" class="stk"/><line x1="${ox}" y1="${oy}" x2="${ox}" y2="20" class="stk"/></svg>`}
+function picGraph(cats,vals,title,key){const W=340,rh=26,H=40+cats.length*rh+22;let s=`<svg class="mdl" viewBox="0 0 ${W} ${H}" style="width:17em" role="img" aria-label="Picture graph: ${title}"><text x="${W/2}" y="14" text-anchor="middle" class="svt sm">${title}</text>`;
+  cats.forEach((c,i)=>{const y=30+i*rh;s+=`<text x="4" y="${y+14}" class="svt sm">${c}</text><line x1="0" y1="${y+rh-2}" x2="${W}" y2="${y+rh-2}" class="gl"/>`;for(let k=0;k<vals[i]/key;k++)s+=`<circle cx="${96+k*20}" cy="${y+10}" r="7" class="sh1"/>`});
+  return s+`<circle cx="12" cy="${H-10}" r="7" class="sh1"/><text x="24" y="${H-6}" class="svt sm">= ${key} ${key===1?'student':'students'}</text></svg>`}
+function rulerFig(len,unit,div,max){const W=Math.max(300,max*(unit==='in'?60:24)+30),ppu=(W-30)/max,ox=15;let s=`<svg class="mdl" viewBox="0 0 ${W} 74" style="width:${(W/22).toFixed(2)}em" role="img" aria-label="Ruler"><rect x="${ox}" y="6" width="${len*ppu}" height="16" rx="3" class="top"/><rect x="${ox-6}" y="30" width="${max*ppu+12}" height="34" class="un"/>`;
+  for(let k=0;k<=max*div;k++){const x=ox+k/div*ppu,full=k%div===0,half=div>=2&&k%(div/2)===0;s+=`<line x1="${x}" y1="30" x2="${x}" y2="${30+(full?14:half?10:6)}" class="stk" style="stroke-width:1"/>`+(full?`<text x="${x}" y="58" text-anchor="middle" class="svt sm">${k/div}</text>`:'')}
+  return s+`<text x="${W-6}" y="18" text-anchor="end" class="svt sm">${unit}</text></svg>`}
+function polyFig(n,w){const W=w||70,R=W*.42,cx=W/2,cy=W/2;if(n===0)return `<svg class="mdl" viewBox="0 0 ${W} ${W}" style="width:${W/22}em"><circle cx="${cx}" cy="${cy}" r="${R}" class="fig"/></svg>`;
+  if(n===-1)return `<svg class="mdl" viewBox="0 0 ${W} ${W}" style="width:${W/22}em"><polyline points="${cx-R},${cy+R*.6} ${cx-R*.2},${cy-R} ${cx+R},${cy+R*.3} ${cx+R*.1},${cy+R}" class="stk" style="stroke-width:2"/></svg>`;
+  if(n===-2)return `<svg class="mdl" viewBox="0 0 ${W} ${W}" style="width:${W/22}em"><path d="M${cx-R},${cy+R*.7} L${cx+R},${cy+R*.7} Q${cx+R},${cy-R} ${cx},${cy-R} Q${cx-R},${cy-R} ${cx-R},${cy+R*.7}" class="fig"/></svg>`;
+  const pts=[];for(let i=0;i<n;i++){const a=-Math.PI/2+i*2*Math.PI/n+(n===4?Math.PI/4:0);pts.push(`${cx+R*Math.cos(a)},${cy+R*Math.sin(a)}`)}return `<svg class="mdl" viewBox="0 0 ${W} ${W}" style="width:${W/22}em" role="img" aria-label="Shape"><polygon points="${pts.join(' ')}" class="fig"/></svg>`}
+function partFig(kind,n,k,eq){const W=180,H=90;let s=`<svg class="mdl" viewBox="0 0 ${kind==='circle'?100:W} ${kind==='circle'?100:H}" style="width:${kind==='circle'?5:9}em" role="img" aria-label="Shape split into ${n} parts">`;
+  if(kind==='circle'){const cx=50,cy=50,R=44;for(let i=0;i<n;i++){const a1=-Math.PI/2+i*2*Math.PI/n,a2=a1+2*Math.PI/n;s+=`<path d="M${cx},${cy} L${cx+R*Math.cos(a1)},${cy+R*Math.sin(a1)} A${R},${R} 0 0 1 ${cx+R*Math.cos(a2)},${cy+R*Math.sin(a2)} Z" class="${i<k?'sh1':'un'}"/>`}return s+'</svg>'}
+  const ws=eq===false?[.5,.2,.3,.15,.25,.1].slice(0,n).map((v,i,a)=>v/a.reduce((x,y)=>x+y,0)):Array(n).fill(1/n);let x=4;ws.forEach((wf,i)=>{const w=wf*(W-8);s+=`<rect x="${x}" y="4" width="${w}" height="${H-8}" class="${i<k?'sh1':'un'}"/>`;x+=w});return s+'</svg>'}
+function angleFig(deg,label,w){const W=w||150,ox=deg>90?W*.5:20,oy=W*.62,R=deg>90?W*.46:W*.72,a=deg*Math.PI/180,ar=Math.min(26,R*.3);const big=deg>180?1:0;return `<svg class="mdl" viewBox="0 0 ${W} ${W*.75}" style="width:${W/22}em" role="img" aria-label="Angle"><line x1="${ox}" y1="${oy}" x2="${ox+R}" y2="${oy}" class="stk" style="stroke-width:2"/><line x1="${ox}" y1="${oy}" x2="${ox+R*Math.cos(a)}" y2="${oy-R*Math.sin(a)}" class="stk" style="stroke-width:2"/><path d="M${ox+ar},${oy} A${ar},${ar} 0 ${big} 0 ${ox+ar*Math.cos(a)},${oy-ar*Math.sin(a)}" class="stk"/>${label?`<text x="${ox+(ar+16)*Math.cos(a/2)}" y="${oy-(ar+16)*Math.sin(a/2)+4}" class="svt sm">${label}</text>`:''}</svg>`}
+const GEO={segment:'<line x1="10" y1="30" x2="110" y2="30" class="stk" style="stroke-width:2"/><circle cx="10" cy="30" r="3.5" class="dot"/><circle cx="110" cy="30" r="3.5" class="dot"/>',ray:'<line x1="10" y1="30" x2="112" y2="30" class="stk" style="stroke-width:2"/><circle cx="10" cy="30" r="3.5" class="dot"/><path d="M104,24 L114,30 L104,36" class="stk" style="stroke-width:2"/>',line:'<line x1="12" y1="30" x2="108" y2="30" class="stk" style="stroke-width:2"/><path d="M18,24 L8,30 L18,36 M102,24 L112,30 L102,36" class="stk" style="stroke-width:2"/>',parallel:'<line x1="10" y1="16" x2="110" y2="16" class="stk" style="stroke-width:2"/><line x1="10" y1="44" x2="110" y2="44" class="stk" style="stroke-width:2"/>',perpendicular:'<line x1="10" y1="50" x2="110" y2="50" class="stk" style="stroke-width:2"/><line x1="60" y1="4" x2="60" y2="50" class="stk" style="stroke-width:2"/><polyline points="60,42 68,42 68,50" class="stk"/>',intersecting:'<line x1="10" y1="10" x2="110" y2="50" class="stk" style="stroke-width:2"/><line x1="10" y1="50" x2="110" y2="14" class="stk" style="stroke-width:2"/>'};
+const geoFig=k=>`<svg class="mdl" viewBox="0 0 120 58" style="width:6em" role="img" aria-label="${k}">${GEO[k]}</svg>`;
+function fracNL(d,max,mark,label){const W=420,p=20,st=(W-2*p)/(d*max);let s=`<svg class="mdl" viewBox="0 0 ${W} 54" style="width:21em" role="img" aria-label="Number line in ${d}ths"><line x1="${p}" y1="20" x2="${W-p}" y2="20" class="stk"/>`;
+  for(let k=0;k<=d*max;k++){const x=p+k*st,whole=k%d===0;s+=`<line x1="${x}" y1="${whole?10:14}" x2="${x}" y2="${whole?30:26}" class="stk"/>`+(whole?`<text x="${x}" y="46" text-anchor="middle" class="svt">${k/d}</text>`:'')}
+  if(mark!=null){const x=p+mark*st;s+=`<circle cx="${x}" cy="20" r="5" class="dot"/><text x="${x}" y="8" text-anchor="middle" class="svt sm">${label||'A'}</text>`}return s.replace('viewBox="0 0 420 54"','viewBox="0 -4 420 58"')+'</svg>'}
+function groupsFig(g,n){const cw=Math.max(46,Math.ceil(Math.sqrt(n))*14+14);let s='',x=4;for(let i=0;i<g;i++){s+=`<circle cx="${x+cw/2}" cy="${cw/2+2}" r="${cw/2-2}" class="un"/>`;const cols=Math.ceil(Math.sqrt(n));for(let k=0;k<n;k++){const cx=x+cw/2+((k%cols)-(cols-1)/2)*12,cy=cw/2+2+(Math.floor(k/cols)-(Math.ceil(n/cols)-1)/2)*12;s+=`<circle cx="${cx}" cy="${cy}" r="4" class="dot"/>`}x+=cw+6}return `<svg class="mdl" viewBox="0 0 ${x} ${cw+4}" style="width:${(x/22).toFixed(2)}em" role="img" aria-label="${g} groups of ${n}">${s}</svg>`}
+function tenFrame(n){let s='';for(let i=0;i<10;i++){const x=4+(i%5)*22,y=4+Math.floor(i/5)*22;s+=`<rect x="${x}" y="${y}" width="22" height="22" class="un"/>`+(i<n?`<circle cx="${x+11}" cy="${y+11}" r="7" class="dot"/>`:'')}return `<svg class="mdl" viewBox="0 0 118 52" style="width:5.5em" role="img" aria-label="Ten frame with ${n}">${s}</svg>`}
+const lens=n=>n===1?'':'s';
+const hm=(h,m)=>`${h}:${String(m).padStart(2,'0')}`;
+const cents=c=>`${c}¢`;
+
+function numName(n){const O=['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'],T=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+  const h3=x=>{const h=Math.floor(x/100),r=x%100;let s=h?O[h]+' hundred':'';if(r){s+=(s?' ':'')+(r<20?O[r]:T[Math.floor(r/10)]+(r%10?'-'+O[r%10]:''))}return s};
+  const th=Math.floor(n/1000),r=n%1000;return((th?h3(th)+' thousand':'')+(th&&r?', ':'')+(r?h3(r):''))||'zero'}
+const SHAPE_TF=[['Every square is a rectangle.',1],['Every rectangle is a square.',0],['Every rhombus is a parallelogram.',1],['Every parallelogram has four right angles.',0],['A trapezoid can have a right angle.',1],['Every square is a rhombus.',1],['A triangle can have two right angles.',0],['Every rectangle is a parallelogram.',1],['An equilateral triangle is also isosceles.',1],['Every quadrilateral is a parallelogram.',0],['A rhombus always has four right angles.',0],['Every parallelogram is a quadrilateral.',1]];
+
 const ldiv=(d,n)=>`<span class="ldiv"><span class="dvs">${d}</span><span class="dvd">${n}</span></span>`;
 const parts=n=>{const s=String(n);return[...s].map((c,i)=>+c*10**(s.length-1-i)).filter(x=>x>0)};
 const areaModel=(a,b)=>{const p=parts(a);return`<table class="amod"><tr><th>×</th>${p.map(x=>`<th>${x}</th>`).join('')}</tr><tr><th>${b}</th>${p.map(x=>`<td><span class="kv">${x*b}</span></td>`).join('')}</tr></table>`};
@@ -1828,7 +1886,804 @@ const STD=[
  onlevel(r){const T=twoWay(r);return{q:`What percent of the students who play an instrument also play a sport?`,model:T.html,a:`${n2(T.c[0][0]*100/(T.c[0][0]+T.c[0][1]))}%`,wide:true,space:'m'}},
  stretch(r){const T=twoWay(r),a=T.c[0][0]/(T.c[0][0]+T.c[0][1]),b=T.c[1][0]/(T.c[1][0]+T.c[1][1]);return{q:'Is there an association between playing an instrument and playing a sport? Use relative frequencies to explain.',model:T.html,a:`${n2(a*100)}% vs ${n2(b*100)}%. ${Math.abs(a-b)>.15?'Yes, the percents are quite different.':'Not much; the percents are close.'}`,wide:true,space:'m'}},
  worked(r){return{q:'Reading a two-way table',steps:['Rows show one category; columns show another.','Each cell counts students in both.','Divide a cell by its row total to compare groups.'],a:''}},
- challenge(r){return{q:'Make a two-way table for 50 students that shows a strong association between two yes/no questions.',a:'Answers vary.'}}}
+ challenge(r){return{q:'Make a two-way table for 50 students that shows a strong association between two yes/no questions.',a:'Answers vary.'}}},
+
+/* ---------- Grade 5: full set ---------- */
+{grade:5,code:'5.MD.C.4',im:1,domain:'Measurement & Data',title:'Volume by counting unit cubes',
+ ican:'find volume by counting unit cubes and by counting layers.',
+ diff:['Small prisms drawn with every cube showing, with a layers hint','Counting cubes in larger prisms, and layers times cubes per layer','Working backward from the number of cubes'],
+ support(r){const l=r.int(2,4),w=r.int(1,3),h=r.int(1,3);return{q:'How many unit cubes make this prism?',model:prismCubes(l,w,h),a:`${l*w*h} cubes`,hint:`The top layer has ${l} × ${w} cubes. Count the layers.`}},
+ onlevel(r){const l=r.int(2,5),w=r.int(2,4),h=r.int(2,4);if(r.chance(.5))return{q:'What is the volume in cubic units?',model:prismCubes(l,w,h),a:`${l*w*h} cubic units`};return{q:'How many cubes are in one layer? How many layers are there? What is the volume?',model:prismCubes(l,w,h),a:`${l*w} per layer, ${h} layers, ${l*w*h} cubic units`,space:'m'}},
+ stretch(r){const l=r.int(2,5),w=r.int(2,4),h=r.int(2,6);if(r.chance(.5))return W(`A prism is built from ${l*w*h} unit cubes. Its bottom layer is ${l} cubes long and ${w} cubes wide. How many layers tall is it?`,`${h} layers`);const n=r.pick([12,16,18,24]),L=[];for(let a=1;a<=n;a++)for(let b=a;b<=n/a;b++)if(n%(a*b)===0&&n/(a*b)>=b)L.push(`${a} × ${b} × ${n/(a*b)}`);return W(`List all the different rectangular prisms you can build with exactly ${n} unit cubes.`,L.join('; '))},
+ worked(r){const l=3,w=2,h=r.int(2,4);return{q:`${l} by ${w} by ${h} prism`,steps:[`One layer: ${l} × ${w} = ${l*w} cubes`,`There are ${h} layers.`,`${l*w} × ${h} = ${l*w*h} cubic units`],a:''}},
+ challenge(r){return{q:'Two prisms are each made of 24 cubes but look different. Can they have the same volume? Draw or describe two examples.',a:'Yes, for example 2 × 3 × 4 and 1 × 4 × 6. Both have a volume of 24 cubic units.'}}},
+
+{grade:5,code:'5.NF.B.3',im:2,domain:'Number & Operations — Fractions',title:'Fractions as division',
+ ican:'understand a fraction as division, and solve sharing problems with fraction answers.',
+ diff:['Sharing stories with a hint that a ÷ b = a/b','Division written as fractions and mixed numbers','Comparing shares between two groups'],
+ support(r){const a=r.int(1,5),b=until(()=>r.int(2,6),x=>x>a),[th,one_]=r.pick([['pizzas','pizza'],['sandwiches','sandwich'],['pans of brownies','pan of brownies']]);return{...W(`${b} friends share ${a} ${a===1?one_:th} equally. How much does each friend get?`,`${fr(a,b)} of a ${one_}`),hint:`${a} ÷ ${b} = ${F(a,b)}`}},
+ onlevel(r){if(r.chance(.5)){const b=r.int(2,9),a=until(()=>r.int(b+1,b*5),x=>x%b!==0);return{q:EQ(`${a} ÷ ${b} = ${BL(3)}`),a:fr(a,b),space:'m'}}const a=r.int(5,20),b=until(()=>r.int(2,6),x=>a%x!==0);return W(`A ${a}-yard rope is cut into ${b} equal pieces. How long is each piece? Between which two whole numbers is the answer?`,`${fr(a,b)} yards; between ${Math.floor(a/b)} and ${Math.ceil(a/b)}`)},
+ stretch(r){const[a1,b1,a2,b2]=until(()=>[r.int(1,5),r.int(2,8),r.int(1,5),r.int(2,8)],([a,b,c,d])=>a<b&&c<d&&a*d!==c*b),[p,q]=two(r);return W(`At ${p}'s table, ${b1} students share ${a1} pizzas equally. At ${q}'s table, ${b2} students share ${a2} pizzas equally. At which table does each student get more?`,`${a1*b2>a2*b1?p:q}'s table (${fr(a1,b1)} vs ${fr(a2,b2)})`)},
+ worked(r){return{q:'3 friends share 2 pizzas',steps:['Cut each pizza into 3 equal pieces.','Each friend gets 1 piece from each pizza: 2 pieces.',`Each gets ${F(2,3)} of a pizza. 2 ÷ 3 = ${F(2,3)}`],a:''}},
+ challenge(r){return{q:'Write a sharing story where each person gets 2 3/4 of something. How many people and how many things are there?',a:'Answers vary, for example 4 people share 11 things.'}}},
+
+{grade:5,code:'5.NF.B.4',im:2,domain:'Number & Operations — Fractions',title:'Multiplying fractions',
+ ican:'multiply a fraction by a whole number or another fraction, and find areas with fraction side lengths.',
+ diff:['Whole number × fraction, with a fraction bar hint','Fraction × fraction, and area of rectangles with fraction sides','Mixed numbers, and area with mixed-number sides'],
+ support(r){const w=r.int(2,6),d=r.pick([2,3,4,5,6,8]),n=r.int(1,d-1);return{q:EQ(`${w} × ${F(n,d)} = ${BL()}`),a:fr(w*n,d),model:bars(Array(w).fill([n,d])),hint:`${w} groups of ${F(n,d)}: count the shaded parts.`}},
+ onlevel(r){const D=[2,3,4,5,6,8,10],b=r.pick(D),d=r.pick(D),a=r.int(1,b-1),c=r.int(1,d-1);if(r.chance(.6))return{q:EQ(`${F(a,b)} × ${F(c,d)} = ${BL()}`),a:fr(a*c,b*d),space:'m'};return W(`A rectangle is ${F(a,b)} foot long and ${F(c,d)} foot wide. What is its area?`,`${fr(a*c,b*d)} square foot`)},
+ stretch(r){const b=r.pick([2,3,4]),d=r.pick([2,3,4,5]),w1=r.int(1,4),w2=r.int(1,3),a=r.int(1,b-1),c=r.int(1,d-1),N=w1*b+a,M=w2*d+c;if(r.chance(.5))return{q:EQ(`${MX(w1,a,b)} × ${MX(w2,c,d)} = ${BL()}`),a:fr(N*M,b*d),space:'l'};return W(`A garden is ${MX(w1,a,b)} yards long and ${MX(w2,c,d)} yards wide. What is its area?`,`${fr(N*M,b*d)} square yards`)},
+ worked(r){return{q:`${F(2,3)} × ${F(3,4)}`,steps:['Multiply the numerators: 2 × 3 = 6.','Multiply the denominators: 3 × 4 = 12.',`${F(6,12)} = ${F(1,2)}`],a:''}},
+ challenge(r){return{q:`Draw an area model to show why ${F(1,2)} × ${F(1,3)} = ${F(1,6)}.`,a:'A whole split into 2 rows and 3 columns; one of 6 parts is in both.'}}},
+
+{grade:5,code:'5.NF.B.5',im:2,domain:'Number & Operations — Fractions',title:'Multiplication as scaling',
+ ican:'predict whether a product will be greater or less than a factor without multiplying.',
+ diff:['Is the product more or less? With a hint about factors less than 1','Comparing products to factors with fractions and mixed numbers','Ordering products without calculating, and explaining'],
+ support(r){const n=r.int(6,40),[f,lt]=r.pick([[F(3,4),1],[F(1,2),1],[F(5,4),0],[F(3,2),0],[F(2,3),1],['2',0]]);return{q:`Without multiplying: is ${EQ(`${f} × ${n}`)} more than, less than, or equal to ${n}?`,a:lt?'Less than':'More than',hint:'Multiplying by a number less than 1 makes it smaller. Greater than 1 makes it bigger.'}},
+ onlevel(r){const n=r.int(5,30),[f,v]=r.pick([[F(7,8),.875],[F(9,8),1.125],[MX(1,1,3),4/3],[F(4,4),1],[F(2,5),.4],[MX(2,1,2),2.5]]);return{q:`${EQ(`${f} × ${n}${CMP}${n}`)}`,a:v<1?'&lt;':v>1?'&gt;':'='}},
+ stretch(r){const n=r.int(10,50);return W(`Without multiplying, put these in order from least to greatest: ${F(3,4)} × ${n}, ${F(5,4)} × ${n}, ${F(1,4)} × ${n}, 1 × ${n}. Explain.`,`${F(1,4)} × ${n}, ${F(3,4)} × ${n}, 1 × ${n}, ${F(5,4)} × ${n}`)},
+ worked(r){const n=r.int(8,20);return{q:`${F(2,3)} × ${n} vs ${n}`,steps:[`${F(2,3)} is less than 1.`,`So ${F(2,3)} of ${n} is only part of ${n}.`,`${F(2,3)} × ${n} &lt; ${n}`],a:''}},
+ challenge(r){return{q:'A student says multiplying always makes a number bigger. Give two examples that show this is not always true, and explain when it is true.',a:'It is false when one factor is less than 1, for example ½ × 8 = 4.'}}},
+
+{grade:5,code:'5.NF.B.6',im:3,domain:'Number & Operations — Fractions',title:'Fraction multiplication word problems',
+ ican:'solve real-world problems by multiplying fractions and mixed numbers.',
+ diff:['A fraction of an amount, with a hint to multiply','Mixed numbers in recipes and measurements','Multi-step stories with fractions of fractions'],
+ support(r){const[p]=two(r),[a,b]=r.pick([[3,4],[2,3],[1,2],[5,6]]),[c,d]=r.pick([[1,2],[1,3],[2,3],[1,4]]);return{...W(`${p} has ${F(a,b)} pound of trail mix and eats ${F(c,d)} of it. How much trail mix does ${p} eat?`,`${fr(a*c,b*d)} pound`),hint:`"${F(c,d)} of" means multiply by ${F(c,d)}.`}},
+ onlevel(r){const w=r.int(1,3),[a,b]=r.pick([[1,2],[1,3],[3,4],[2,3]]),k=r.int(2,5);return W(`A recipe uses ${MX(w,a,b)} cups of flour. How much flour is needed for ${k} batches?`,`${fr((w*b+a)*k,b)} cups`)},
+ stretch(r){const L=r.int(4,8),w=r.int(2,5),f=r.pick([[1,3],[1,4],[2,5]]);return W(`A garden is ${MX(L,1,2)} feet long and ${MX(w,1,4)} feet wide. ${F(...f)} of it is planted with tomatoes. What is the area of the tomato part?`,`${fr((2*L+1)*(4*w+1)*f[0],8*f[1])} square feet`)},
+ worked(r){return{q:`${F(2,3)} of ${F(3,4)} cup`,steps:[`${F(2,3)} × ${F(3,4)}`,`= ${F(6,12)}`,`= ${F(1,2)} cup`],a:''}},
+ challenge(r){return{q:`Write a story problem for ${MX(2,1,2)} × ${F(2,5)}. Solve it and explain what the answer means.`,a:'1; stories vary.'}}},
+
+{grade:5,code:'5.NF.B.7',im:3,domain:'Number & Operations — Fractions',title:'Dividing with unit fractions',
+ ican:'divide a unit fraction by a whole number, and a whole number by a unit fraction.',
+ diff:['One of each kind, with a fraction bar hint','Mixed practice of both kinds','Stories that call for each kind of division'],
+ support(r){if(r.chance(.5)){const w=r.int(2,4),d=r.int(2,4);return{q:EQ(`${w} ÷ ${F(1,d)} = ${BL()}`),a:w*d,model:bars(Array(w).fill([0,d])),hint:`How many ${F(1,d)}s fit in ${w}?`}}const d=r.int(2,4),n=r.int(2,4);return{q:EQ(`${F(1,d)} ÷ ${n} = ${BL()}`),a:F(1,d*n),model:bars([[1,d]]),hint:`Split the shaded ${F(1,d)} into ${n} equal parts.`}},
+ onlevel(r){const d=r.int(2,8),n=r.int(2,9);return r.chance(.5)?{q:EQ(`${n} ÷ ${F(1,d)} = ${BL()}`),a:n*d}:{q:EQ(`${F(1,d)} ÷ ${n} = ${BL()}`),a:F(1,d*n)}},
+ stretch(r){const[p]=two(r);if(r.chance(.5)){const lb=r.int(2,6),d=r.pick([3,4,8]);return W(`How many ${F(1,d)}-pound burgers can be made from ${lb} pounds of meat?`,`${lb*d} burgers`)}const d=r.pick([2,3,4]),n=r.int(2,5);return W(`${p} has ${F(1,d)} pound of fudge to share equally with ${n} friends. How much fudge does each friend get?`,`${F(1,d*n)} pound`)},
+ worked(r){return{q:`${F(1,3)} ÷ 2`,steps:[`Start with ${F(1,3)} of a whole.`,'Split it into 2 equal parts.',`Each part is ${F(1,6)} of the whole.`],a:''}},
+ challenge(r){return{q:`Explain why 3 ÷ ${F(1,4)} is greater than 3, but ${F(1,4)} ÷ 3 is less than ${F(1,4)}.`,a:'There are 12 fourths in 3; splitting a fourth into 3 parts makes twelfths.'}}},
+
+{grade:5,code:'5.NBT.B.5',im:4,domain:'Number & Operations in Base Ten',title:'Multi-digit multiplication',
+ ican:'multiply multi-digit whole numbers using the standard algorithm.',
+ diff:['3-digit × 1-digit, with a hint to multiply each place','3- and 4-digit numbers × 2-digit numbers','3-digit × 3-digit, and multiplication stories'],
+ support(r){const a=r.int(102,899),b=r.int(2,9);return{q:vert(a,b,'×'),a:a*b,hint:'Multiply the ones, then the tens, then the hundreds. Regroup as you go.',space:'m'}},
+ onlevel(r){const a=r.chance(.5)?r.int(102,999):r.int(1001,4999),b=r.int(12,89);return{q:vert(a,b,'×'),a:a*b,space:'l'}},
+ stretch(r){if(r.chance(.5)){const a=r.int(102,999),b=r.int(102,499);return{q:vert(a,b,'×'),a:a*b,space:'l'}}const s=r.int(1200,4800),d=r.int(12,31);return W(`A stadium has ${s.toLocaleString('en-US')} seats. It sells out ${d} games in a row. How many tickets is that?`,`${(s*d).toLocaleString('en-US')} tickets`)},
+ worked(r){const a=r.int(21,49),b=r.int(12,19);return{q:`${a} × ${b}`,steps:[`${a} × ${b%10} = ${a*(b%10)}`,`${a} × ${b-b%10} = ${a*(b-b%10)}`,`${a*(b%10)} + ${a*(b-b%10)} = ${a*b}`],a:''}},
+ challenge(r){return{q:'Use the digits 2, 4, 6, 8 and 9 once each to make a 3-digit number times a 2-digit number with the greatest product.',a:'964 × 82 = 79,048'}}},
+
+{grade:5,code:'5.NBT.B.6',im:4,domain:'Number & Operations in Base Ten',title:'Dividing by 2-digit numbers',
+ ican:'divide up to 4-digit numbers by 2-digit numbers using place value strategies.',
+ diff:['Dividing by multiples of 10, with a basic-fact hint','4-digit numbers ÷ 2-digit numbers','Remainders in stories, and checking with multiplication'],
+ support(r){const d=r.int(2,9)*10,q=r.int(3,40);return{q:ldiv(d,d*q),a:q,hint:`Think of a basic fact: ${d/10} × ${BL(1.4)} = ${d*q/10}`,space:'m'}},
+ onlevel(r){const d=r.int(12,89),q=r.int(Math.ceil(1000/d),Math.floor(9999/d)),rem=r.chance(.3)?r.int(1,d-1):0;return{q:ldiv(d,d*q+rem),a:rem?`${q} R${rem}`:q,space:'l'}},
+ stretch(r){const n=r.int(300,2000),c=r.int(12,36),q=Math.floor(n/c),rm=n%c;return rm?W(`A school packs ${n.toLocaleString('en-US')} books into boxes that hold ${c} books each. How many boxes are needed to pack every book? How many books are in the last box?`,`${q+1} boxes; ${rm} books in the last box`):W(`${n} chairs are set up in rows of ${c}. How many rows are there?`,`${q} rows`)},
+ worked(r){const d=r.int(12,25),q=r.int(21,49),n=d*q;return{q:`${n} ÷ ${d}`,steps:[`${d} × ${q-q%10} = ${d*(q-q%10)}. ${n} − ${d*(q-q%10)} = ${n-d*(q-q%10)}`,`${d} × ${q%10} = ${d*(q%10)}`,`${q-q%10} + ${q%10} = ${q}`],a:''}},
+ challenge(r){return{q:'Find a 4-digit number that divides evenly by 25 and by 12. Explain your strategy.',a:'Any multiple of 300, such as 1,200.'}}},
+
+{grade:5,code:'5.NBT.A.1–2',ny:'NY-5.NBT.1–2',im:5,domain:'Number & Operations in Base Ten',title:'Place value patterns and powers of 10',
+ ican:'explain that each place is 10 times the place to its right, and multiply and divide by powers of 10.',
+ diff:['Multiplying whole numbers by 10 and 100, with a hint','Decimals × and ÷ powers of 10, and exponents','Comparing the values of the same digit in different places'],
+ support(r){const n=r.int(12,99),k=r.pick([10,100,1000]);return{q:EQ(`${n} × ${k.toLocaleString('en-US')} = ${BL(3)}`),a:(n*k).toLocaleString('en-US'),hint:`Each digit moves ${String(k).length-1} place${k>10?'s':''} to the left.`}},
+ onlevel(r){const t=r.int(0,2),x=r.int(11,999)/100;if(t===0){const e=r.int(1,3);return{q:EQ(`${trim(x.toFixed(2))} × 10<sup>${e}</sup> = ${BL(3)}`),a:trim((x*10**e).toFixed(2))}}if(t===1){const e=r.int(1,3);return{q:EQ(`${trim(x.toFixed(2))} ÷ 10<sup>${e}</sup> = ${BL(3)}`),a:trim((x/10**e).toFixed(5))}}const e=r.int(2,6);return{q:EQ(`10<sup>${e}</sup> = ${BL(4)}`),a:(10**e).toLocaleString('en-US')}},
+ stretch(r){const d=r.int(2,9),e=r.int(1,3);return W(`How many times as large is the value of the ${d} in ${d}${'0'.repeat(e)}.4 as the value of the ${d} in 0.${d}? Explain using place value.`,`${(10**(e+1)).toLocaleString('en-US')} times`)},
+ worked(r){return{q:'3.7 × 100',steps:['Multiplying by 100 makes each digit 100 times as large.','Each digit moves 2 places to the left.','3.7 × 100 = 370'],a:''}},
+ challenge(r){return{q:'Explain why multiplying by 10 adds a zero to 45 but not to 4.5. What really happens to the digits?',a:'The digits move one place to the left; 4.5 becomes 45.'}}},
+
+{grade:5,code:'5.NBT.A.3',im:5,domain:'Number & Operations in Base Ten',title:'Reading, writing and comparing decimals',
+ ican:'read, write and compare decimals to thousandths.',
+ diff:['Writing decimals in expanded form, with a place value hint','Comparing decimals, and writing them from words','Ordering decimals, and expanded form with fractions'],
+ support(r){const a=r.int(1,9),b=r.int(1,9),c=r.int(1,9),d=r.int(1,9);return{q:`Write in expanded form: ${EQ(`${a}.${b}${c}${d}`)}`,a:`${a} × 1 + ${b} × (${F(1,10)}) + ${c} × (${F(1,100)}) + ${d} × (${F(1,1000)})`,hint:'Tenths, then hundredths, then thousandths.',wide:true,space:'m'}},
+ onlevel(r){if(r.chance(.5)){const a=r.int(100,999),b=until(()=>r.int(10,99)*10+r.pick([0,0,r.int(1,9)]),x=>x!==a);return{q:EQ(`0.${a}${CMP}0.${String(b).padStart(3,'0').replace(/0+$/,'')}`),a:a<b?'&lt;':'&gt;'}}const w=r.int(2,9),t=r.int(11,999);return{q:`Write as a decimal: ${w} and ${t} thousandths`,a:`${w}.${String(t).padStart(3,'0')}`}},
+ stretch(r){const xs=until(()=>[0,1,2,3].map(()=>trim((r.int(100,999)/1000+r.int(0,2)).toFixed(r.pick([1,2,3])))),a=>new Set(a.map(Number)).size===4);return{q:`Order from least to greatest: ${xs.join(', ')}`,a:xs.slice().sort((a,b)=>a-b).join(', '),wide:true,space:'m'}},
+ worked(r){return{q:'0.45 and 0.405',steps:['Write both with 3 places: 0.450 and 0.405.','Compare tenths: both 4. Compare hundredths: 5 > 0.','0.45 &gt; 0.405'],a:''}},
+ challenge(r){return{q:'A student says 0.25 is greater than 0.3 because 25 is greater than 3. Explain the mistake with a picture or place value.',a:'0.3 = 0.30, and 30 hundredths is greater than 25 hundredths.'}}},
+
+{grade:5,code:'5.NBT.A.4',im:5,domain:'Number & Operations in Base Ten',title:'Rounding decimals',
+ ican:'round decimals to any place.',
+ diff:['Rounding to the nearest whole number, with a halfway hint','Rounding to the nearest tenth or hundredth','Finding every number that rounds to a given value'],
+ support(r){const x=r.int(101,999)/100;return{q:`Round ${x.toFixed(2)} to the nearest whole number.`,a:Math.round(x),hint:`Is it closer to ${Math.floor(x)} or ${Math.ceil(x)}? Look at the tenths digit.`}},
+ onlevel(r){const x=r.int(1001,9999)/1000,[pl,dp]=r.pick([['tenth',1],['hundredth',2]]);return{q:`Round ${x.toFixed(3)} to the nearest ${pl}.`,a:(Math.round(x*10**dp+1e-9)/10**dp).toFixed(dp)}},
+ stretch(r){const t=r.int(11,98);return W(`A number with two decimal places rounds to ${(t/10).toFixed(1)}. What is the least it could be? What is the greatest?`,`${((t-.5)/10).toFixed(2)} and ${((t+.4)/10).toFixed(2)}`)},
+ worked(r){return{q:'Round 3.68 to the nearest tenth',steps:['3.68 is between 3.6 and 3.7.','The hundredths digit is 8, so it is closer to 3.7.','3.68 rounds to 3.7'],a:''}},
+ challenge(r){return{q:'Find a number that rounds to 5 when rounded to the nearest whole number, but rounds to 4.5 when rounded to the nearest tenth.',a:'Any number from 4.50 to 4.54, such as 4.52.'}}},
+
+{grade:5,code:'5.NF.A.2',im:6,domain:'Number & Operations — Fractions',title:'Fraction word problems with estimation',
+ ican:'solve word problems by adding and subtracting fractions, and check answers with benchmark fractions.',
+ diff:['Stories with related denominators, with an estimate hint','Stories with unlike denominators','Mixed numbers, and finding the mistake in a wrong answer'],
+ support(r){const[p]=two(r),[b,d]=r.pick([[2,4],[2,8],[3,6],[4,8]]),a=r.int(1,b-1),c=r.int(1,d-1);return{...W(`${p} walks ${F(a,b)} mile to school and ${F(c,d)} mile to the library. How far does ${p} walk in all?`,`${fr(a*d+c*b,b*d)} mile${a*d+c*b>=b*d?'s':''}`),hint:`Estimate first: is each distance closer to 0, ${F(1,2)} or 1?`}},
+ onlevel(r){const[p]=two(r),D=[2,3,4,5,6,8,10,12],[b,d]=until(()=>[r.pick(D),r.pick(D)],([x,y])=>x%y&&y%x),a=r.int(1,b-1),c=r.int(1,d-1),sub=a*d>c*b;return sub?W(`${p} had ${F(a,b)} of a pizza and ate ${F(c,d)} of a pizza. How much is left?`,`${fr(a*d-c*b,b*d)} of a pizza`):W(`${p} painted ${F(a,b)} of a fence in the morning and ${F(c,d)} in the afternoon. How much was painted in all?`,`${fr(a*d+c*b,b*d)} of the fence`)},
+ stretch(r){const[p]=two(r);if(r.chance(.5))return W(`${p} says ${F(2,5)} + ${F(1,2)} = ${F(3,7)}. Use benchmark fractions to show why that cannot be right. Then find the correct sum.`,`${F(3,7)} is less than ${F(1,2)}, but the sum must be more than ${F(1,2)}. Correct: ${F(9,10)}`);const w1=r.int(2,5),w2=r.int(1,w1-1);return W(`A board is ${MX(w1,3,4)} feet long. ${p} cuts off ${MX(w2,1,3)} feet. How much is left?`,`${fr((w1*4+3)*3-(w2*3+1)*4,12)} feet`)},
+ worked(r){return{q:`${F(1,2)} + ${F(1,3)}`,steps:['Estimate: a bit less than 1.',`Common denominator 6: ${F(3,6)} + ${F(2,6)}`,`= ${F(5,6)}, which is close to 1. ✓`],a:''}},
+ challenge(r){return{q:'Write a story problem where you add two fractions with different denominators and the answer is a little more than 1. Solve it.',a:'Answers vary.'}}},
+
+{grade:5,code:'5.MD.A.1',im:6,domain:'Measurement & Data',title:'Converting measurements',
+ ican:'convert between units in the same measurement system and use conversions in multi-step problems.',
+ diff:['Converting to a smaller unit with whole numbers, with the fact given','Decimals in metric conversions, and both directions','Multi-step stories that need a conversion'],
+ support(r){const[big,small,f]=r.pick(CONV),n=r.int(2,9);return{q:EQ(`${n} ${big} = ${BL(3)} ${small}`),a:`${n*f} ${small}`,hint:`1 ${one(big)} = ${f} ${small}.`}},
+ onlevel(r){const[big,small,f]=r.pick([['meters','centimeters',100],['kilograms','grams',1000],['liters','milliliters',1000],['kilometers','meters',1000]]);const x=r.int(11,99)/10;return r.chance(.5)?{q:EQ(`${trim(x.toFixed(1))} ${big} = ${BL(3)} ${small}`),a:`${Math.round(x*f)} ${small}`}:{q:EQ(`${Math.round(x*f).toLocaleString('en-US')} ${small} = ${BL(3)} ${big}`),a:`${trim(x.toFixed(1))} ${big}`}},
+ stretch(r){const[p]=two(r),n=r.int(3,8),l=r.int(12,40);return W(`${p} has a ${n}-meter roll of ribbon and cuts pieces that are ${l} centimeters long. How many full pieces can ${p} cut? How much ribbon is left?`,`${Math.floor(n*100/l)} pieces; ${n*100%l} cm left`)},
+ worked(r){return{q:'2.5 kilograms = ? grams',steps:['1 kilogram = 1,000 grams','2.5 × 1,000','= 2,500 grams'],a:''}},
+ challenge(r){return{q:'Which is longer: 3 yards or 100 inches? Show two different ways to decide.',a:'3 yards = 108 inches, so 3 yards is longer.'}}},
+
+{grade:5,code:'5.OA.A.1–2',ny:'NY-5.OA.1–2',im:4,domain:'Operations & Algebraic Thinking',title:'Order of operations and writing expressions',
+ ican:'evaluate expressions with parentheses and write expressions from words.',
+ diff:['Evaluating with one set of parentheses, with a hint','Mixed order of operations, and writing expressions from words','Placing parentheses to make a statement true, and comparing expressions'],
+ support(r){const a=r.int(2,12),b=r.int(2,9),c=r.int(2,6);return{q:EQ(`(${a} + ${b}) × ${c} = ${BL()}`),a:(a+b)*c,hint:'Do what is inside the parentheses first.'}},
+ onlevel(r){const t=r.int(0,2),a=r.int(2,12),b=r.int(2,9),c=r.int(2,6);if(t===0)return{q:EQ(`${a} + ${b} × ${c} = ${BL()}`),a:a+b*c};if(t===1)return{q:EQ(`${c*(a+b)} ÷ (${a} + ${b}) − 1 = ${BL()}`),a:c-1};return{q:`Write an expression: add ${a} and ${b}, then multiply by ${c}.`,a:`(${a} + ${b}) × ${c}`}},
+ stretch(r){const a=r.int(2,9),b=r.int(2,9),c=r.int(2,6);if(r.chance(.5))return{q:`Add parentheses to make this true: ${EQ(`${a} + ${b} × ${c} = ${(a+b)*c}`)}`,a:`(${a} + ${b}) × ${c}`,space:'m'};const n=r.int(1200,9800),m=r.int(120,980);return W(`Without calculating, compare ${EQ(`3 × (${n} + ${m})`)} and ${EQ(`${n} + ${m}`)}. How are they related?`,'The first is 3 times as large as the second.')},
+ worked(r){return{q:'(6 + 4) × 3 − 5',steps:['Parentheses first: 6 + 4 = 10','Then multiply: 10 × 3 = 30','Then subtract: 30 − 5 = 25'],a:''}},
+ challenge(r){return{q:'Use the numbers 2, 3, 4 and 5 once each, with parentheses, to make the greatest value you can. Then make the least.',a:'Answers vary, for example (2 + 3) × 4 × 5 = 100.'}}},
+
+{grade:5,code:'5.MD.B.2',im:6,domain:'Measurement & Data',title:'Line plots with fractions',
+ ican:'make and read line plots with fraction measurements, and solve problems with the data.',
+ diff:['Counting data points on a line plot, with a hint','The difference between greatest and least, and totals','Sharing the total equally, and making a line plot'],
+ support(r){const data=Array.from({length:r.int(8,12)},()=>r.int(2,6)/8),k=r.pick([...new Set(data)]);return{q:`How many measurements are ${fr(k*8,8)} inch?`,model:dotPlotF(data,8,0,1,'Length of bugs (inches)'),a:data.filter(v=>v===k).length,hint:'Count the × marks above that number.',wide:true}},
+ onlevel(r){const data=Array.from({length:r.int(8,12)},()=>r.int(1,7)/8);if(r.chance(.5)){const mx=Math.max(...data),mn=Math.min(...data);return{q:'What is the difference between the longest and the shortest measurement?',model:dotPlotF(data,8,0,1,'Length of bugs (inches)'),a:`${fr(Math.round((mx-mn)*8),8)} inch`,wide:true}}const k=r.pick([...new Set(data)]),c=data.filter(v=>v===k).length;return{q:`What is the total length of all the bugs that are ${fr(k*8,8)} inch long?`,model:dotPlotF(data,8,0,1,'Length of bugs (inches)'),a:`${fr(Math.round(k*8*c),8)} inches`,wide:true}},
+ stretch(r){const data=Array.from({length:8},()=>r.int(1,4)/4),tot=data.reduce((a,b)=>a+b,0);return{q:'The line plot shows how much water is in 8 beakers (liters). If the water were shared equally among the beakers, how much would each hold?',model:dotPlotF(data,4,0,1,'Water in beakers (liters)'),a:`Total ${fr(Math.round(tot*4),4)} L; each ${fr(Math.round(tot*4),32)} L`,wide:true,space:'m'}},
+ worked(r){return{q:'Reading a line plot',steps:['Each × is one measurement.','Count the × marks above a value to find how many.','Add the values to find a total.'],a:''}},
+ challenge(r){return{q:'Measure 8 pencils or other objects to the nearest 1/4 inch and make a line plot. Write one question someone could answer from your plot.',a:'Answers vary.'}}},
+
+{grade:5,code:'5.OA.B.3',im:7,domain:'Operations & Algebraic Thinking',title:'Numerical patterns',
+ ican:'generate two patterns from rules and describe how they are related.',
+ diff:['Extending one pattern from a rule, with a hint','Two patterns, and ordered pairs from them','Describing the relationship between two patterns and graphing it'],
+ support(r){const a=r.int(2,9),s0=r.int(0,6);return{q:`Start at ${s0} and add ${a} each time. Write the first 6 numbers.`,a:[0,1,2,3,4,5].map(i=>s0+i*a).join(', '),hint:`${s0}, ${s0+a}, ${s0+2*a}, …`}},
+ onlevel(r){const a=r.int(2,9),k=r.int(2,4);return W(`Pattern A starts at 0 and adds ${a}. Pattern B starts at 0 and adds ${a*k}. Write the first 5 terms of each, then write the ordered pairs (A, B).`,[0,1,2,3,4].map(i=>`(${i*a}, ${i*a*k})`).join(', '))},
+ stretch(r){const a=r.int(2,9),k=r.int(2,5);return W(`Pattern A adds ${a} each time, starting at 0. Pattern B adds ${a*k} each time, starting at 0. How does each term in B compare with the matching term in A? Why? Plot the pairs on a grid.`,`Each B term is ${k} times the A term, because ${a*k} is ${k} times ${a}.`)},
+ worked(r){return{q:'Rule "add 3" and rule "add 6"',steps:['A: 0, 3, 6, 9','B: 0, 6, 12, 18','Each B term is 2 times the A term.'],a:''}},
+ challenge(r){return{q:'Make two patterns where each term in the second pattern is always 5 more than the matching term in the first. What rules did you use?',a:'Same "add" rule; start the second pattern at 5.'}}},
+
+{grade:5,code:'5.G.A.1–2',ny:'NY-5.G.1–2',im:7,domain:'Geometry',title:'The coordinate grid',
+ ican:'graph points in the first quadrant and use them to solve problems.',
+ diff:['Naming the coordinates of a point, with a hint','Plotting points and finding distances along grid lines','Map and shape problems on the grid'],
+ support(r){const x=r.int(1,9),y=r.int(1,9);return{q:'What are the coordinates of point A?',model:qGrid(10,[[x,y,'A']]),a:`(${x}, ${y})`,hint:'Go across first (x), then up (y).'}},
+ onlevel(r){const x=r.int(0,9),y=r.int(0,9),d=r.int(2,6);if(r.chance(.5))return{q:`Plot (${x}, ${y}) and (${x}, ${Math.min(10,y+d)}). How far apart are they?`,model:qGrid(10,[]),a:`${Math.min(10,y+d)-y} units`};const[p]=two(r);return W(`On a map grid, ${p}'s house is at (${x}, ${y}). The park is ${d} units right and ${Math.min(3,10-y)} units up. What are the coordinates of the park?`,`(${Math.min(10,x+d)}, ${y+Math.min(3,10-y)})`)},
+ stretch(r){const x=r.int(1,4),y=r.int(1,4),w=r.int(2,5),h=r.int(2,5);return W(`Three corners of a rectangle are (${x}, ${y}), (${x+w}, ${y}) and (${x+w}, ${y+h}). What is the fourth corner? What is the perimeter?`,`(${x}, ${y+h}); ${2*(w+h)} units`)},
+ worked(r){return{q:'Plotting (4, 2)',steps:['Start at (0, 0).','Move 4 units right along the x-axis.','Move 2 units up. That is (4, 2).'],a:''}},
+ challenge(r){return{q:'Draw a square on the grid where no side is horizontal or vertical. List the coordinates of its corners.',a:'Answers vary, for example (2, 1), (4, 3), (2, 5), (0, 3).'}}},
+
+{grade:5,code:'5.G.B.3–4',ny:'NY-5.G.3–4',im:7,domain:'Geometry',title:'Classifying two-dimensional figures',
+ ican:'classify shapes by their properties and understand that categories can contain other categories.',
+ diff:['True-or-false statements about shapes, with a hint','Naming every category a shape belongs to','Explaining why one category is inside another'],
+ support(r){const[q,a]=r.pick(SHAPE_TF);return{q:`True or false? ${q}`,a:a?'True':'False',hint:'Think about what every shape in the group must have.'}},
+ onlevel(r){if(r.chance(.5)){const[q,a]=r.pick(SHAPE_TF);return{q:`True or false? ${q}`,a:a?'True':'False'}}const[sh,cats]=r.pick([['square','quadrilateral, parallelogram, rectangle, rhombus'],['rectangle','quadrilateral, parallelogram'],['rhombus','quadrilateral, parallelogram'],['trapezoid','quadrilateral'],['equilateral triangle','triangle, isosceles triangle, acute triangle']]);return{q:`List every category a ${sh} belongs to.`,a:cats,space:'m'}},
+ stretch(r){if(r.chance(.6)){const[q,a]=r.pick(SHAPE_TF);return W(`True or false? ${q} Explain, or draw a shape that proves your answer.`,a?'True':'False')}const[q,a]=r.pick([['Explain why every square is a rectangle, but not every rectangle is a square.','A square has 4 right angles, so it is a rectangle. A rectangle does not need equal sides.'],['Is a rhombus always a parallelogram? Is a parallelogram always a rhombus? Explain.','Yes; no, because a parallelogram does not need 4 equal sides.'],['Draw a diagram that shows how quadrilaterals, parallelograms, rectangles, rhombuses and squares are related.','Squares are inside both rectangles and rhombuses, which are inside parallelograms, which are inside quadrilaterals.']]);return W(q,a)},
+ worked(r){return{q:'Is a square a rhombus?',steps:['A rhombus has 4 equal sides.','A square has 4 equal sides.','So every square is a rhombus.'],a:''}},
+ challenge(r){return{q:'Sketch a quadrilateral that is not a trapezoid, not a parallelogram and not a kite. Describe it.',a:'Answers vary, for example one with no parallel sides and no equal sides.'}}},
+
+/* ---------- Grade 4: full set ---------- */
+{grade:4,code:'4.OA.B.4',im:1,domain:'Operations & Algebraic Thinking',title:'Factors, multiples, primes and composites',
+ ican:'find factor pairs, recognize multiples, and tell whether a number is prime or composite.',
+ diff:['Listing factor pairs with an array hint','Prime or composite? and is it a multiple?','Numbers with exactly a given number of factors, and explaining'],
+ support(r){const n=r.pick([6,8,10,12,14,15,16,18,20,21,24]);return{q:`List all the factor pairs of ${n}.`,a:factors(n).filter(f=>f*f<=n).map(f=>`${f} × ${n/f}`).join(', '),hint:'Try 1, 2, 3, … and see which ones make an array with no extras.',space:'m'}},
+ onlevel(r){if(r.chance(.5)){const n=r.int(2,100),pr=factors(n).length===2;return{q:`Is ${n} prime or composite? Explain.`,a:pr?'Prime: its only factors are 1 and itself':`Composite: ${factors(n).join(', ')}`,space:'m'}}const a=r.int(3,9),n=r.int(10,99),m=n%a===0;return{q:`Is ${n} a multiple of ${a}?`,a:m?`Yes, ${a} × ${n/a}`:'No'}},
+ stretch(r){if(r.chance(.5)){const k=r.pick([3,4,5]);const L=[];for(let n=2;n<=60;n++)if(factors(n).length===k)L.push(n);return W(`Find three numbers less than 60 that have exactly ${k} factors. What do you notice?`,L.slice(0,6).join(', ')+(k===3?' (all perfect squares of primes)':''))}if(r.chance(.5)){const a=r.int(3,9),m=a*r.int(6,12)+r.pick([0,0,1,2]);return W(`List the first 6 multiples of ${a}. Is ${m} a multiple of ${a}? How do you know?`,`${[1,2,3,4,5,6].map(i=>i*a).join(', ')}; ${m%a?'no':'yes, '+a+' × '+m/a}`)}return W('Is every odd number prime? Is every prime number odd? Explain with examples.','No (9 is odd and composite); no (2 is prime and even).')},
+ worked(r){return{q:'Factor pairs of 12',steps:['1 × 12, 2 × 6, 3 × 4','5 does not work; 4 × 3 is already listed.','Factors: 1, 2, 3, 4, 6, 12'],a:''}},
+ challenge(r){return{q:'What is the smallest number with exactly 6 factors? Explain how you know.',a:'12 (1, 2, 3, 4, 6, 12)'}}},
+
+{grade:4,code:'4.OA.C.5',im:1,domain:'Operations & Algebraic Thinking',title:'Number and shape patterns',
+ ican:'extend a pattern from a rule and describe features of the pattern.',
+ diff:['Extending a pattern from a rule, with a hint','Extending and describing features like odd and even','Finding the 20th term and explaining'],
+ support(r){const s=r.int(1,9),a=r.int(2,9);return{q:`The rule is "add ${a}." Start at ${s}. Write the next 5 numbers.`,a:[1,2,3,4,5].map(i=>s+i*a).join(', '),hint:`${s} + ${a} = ${s+a}. Keep going.`}},
+ onlevel(r){const s=r.int(1,9),a=r.pick([2,3,4,5]);return W(`The rule is "add ${a}," starting at ${s}. Write the first 6 numbers. Are they all odd, all even, or both? Why?`,`${[0,1,2,3,4,5].map(i=>s+i*a).join(', ')}; ${a%2===0?(s%2?'all odd':'all even'):'they alternate odd and even'}`)},
+ stretch(r){const s=r.int(1,9),a=r.int(2,9);return W(`A pattern starts at ${s} and adds ${a} each time. What is the 20th number? Explain how you know without listing every number.`,`${s+19*a}; start plus 19 jumps of ${a}`)},
+ worked(r){return{q:'Rule "add 3" starting at 1',steps:['1, 4, 7, 10, 13','Each odd number plus 3 is even, and each even plus 3 is odd.','So the pattern alternates odd and even.'],a:''}},
+ challenge(r){return{q:'Make a rule that starts at 2 and creates only even numbers. Make another that starts at 2 and alternates even and odd.',a:'Add any even number; add any odd number.'}}},
+
+{grade:4,code:'4.NF.A.1',im:2,domain:'Number & Operations — Fractions',title:'Equivalent fractions',
+ ican:'explain why fractions are equivalent and create equivalent fractions.',
+ diff:['Fraction bars to shade, with a hint','Missing numerators and denominators, including hundredths','Generating several equivalent fractions and simplifying'],
+ support(r){const[b,c]=r.pick([[2,4],[3,6],[4,8],[5,10],[2,6],[3,12],[4,12]]),a=r.int(1,b-1);return{q:EQ(`${F(a,b)} = ${F(BOX,c)}`),a:F(a*c/b,c),model:bars([[a,b],[0,c]]),hint:'Shade the bottom bar to match the top bar.'}},
+ onlevel(r){const D=[2,3,4,5,6,8,10,12],b=r.pick(D),k=r.int(2,b===10?10:5),a=r.int(1,b-1);return r.chance(.5)?{q:EQ(`${F(a,b)} = ${F(BOX,b*k)}`),a:a*k}:{q:EQ(`${F(a,b)} = ${F(a*k,BOX)}`),a:b*k}},
+ stretch(r){const D=[2,3,4,5,6],b=r.pick(D),a=r.int(1,b-1),k=r.int(2,6);return r.chance(.5)?{q:`Write ${F(a*k,b*k)} in simplest form.`,a:fr(a,b)}:W(`Write three fractions equal to ${F(a,b)}. Explain how you know they are equal.`,`${F(2*a,2*b)}, ${F(3*a,3*b)}, ${F(4*a,4*b)}; multiply top and bottom by the same number`)},
+ worked(r){return{q:`${F(2,3)} = ${F('?',12)}`,steps:['3 × 4 = 12, so each third splits into 4 parts.','2 × 4 = 8',`${F(2,3)} = ${F(8,12)}`],a:''}},
+ challenge(r){return{q:`Explain why multiplying the top and bottom of ${F(3,4)} by the same number does not change its value. Use a picture.`,a:'You split each part into equal smaller parts; the shaded amount stays the same.'}}},
+
+{grade:4,code:'4.NF.B.3a–b',ny:'NY-4.NF.3a–b',im:3,domain:'Number & Operations — Fractions',title:'Decomposing fractions',
+ ican:'decompose a fraction into a sum of fractions with the same denominator.',
+ diff:['Writing a fraction as a sum of unit fractions, with bars','Two different ways to decompose a fraction','Decomposing mixed numbers'],
+ support(r){const d=r.int(3,8),n=r.int(2,Math.min(5,d));return{q:`Write ${F(n,d)} as a sum of unit fractions.`,a:Array(n).fill(F(1,d)).join(' + '),model:bars([[n,d]]),hint:`A unit fraction has a 1 on top: ${F(1,d)}.`,space:'m'}},
+ onlevel(r){const d=r.int(4,10),n=r.int(3,d);const a=r.int(1,n-1),b=until(()=>r.int(1,n-1),x=>x!==a&&x!==n-a);return{q:`Write ${F(n,d)} as a sum in two different ways.`,a:`${F(a,d)} + ${F(n-a,d)}; ${F(b,d)} + ${F(n-b,d)}`,space:'m'}},
+ stretch(r){const w=r.int(1,3),d=r.int(3,8),n=r.int(1,d-1);return{q:`Decompose ${MX(w,n,d)} into a sum of fractions in two ways. One way must use only fractions with denominator ${d}.`,a:`${Array(w).fill(F(d,d)).join(' + ')} + ${F(n,d)}; or ${w*d+n} copies of ${F(1,d)} added together`,space:'m'}},
+ worked(r){return{q:`${F(3,5)}`,steps:[`${F(1,5)} + ${F(1,5)} + ${F(1,5)}`,`or ${F(2,5)} + ${F(1,5)}`,'Same denominator; the numerators add to 3.'],a:''}},
+ challenge(r){return{q:`How many different ways can you write ${F(5,6)} as a sum of fractions with denominator 6? List them.`,a:'1+4, 2+3, 1+1+3, 1+2+2, 1+1+1+2, 1+1+1+1+1 (in sixths), and orderings'}}},
+
+{grade:4,code:'4.NF.B.3c–d',ny:'NY-4.NF.3c–d',im:3,domain:'Number & Operations — Fractions',title:'Adding and subtracting mixed numbers',
+ ican:'add and subtract fractions and mixed numbers with like denominators, including in word problems.',
+ diff:['Like denominators with no regrouping, with a hint','Mixed numbers, sometimes with regrouping','Word problems with mixed numbers'],
+ support(r){const d=r.int(3,10),a=r.int(1,d-2),b=r.int(1,d-1-a),sub=r.chance(.4);return sub&&a>b?{q:EQ(`${F(a,d)} − ${F(b,d)} = ${BL()}`),a:F(a-b,d),hint:'Same denominator: subtract the numerators.'}:{q:EQ(`${F(a,d)} + ${F(b,d)} = ${BL()}`),a:F(a+b,d),hint:'Same denominator: add the numerators. Keep the denominator.'}},
+ onlevel(r){const d=r.int(3,8),w1=r.int(2,6),w2=r.int(1,w1-1),a=r.int(1,d-1),b=r.int(1,d-1),sub=r.chance(.5);const A=w1*d+a,B=w2*d+b;return{q:EQ(`${MX(w1,a,d)} ${sub?'−':'+'} ${MX(w2,b,d)} = ${BL()}`),a:fr(sub?A-B:A+B,d),space:'m'}},
+ stretch(r){const[p]=two(r),d=r.pick([4,8]),w1=r.int(3,7),w2=r.int(1,w1-1),a=r.int(1,d-1),b=r.int(1,d-1);return W(`${p} had ${MX(w1,a,d)} yards of fabric and used ${MX(w2,b,d)} yards. How much is left?`,`${fr((w1*d+a)-(w2*d+b),d)} yards`)},
+ worked(r){return{q:`${MX(3,1,4)} − ${MX(1,3,4)}`,steps:[`${MX(3,1,4)} = ${MX(2,5,4)}`,`${MX(2,5,4)} − ${MX(1,3,4)} = ${MX(1,2,4)}`,`= ${MX(1,1,2)}`],a:''}},
+ challenge(r){return{q:`Find two mixed numbers with denominator 5 whose sum is exactly 7. Find two whose difference is ${F(3,5)}.`,a:'Answers vary, for example 3 2/5 + 3 3/5.'}}},
+
+{grade:4,code:'4.NF.B.4',im:3,domain:'Number & Operations — Fractions',title:'Multiplying a whole number by a fraction',
+ ican:'multiply a whole number by a fraction and solve word problems.',
+ diff:['Whole number × unit fraction, with fraction bars','Whole number × any fraction','Word problems, and between which two whole numbers the answer falls'],
+ support(r){const w=r.int(2,6),d=r.int(2,8);return{q:EQ(`${w} × ${F(1,d)} = ${BL()}`),a:fr(w,d),model:bars(Array(w).fill([1,d])),hint:`${w} groups of ${F(1,d)}: count the shaded parts.`}},
+ onlevel(r){const w=r.int(2,9),d=r.pick([2,3,4,5,6,8,10,12]),n=r.int(2,d-1);return{q:EQ(`${w} × ${F(n,d)} = ${BL()}`),a:fr(w*n,d),space:'m'}},
+ stretch(r){const[p]=two(r),w=r.int(3,8),[n,d]=r.pick([[3,4],[2,3],[5,8],[3,8]]);return W(`Each of ${w} students needs ${F(n,d)} yard of ribbon. How much ribbon is needed in all? Between which two whole numbers is the answer?`,`${fr(w*n,d)} yards; between ${Math.floor(w*n/d)} and ${Math.floor(w*n/d)+1}`)},
+ worked(r){return{q:`3 × ${F(2,5)}`,steps:[`3 groups of ${F(2,5)}`,`${F(2,5)} + ${F(2,5)} + ${F(2,5)} = ${F(6,5)}`,`= ${MX(1,1,5)}`],a:''}},
+ challenge(r){return{q:`Write ${F(9,4)} as a whole number times a unit fraction, and as a whole number times a fraction that is not a unit fraction.`,a:'9 × 1/4 and 3 × 3/4'}}},
+
+{grade:4,code:'4.MD.B.4',im:3,domain:'Measurement & Data',title:'Line plots with fractions',
+ ican:'make a line plot with measurements in fractions of a unit and solve problems with it.',
+ diff:['Counting data on a line plot, with a hint','Differences between measurements','Totals and comparisons using the plot'],
+ support(r){const data=Array.from({length:r.int(8,12)},()=>r.int(1,7)/8),k=r.pick([...new Set(data)]);return{q:`How many pencils are ${MX(3,k*8/gcd(k*8,8),8/gcd(k*8,8))} inches long?`,model:dotPlotF(data.map(v=>v+3),8,3,4,'Pencil length (inches)'),a:data.filter(v=>v===k).length,hint:'Count the × marks above that number.',wide:true}},
+ onlevel(r){const data=Array.from({length:r.int(8,12)},()=>r.int(0,4)/4+2),mx=Math.max(...data),mn=Math.min(...data);return{q:'What is the difference between the longest and shortest measurement?',model:dotPlotF(data,4,2,3,'Ribbon length (feet)'),a:`${fr(Math.round((mx-mn)*4),4)} foot`,wide:true}},
+ stretch(r){const data=Array.from({length:10},()=>r.int(1,4)/4),k=r.pick([...new Set(data)]),c=data.filter(v=>v===k).length;return{q:`What is the total weight of all the apples that weigh ${fr(k*4,4)} pound?`,model:dotPlotF(data,4,0,1,'Apple weight (pounds)'),a:`${fr(Math.round(k*4*c),4)} pounds`,wide:true}},
+ worked(r){return{q:'Reading a line plot with fractions',steps:['The number line is split into equal parts, like fourths or eighths.','Each × is one measurement.','Count × marks to find how many; subtract values to compare.'],a:''}},
+ challenge(r){return{q:'Measure 10 objects to the nearest 1/4 inch. Make a line plot. What is the most common length?',a:'Answers vary.'}}},
+
+{grade:4,code:'4.NF.C.5–6',ny:'NY-4.NF.5–6',im:4,domain:'Number & Operations — Fractions',title:'Tenths and hundredths',
+ ican:'write tenths and hundredths as fractions and decimals, and add tenths to hundredths.',
+ diff:['Shaded hundred grids as fractions and decimals, with a hint','Converting between tenths, hundredths and decimals','Adding tenths and hundredths, and locating decimals on a number line'],
+ support(r){const n=r.int(5,95);return{q:`Write the shaded part as a fraction and as a decimal.`,model:grid100(n),a:`${F(n,100)} = ${(n/100).toFixed(2)}`,hint:'There are 100 small squares. Count the shaded ones.'}},
+ onlevel(r){const t=r.int(0,2);if(t===0){const n=r.int(1,9);return{q:EQ(`${F(n,10)} = ${F(BOX,100)}`),a:n*10}}if(t===1){const n=r.int(1,99);return{q:`Write ${F(n,100)} as a decimal.`,a:(n/100).toFixed(2)}}const n=r.int(1,99);return{q:`Write ${(n/100).toFixed(2)} as a fraction.`,a:F(n,100)}},
+ stretch(r){const a=r.int(1,9),b=r.int(1,99);if(r.chance(.6))return{q:EQ(`${F(a,10)} + ${F(b,100)} = ${BL()}`),a:`${fr(a*10+b,100)} = ${((a*10+b)/100).toFixed(2)}`,space:'m'};const v=r.int(1,9);return{q:'What decimal is at point A?',model:fracNL(10,1,v),a:(v/10).toFixed(1)}},
+ worked(r){return{q:`${F(3,10)} + ${F(25,100)}`,steps:[`${F(3,10)} = ${F(30,100)}`,`${F(30,100)} + ${F(25,100)} = ${F(55,100)}`,'= 0.55'],a:''}},
+ challenge(r){return{q:'Explain why 0.5 and 0.50 are equal. Use a hundred grid or money.',a:'5 tenths = 50 hundredths; 50¢ is half a dollar.'}}},
+
+{grade:4,code:'4.NF.C.7',im:4,domain:'Number & Operations — Fractions',title:'Comparing decimals',
+ ican:'compare decimals to hundredths and explain my reasoning.',
+ diff:['Comparing tenths, with a hint','Comparing tenths and hundredths','Ordering decimals and explaining a common mistake'],
+ support(r){const a=r.int(1,9),b=until(()=>r.int(1,9),x=>x!==a);return{q:EQ(`0.${a}${CMP}0.${b}`),a:a<b?'&lt;':'&gt;',hint:'Compare the tenths digits.'}},
+ onlevel(r){const a=r.int(1,99),b=until(()=>r.int(1,9)*10,x=>x!==a);return{q:EQ(`${(a/100).toFixed(2)}${CMP}${(b/100).toFixed(1)}`),a:a<b?'&lt;':'&gt;'}},
+ stretch(r){const xs=until(()=>[0,1,2,3].map(()=>r.int(1,99)/100),a=>new Set(a).size===4).map(v=>r.chance(.4)&&Math.round(v*100)%10===0?(v).toFixed(1):v.toFixed(2));if(r.chance(.5))return{q:`Order from least to greatest: ${xs.join(', ')}`,a:xs.slice().sort((a,b)=>a-b).join(', '),wide:true,space:'m'};return W('A student says 0.09 is greater than 0.4 because 9 is greater than 4. Explain the mistake.','0.4 = 0.40, and 40 hundredths is more than 9 hundredths.')},
+ worked(r){return{q:'0.6 and 0.58',steps:['0.6 = 0.60','60 hundredths and 58 hundredths','0.6 &gt; 0.58'],a:''}},
+ challenge(r){return{q:'Find three decimals between 0.3 and 0.4. Show them on a number line.',a:'Answers vary, for example 0.31, 0.35, 0.38.'}}},
+
+{grade:4,code:'4.NBT.A.2',im:4,domain:'Number & Operations in Base Ten',title:'Reading, writing and comparing large numbers',
+ ican:'read, write and compare multi-digit numbers up to 1,000,000.',
+ diff:['Writing numbers in expanded form, with a hint','Number names, and comparing two numbers','Ordering numbers, and the value of a digit'],
+ support(r){const n=r.int(1001,99999);return{q:`Write ${n.toLocaleString('en-US')} in expanded form.`,a:String(n).split('').map((d,i,a)=>+d*10**(a.length-1-i)).filter(Boolean).map(v=>v.toLocaleString('en-US')).join(' + '),hint:'Write the value of each digit, then add them.',wide:true}},
+ onlevel(r){if(r.chance(.5)){const a=r.int(10000,999999),b=until(()=>a+r.pick([-1,1])*r.pick([1,10,100,1000,10000]),x=>x>0&&x<1000000);return{q:EQ(`${a.toLocaleString('en-US')}${CMP}${b.toLocaleString('en-US')}`),a:a<b?'&lt;':'&gt;'}}const n=r.int(10000,999999);return{q:`Write the number name for ${n.toLocaleString('en-US')}.`,a:numName(n),wide:true,space:'m'}},
+ stretch(r){const n=r.int(100000,999999),s=String(n),i=r.int(0,5),d=s[i];return d!=='0'?{q:`What is the value of the ${d} in ${n.toLocaleString('en-US')}?`,a:(+d*10**(5-i)).toLocaleString('en-US')}:{q:`Write ${n.toLocaleString('en-US')} in expanded form.`,a:s.split('').map((x,j)=>+x*10**(5-j)).filter(Boolean).map(v=>v.toLocaleString('en-US')).join(' + '),wide:true}},
+ worked(r){return{q:'45,203',steps:['4 ten thousands, 5 thousands, 2 hundreds, 0 tens, 3 ones','40,000 + 5,000 + 200 + 3','forty-five thousand, two hundred three'],a:''}},
+ challenge(r){return{q:'Use the digits 1, 3, 5, 7, 8 and 9 once each to make the greatest 6-digit number and the least. What is their difference?',a:'987,531 − 135,789 = 851,742'}}},
+
+{grade:4,code:'4.NBT.A.3',im:4,domain:'Number & Operations in Base Ten',title:'Rounding multi-digit numbers',
+ ican:'round multi-digit whole numbers to any place.',
+ diff:['Rounding to the nearest ten or hundred, with a halfway hint','Rounding to the nearest thousand or ten thousand','Finding all numbers that round to a value'],
+ support(r){const p=r.pick([10,100]),n=r.int(101,9999);return{q:`Round ${n.toLocaleString('en-US')} to the nearest ${p===10?'ten':'hundred'}.`,a:(Math.round(n/p)*p).toLocaleString('en-US'),hint:`Find the two ${p===10?'tens':'hundreds'} it is between. Which is closer?`}},
+ onlevel(r){const[p,w]=r.pick([[1000,'thousand'],[10000,'ten thousand'],[100,'hundred']]),n=r.int(10001,999999);return{q:`Round ${n.toLocaleString('en-US')} to the nearest ${w}.`,a:(Math.round(n/p)*p).toLocaleString('en-US')}},
+ stretch(r){if(r.chance(.5)){const t=r.int(11,99)*100;return W(`A number rounds to ${t.toLocaleString('en-US')} when rounded to the nearest hundred. What is the least whole number it could be? What is the greatest?`,`${(t-50).toLocaleString('en-US')} and ${(t+49).toLocaleString('en-US')}`)}const t=r.int(2,99)*1000;return W(`A number rounds to ${t.toLocaleString('en-US')} when rounded to the nearest thousand. What is the least whole number it could be? What is the greatest?`,`${(t-500).toLocaleString('en-US')} and ${(t+499).toLocaleString('en-US')}`)},
+ worked(r){return{q:'Round 47,682 to the nearest thousand',steps:['It is between 47,000 and 48,000.','The hundreds digit is 6, so it is closer to 48,000.','47,682 rounds to 48,000'],a:''}},
+ challenge(r){return{q:'Find a number that rounds to 5,000 when rounded to the nearest thousand but to 4,500 when rounded to the nearest hundred.',a:'Any number from 4,500 to 4,549.'}}},
+
+{grade:4,code:'4.NBT.B.4',im:4,domain:'Number & Operations in Base Ten',title:'Adding and subtracting multi-digit numbers',
+ ican:'add and subtract multi-digit whole numbers using the standard algorithm.',
+ diff:['4-digit addition and subtraction with the places labeled','5- and 6-digit numbers with regrouping','Subtracting across zeros and two-step stories'],
+ support(r){const a=r.int(1200,6000),b=r.int(1100,3999),add=r.chance(.5);return add?{q:vert(a,b,'+',['Th','H','T','O']),a:(a+b),hint:'Start with the ones. Regroup when a column is 10 or more.'}:{q:vert(a+b,b,'−',['Th','H','T','O']),a:a,hint:'Start with the ones. Regroup when the top digit is smaller.'}},
+ onlevel(r){const a=r.int(10000,500000),b=r.int(10000,400000),add=r.chance(.5);return add?{q:vert(a,b,'+'),a:(a+b).toLocaleString('en-US')}:{q:vert(Math.max(a,b),Math.min(a,b),'−'),a:Math.abs(a-b).toLocaleString('en-US')}},
+ stretch(r){if(r.chance(.5)){const a=r.pick([10000,40000,50000,100000,300000,500000,600000]),b=r.int(1111,a-1);return{q:vert(a,b,'−'),a:(a-b).toLocaleString('en-US'),space:'m'}}const a=r.int(20000,90000),b=r.int(5000,15000),c=r.int(5000,15000);return W(`A town had ${a.toLocaleString('en-US')} people. ${b.toLocaleString('en-US')} moved in and ${c.toLocaleString('en-US')} moved away. How many people live there now?`,`${(a+b-c).toLocaleString('en-US')} people`)},
+ worked(r){return{q:'5,003 − 1,267',steps:['You cannot take 7 from 3, and there are no tens or hundreds.','Regroup: 5,003 = 4 thousands, 9 hundreds, 9 tens, 13 ones.','13 − 7 = 6, 9 − 6 = 3, 9 − 2 = 7, 4 − 1 = 3: 3,736'],a:''}},
+ challenge(r){return{q:'Fill in the missing digits: 4_,3_8 + 2_,_7_ = 70,000. Is there more than one answer?',a:'Answers vary, for example 45,328 + 24,672.'}}},
+
+{grade:4,code:'4.OA.A.1–2',ny:'NY-4.OA.1–2',im:5,domain:'Operations & Algebraic Thinking',title:'Multiplicative comparison',
+ ican:'use "times as many" language and solve comparison problems with multiplication or division.',
+ diff:['Writing comparison sentences as equations, with a hint','"Times as many" word problems, both directions','Comparing with both "times as many" and "more than"'],
+ support(r){const a=r.int(2,9),b=r.int(2,9);return{q:`Write an equation: ${a*b} is ${a} times as many as ${b}.`,a:`${a*b} = ${a} × ${b}`,hint:'"Times as many" means multiply.'}},
+ onlevel(r){const[p,q]=two(r),a=r.int(2,9),b=r.int(2,12);return r.chance(.5)?W(`${p} has ${b} stickers. ${q} has ${a} times as many. How many stickers does ${q} have?`,`${a*b} stickers`):W(`${p} ran ${a*b} laps. That is ${a} times as many laps as ${q} ran. How many laps did ${q} run?`,`${b} laps`)},
+ stretch(r){const[p,q]=two(r),a=r.int(3,6),b=r.int(4,12);return W(`${p} read ${b} books. ${q} read ${a} times as many. How many more books did ${q} read than ${p}? Explain the difference between "times as many" and "more than."`,`${a*b} − ${b} = ${a*b-b} more books`)},
+ worked(r){return{q:'Leo has 4 cards. Mai has 3 times as many.',steps:['"3 times as many as 4"','3 × 4 = 12','Mai has 12 cards.'],a:''}},
+ challenge(r){return{q:'Write one story where the answer is found by multiplying and one where it is found by dividing, using the words "times as many."',a:'Answers vary.'}}},
+
+{grade:4,code:'4.MD.A.1–2',ny:'NY-4.MD.1–2',im:5,domain:'Measurement & Data',title:'Measurement conversions and word problems',
+ ican:'convert from larger to smaller units and solve measurement word problems.',
+ diff:['Converting to a smaller unit with a conversion table hint','Conversions in both directions with mixed units','Multi-step measurement stories'],
+ support(r){const[big,small,f]=r.pick(CONV),n=r.int(2,9);return{q:EQ(`${n} ${big} = ${BL(3)} ${small}`),a:`${n*f} ${small}`,hint:`1 ${one(big)} = ${f} ${small}. Make a table: 1 → ${f}, 2 → ${2*f}, …`}},
+ onlevel(r){const[big,small,f]=r.pick(CONV.filter(c=>c[2]<=60)),n=r.int(2,8),x=r.int(1,f-1);return{q:EQ(`${n} ${big} ${x} ${small} = ${BL(3)} ${small}`),a:`${n*f+x} ${small}`}},
+ stretch(r){const[p]=two(r),m=r.int(2,4),c=r.int(150,400);return W(`${p} has ${m} liters of juice and pours ${c}-milliliter cups. How many full cups can ${p} pour? How much is left?`,`${Math.floor(m*1000/c)} cups; ${m*1000%c} mL left`)},
+ worked(r){return{q:'3 feet 4 inches = ? inches',steps:['1 foot = 12 inches','3 feet = 36 inches','36 + 4 = 40 inches'],a:''}},
+ challenge(r){return{q:'Which is longer: 2 hours 15 minutes or 140 minutes? Show your thinking.',a:'2 h 15 min = 135 min, so 140 minutes is longer.'}}},
+
+{grade:4,code:'4.MD.A.3',im:5,domain:'Measurement & Data',title:'Area and perimeter',
+ ican:'use area and perimeter formulas for rectangles to solve problems.',
+ diff:['Area and perimeter of a drawn rectangle, with formula hints','Missing side lengths from area or perimeter','Stories that need both area and perimeter'],
+ support(r){const l=r.int(3,12),w=r.int(2,9),u=r.pick(UNITS);return{q:'Find the area and the perimeter.',model:rectFig(l,w,u,false),a:`Area ${l*w} sq ${u}; perimeter ${2*(l+w)} ${u}`,hint:'Area = length × width. Perimeter = add all four sides.'}},
+ onlevel(r){const l=r.int(4,15),w=r.int(2,12),u=r.pick(UNITS);return r.chance(.5)?W(`A rectangle has an area of ${l*w} square ${u} and a length of ${l} ${u}. What is its width?`,`${w} ${u}`):W(`A rectangle has a perimeter of ${2*(l+w)} ${u} and a length of ${l} ${u}. What is its width?`,`${w} ${u}`)},
+ stretch(r){const[p]=two(r),l=r.int(8,20),w=r.int(5,15),c=r.int(3,9);return W(`${p} wants to fence a rectangular garden that is ${l} ft by ${w} ft and cover it with mulch. Fencing costs $${c} per foot. How much fencing is needed, and how much will it cost? What is the area to mulch?`,`${2*(l+w)} ft of fence, $${2*(l+w)*c}; ${l*w} sq ft`)},
+ worked(r){return{q:'Rectangle 7 m by 4 m',steps:['Area = 7 × 4 = 28 square meters','Perimeter = 7 + 4 + 7 + 4','= 22 meters'],a:''}},
+ challenge(r){return{q:'Find two different rectangles that each have a perimeter of 24 units. Which one has the greater area?',a:'Answers vary; 6 × 6 has the greatest area (36).'}}},
+
+{grade:4,code:'4.OA.A.3',im:6,domain:'Operations & Algebraic Thinking',title:'Multi-step word problems',
+ ican:'solve multi-step word problems with whole numbers and check that my answer is reasonable.',
+ diff:['Two-step stories with an estimation hint','Multi-step stories, including interpreting remainders','Writing an equation with a letter for the unknown'],
+ support(r){const[p]=two(r),n=r.int(3,8),c=r.int(4,12),s=r.int(5,20);return{...W(`${p} buys ${n} packs of ${c} stickers and gives away ${s}. How many stickers does ${p} have left?`,`${n*c-s} stickers`),hint:'First find how many stickers in all. Then subtract.'}},
+ onlevel(r){const n=r.int(60,200),c=r.int(6,9);return W(`${n} students are going on a trip. Each van holds ${c} students. How many vans are needed?`,`${Math.ceil(n/c)} vans`)},
+ stretch(r){const[p]=two(r),a=r.int(3,9),b=r.int(12,40),c=r.int(20,90);return W(`${p} buys ${a} shirts that cost $${b} each and a jacket. The total is $${a*b+c}. Write an equation with a letter for the jacket's cost, then solve it.`,`${a} × ${b} + ${V('j')} = ${a*b+c}; ${V('j')} = $${c}`)},
+ worked(r){return{q:'4 packs of 6 pens, then 5 are given away',steps:['4 × 6 = 24 pens','24 − 5 = 19','Estimate: about 25 − 5 = 20, so 19 makes sense.'],a:''}},
+ challenge(r){return{q:'Write a multi-step story problem where the answer is 48. Use multiplication and subtraction.',a:'Answers vary.'}}},
+
+{grade:4,code:'4.MD.C.5–7',ny:'NY-4.MD.5–7',im:7,domain:'Measurement & Data',title:'Measuring and adding angles',
+ ican:'measure angles in degrees and find unknown angles by adding or subtracting.',
+ diff:['Benchmark angles: more or less than a right angle, with a hint','Unknown angle measures when angles are joined','Angles in a full turn, and turns of a circle'],
+ support(r){const d=r.pick([20,30,40,45,50,60,70,90,90,100,110,120,135,150,160]);return{q:'Is this angle acute, right, or obtuse?',model:angleFig(d),a:d<90?'Acute':d===90?'Right':'Obtuse',hint:'Compare it with the corner of a piece of paper (90°).'}},
+ onlevel(r){const a=r.int(2,8)*10,b=r.int(2,8)*5;return r.chance(.5)?W(`Two angles are joined to make an angle of ${a+b}°. One of them is ${a}°. What is the other?`,`${b}°`):W(`Angle ABC is ${a}° and angle CBD is ${b}°. They share a side. What is the measure of angle ABD?`,`${a+b}°`)},
+ stretch(r){if(r.chance(.35)){const a=r.int(3,15)*10;return W(`A straight angle (180°) is split into two angles. One is ${a}°. What is the other?`,`${180-a}°`)}const k=r.pick([2,3,4,5,6,8,9,10,12]);return r.chance(.5)?W(`A circle is cut into ${k} equal angles at its center. How many degrees is each angle?`,`${360/k}°`):W(`A clock's minute hand moves from 12 to ${k}. How many degrees does it turn?`,`${k*30}°`)},
+ worked(r){return{q:'Joining 40° and 35°',steps:['The angles share a side.','Add their measures: 40 + 35','= 75°'],a:''}},
+ challenge(r){return{q:'How many degrees does the hour hand of a clock turn in 1 hour? In 15 minutes? Explain.',a:'30°; 7.5°'}}},
+
+{grade:4,code:'4.G.A.1–2',ny:'NY-4.G.1–2',im:7,domain:'Geometry',title:'Lines, angles and classifying shapes',
+ ican:'identify points, lines, rays, segments and angles, and classify shapes by their lines and angles.',
+ diff:['Naming what is drawn, with a hint','Parallel, perpendicular and angle types in shapes','Classifying triangles and quadrilaterals by sides and angles'],
+ support(r){if(r.chance(.4)){const d=r.pick([30,60,90,120,150]);return{q:'Is this angle acute, right or obtuse?',model:angleFig(d),a:d<90?'Acute':d===90?'Right':'Obtuse',hint:'A right angle is a square corner. Acute is smaller; obtuse is bigger.'}}const k=r.pick(['segment','ray','line','parallel','perpendicular','intersecting']);return{q:'What is shown?',model:geoFig(k),a:{segment:'A line segment',ray:'A ray',line:'A line',parallel:'Parallel lines',perpendicular:'Perpendicular lines',intersecting:'Intersecting lines'}[k],hint:'Arrows mean it goes on forever. Dots mean it stops.'}},
+ onlevel(r){if(r.chance(.45)){const d=r.pick([25,35,45,60,75,90,90,105,120,140,160]);return{q:'Is this angle acute, right or obtuse?',model:angleFig(d),a:d<90?'Acute':d===90?'Right':'Obtuse'}}const[sh,q,a]=r.pick([['square','How many right angles?','4'],['rectangle','How many pairs of parallel sides?','2'],['trapezoid','How many pairs of parallel sides?','At least 1'],['right triangle','How many right angles?','1'],['rhombus','Are its sides all equal?','Yes'],['regular hexagon','How many pairs of parallel sides?','3']]);return{q:`A ${sh}: ${q}`,a}},
+ stretch(r){if(r.chance(.4)){const[sh,a]=r.pick([['a square','4 right angles, 2 pairs of parallel sides, 2 pairs of perpendicular sides'],['a rectangle','4 right angles, 2 pairs of parallel sides'],['a right triangle','1 right angle, 1 pair of perpendicular sides, no parallel sides'],['a trapezoid','at least 1 pair of parallel sides']]);return W(`Describe ${sh} using the words parallel, perpendicular and right angle.`,a)}const[A,B,C]=r.pick([[60,60,60],[90,45,45],[100,40,40],[30,60,90],[50,60,70],[120,30,30]]);return W(`A triangle has angles of ${A}°, ${B}° and ${C}°. Is it acute, right or obtuse? Could it be equilateral or isosceles?`,`${Math.max(A,B,C)<90?'Acute':Math.max(A,B,C)===90?'Right':'Obtuse'}; ${A===B&&B===C?'equilateral':A===B||B===C||A===C?'isosceles':'scalene'}`)},
+ worked(r){return{q:'Parallel or perpendicular?',steps:['Parallel lines never meet and stay the same distance apart.','Perpendicular lines meet at a right angle.','A square has both.'],a:''}},
+ challenge(r){return{q:'Draw a quadrilateral with exactly one pair of parallel sides and exactly two right angles. What is it called?',a:'A right trapezoid.'}}},
+
+/* ---------- Grade 3: full set ---------- */
+{grade:3,code:'3.OA.A.1–3',ny:'NY-3.OA.1–3',im:1,domain:'Operations & Algebraic Thinking',title:'Equal groups and arrays',
+ ican:'use equal groups and arrays to understand multiplication and division, and solve word problems.',
+ diff:['Pictures of equal groups to describe with multiplication, with a hint','Equal groups and arrays in stories, both multiplication and division','Writing your own story, and arrays with a missing number'],
+ support(r){const g=r.int(2,5),n=r.int(2,5);return{q:`${BL(1.6)} groups of ${BL(1.6)} = ${BL(2)}`,a:`${g} groups of ${n} = ${g*n}`,model:groupsFig(g,n),hint:'Count the circles. Then count the dots in one circle.'}},
+ onlevel(r){const[p]=two(r),g=r.int(2,9),n=r.int(2,9),t=r.int(0,2),th=r.pick(['apples','crayons','marbles','stickers']);if(t===0)return W(`${p} has ${g} bags with ${n} ${th} in each bag. How many ${th} does ${p} have?`,`${g*n} ${th}`);if(t===1)return W(`${p} puts ${g*n} ${th} into ${g} equal groups. How many ${th} are in each group?`,`${n} ${th}`);return W(`Chairs are set up in ${g} rows with ${n} chairs in each row. How many chairs are there?`,`${g*n} chairs`)},
+ stretch(r){const g=r.int(3,9),n=r.int(3,9);return r.chance(.5)?W(`Write a story problem for ${g} × ${n}. Then write a division story that uses the same numbers.`,`${g*n}; stories vary`):W(`An array has ${g*n} squares. It has ${g} rows. How many columns does it have? Draw it.`,`${n} columns`)},
+ worked(r){return{q:'3 groups of 4',steps:['There are 3 groups.','Each group has 4.','3 × 4 = 12'],a:''}},
+ challenge(r){return{q:'Draw two different arrays that each show 24. Write the multiplication equation for each one.',a:'Answers vary, for example 4 × 6 and 3 × 8.'}}},
+
+{grade:3,code:'3.MD.B.3',im:1,domain:'Measurement & Data',title:'Picture graphs and bar graphs',
+ ican:'read scaled picture graphs and bar graphs and solve "how many more" problems.',
+ diff:['Reading a picture graph where each picture means 2, with a hint','Reading scaled bar graphs and comparing categories','Using the graph to answer two-step questions'],
+ support(r){const cats=['Apples','Bananas','Grapes','Pears'],v=cats.map(()=>r.int(1,6)*2),i=r.int(0,3);return{q:`How many students chose ${cats[i].toLowerCase()}?`,model:picGraph(cats,v,'Favorite fruit',2),a:v[i],hint:'Each circle stands for 2 students. Count by 2s.'}},
+ onlevel(r){const cats=['Soccer','Basketball','Tennis','Swimming'],sc=r.pick([2,5,10]),v=cats.map(()=>r.int(1,8)*sc),[i,j]=r.shuffle([0,1,2,3]);return{q:`How many more students chose ${cats[i].toLowerCase()} than ${cats[j].toLowerCase()}?`,model:barGraph(cats,v,'Favorite sport',sc),a:v[i]-v[j]>=0?v[i]-v[j]:`${v[j]-v[i]} fewer`,wide:true}},
+ stretch(r){const cats=['Red','Blue','Green','Yellow'],v=cats.map(()=>r.int(2,9)*5);return{q:'How many students were surveyed in all? How many more chose the most popular color than the least popular?',model:barGraph(cats,v,'Favorite color',5),a:`${v.reduce((a,b)=>a+b)} students; ${Math.max(...v)-Math.min(...v)} more`,wide:true,space:'m'}},
+ worked(r){return{q:'Reading a scaled bar graph',steps:['Check the scale: each line might stand for 2, 5 or 10.','Find where the bar ends.','Subtract to compare two bars.'],a:''}},
+ challenge(r){return{q:'Make a picture graph where each picture stands for 5. Show a category with 15 and one with 25. How did you show them?',a:'Answers vary.'}}},
+
+{grade:3,code:'3.OA.B.5',im:2,domain:'Operations & Algebraic Thinking',title:'Properties of multiplication',
+ ican:'use the commutative and distributive properties to multiply.',
+ diff:['Turning arrays around (commutative property), with a hint','Breaking apart a factor to multiply (distributive property)','Using properties to solve harder facts and explain'],
+ support(r){const a=r.int(2,9),b=until(()=>r.int(2,9),x=>x!==a);return{q:EQ(`${a} × ${b} = ${b} × ${BL(1.6)}`),a:a,model:dots(a,b),hint:'Turning an array on its side does not change how many dots there are.'}},
+ onlevel(r){const a=r.int(3,9),b=r.int(6,9),b1=r.int(2,b-2);return{q:EQ(`${a} × ${b} = ${a} × ${b1} + ${a} × ${BL(1.6)} = ${BL(2)}`),a:`${b-b1}; ${a*b}`,space:'m'}},
+ stretch(r){const a=r.int(6,9),b=r.int(6,9);return W(`Show how to find ${a} × ${b} by breaking ${b} into two easier numbers. Draw an area model.`,`For example ${a} × 5 + ${a} × ${b-5} = ${a*5} + ${a*(b-5)} = ${a*b}`)},
+ worked(r){return{q:'7 × 8',steps:['Break 8 into 5 + 3.','7 × 5 = 35 and 7 × 3 = 21','35 + 21 = 56'],a:''}},
+ challenge(r){return{q:'Explain why 4 × 7 is the same as 2 × 7 doubled. Draw an array to show it.',a:'Four rows of 7 is two rows of 7, twice.'}}},
+
+{grade:3,code:'3.NBT.A.1',im:3,domain:'Number & Operations in Base Ten',title:'Rounding to the nearest 10 or 100',
+ ican:'round whole numbers to the nearest 10 or 100.',
+ diff:['Rounding to the nearest 10 on a number line, with a hint','Rounding 3-digit numbers to the nearest 10 or 100','Finding all numbers that round to a value'],
+ support(r){const n=r.int(11,99),lo=Math.floor(n/10)*10;return{q:`Round ${n} to the nearest ten.`,a:Math.round(n/10)*10,hint:`${n} is between ${lo} and ${lo+10}. Which is closer?`}},
+ onlevel(r){const n=r.int(101,999),p=r.pick([10,100]);return{q:`Round ${n} to the nearest ${p===10?'ten':'hundred'}.`,a:Math.round(n/p)*p}},
+ stretch(r){if(r.chance(.5)){const t=r.int(2,98)*10;return W(`A number rounds to ${t} when rounded to the nearest ten. List every whole number it could be.`,Array.from({length:10},(_,i)=>t-5+i).join(', '))}const t=r.int(2,9)*100;return W(`A number rounds to ${t} when rounded to the nearest hundred. What is the least it could be? What is the greatest?`,`${t-50} and ${t+49}`)},
+ worked(r){return{q:'Round 347 to the nearest hundred',steps:['347 is between 300 and 400.','The halfway point is 350.','347 is less than 350, so it rounds to 300.'],a:''}},
+ challenge(r){return{q:'Find a number that rounds to 500 when rounded to the nearest hundred but rounds to 460 when rounded to the nearest ten.',a:'455 to 464 (for example 458).'}}},
+
+{grade:3,code:'3.NBT.4',ny:'NY-3.NBT.4a–b',only:'ny',im:3,domain:'Number & Operations in Base Ten',title:'Four-digit place value',
+ ican:'read, write and show four-digit numbers as thousands, hundreds, tens and ones.',
+ diff:['Base-ten blocks and expanded form, with a hint','Number names, expanded form and the value of a digit','Comparing four-digit numbers and different ways to show the same number'],
+ support(r){const h=r.int(1,3),t=r.int(0,5),o=r.int(0,8);return{q:'What number is shown?',model:blocksFig(h,t,o),a:h*100+t*10+o,hint:'Each square is 100. Each long rod is 10. Each small cube is 1.'}},
+ onlevel(r){const n=r.int(1001,9999);return r.chance(.5)?{q:`Write ${n.toLocaleString('en-US')} in expanded form.`,a:String(n).split('').map((d,i)=>+d*10**(3-i)).filter(Boolean).map(v=>v.toLocaleString('en-US')).join(' + '),wide:true}:{q:`Write the number name for ${n.toLocaleString('en-US')}.`,a:numName(n),wide:true,space:'m'}},
+ stretch(r){const th=r.int(1,8),h=r.int(1,9),t=r.int(1,9),o=r.int(1,9),n=th*1000+h*100+t*10+o;return W(`Show ${n.toLocaleString('en-US')} in two ways: as thousands, hundreds, tens and ones, and as hundreds, tens and ones only.`,`${th} thousands ${h} hundreds ${t} tens ${o} ones; ${th*10+h} hundreds ${t} tens ${o} ones`)},
+ worked(r){return{q:'3,405',steps:['3 thousands, 4 hundreds, 0 tens, 5 ones','3,000 + 400 + 5','three thousand, four hundred five'],a:''}},
+ challenge(r){return{q:'Use the digits 2, 5, 7 and 9 once each to make the greatest and the least four-digit numbers. Write each in expanded form.',a:'9,752 and 2,579'}}},
+
+{grade:3,code:'3.OA.D.8',im:3,domain:'Operations & Algebraic Thinking',title:'Two-step word problems',
+ ican:'solve two-step word problems and check whether my answer is reasonable.',
+ diff:['Two-step stories with a hint about the first step','Two-step stories with all four operations','Writing an equation with a letter for the unknown'],
+ support(r){const[p]=two(r),a=r.int(10,40),b=r.int(5,20),c=r.int(5,a+b-5);return{...W(`${p} has ${a} cards. ${p} gets ${b} more, then gives ${c} away. How many cards does ${p} have now?`,`${a+b-c} cards`),hint:`Step 1: ${a} + ${b}. Step 2: take away ${c}.`}},
+ onlevel(r){const[p]=two(r),n=r.int(3,8),c=r.int(3,9),s=r.int(2,n*c-1);return r.chance(.5)?W(`${p} buys ${n} packs of ${c} pencils and gives ${s} pencils to friends. How many pencils are left?`,`${n*c-s} pencils`):W(`A teacher has ${n*c} markers and puts them in ${n} equal boxes. Then ${Math.min(s,c-1)} markers are taken from one box. How many markers are left in that box?`,`${c-Math.min(s,c-1)} markers`)},
+ stretch(r){const[p]=two(r),n=r.int(3,7),c=r.int(4,9),x=r.int(5,30);return W(`${p} had some stickers. After buying ${n} sheets of ${c} stickers, ${p} has ${n*c+x}. Write an equation with a letter for the unknown and solve it.`,`${V('s')} + ${n} × ${c} = ${n*c+x}; ${V('s')} = ${x}`)},
+ worked(r){return{q:'4 bags of 6 apples, 5 are eaten',steps:['Step 1: 4 × 6 = 24 apples','Step 2: 24 − 5 = 19','Check: about 25 − 5 = 20, so 19 is reasonable.'],a:''}},
+ challenge(r){return{q:'Write a two-step story problem that uses multiplication and addition and has an answer of 35.',a:'Answers vary.'}}},
+
+{grade:3,code:'3.OA.A.4',im:4,domain:'Operations & Algebraic Thinking',title:'Unknown numbers in multiplication and division',
+ ican:'find the unknown number in a multiplication or division equation.',
+ diff:['Missing factor with an array hint','Missing numbers in any position','Equations from stories and fact families'],
+ support(r){const a=r.int(2,6),b=r.int(2,6);return{q:EQ(`${a} × ${BL(1.6)} = ${a*b}`),a:b,model:dots(a,b),hint:`${a} rows. How many in each row to make ${a*b}?`}},
+ onlevel(r){const a=r.int(2,10),b=r.int(2,10),t=r.int(0,2);return t===0?{q:EQ(`${BL(1.6)} × ${b} = ${a*b}`),a:a}:t===1?{q:EQ(`${a*b} ÷ ${BL(1.6)} = ${b}`),a:a}:{q:EQ(`${a*b} = ${a} × ${BL(1.6)}`),a:b}},
+ stretch(r){const a=r.int(3,9),b=r.int(3,9);return r.chance(.5)?{q:`Write all four equations in the fact family for ${a}, ${b} and ${a*b}.`,a:`${a} × ${b} = ${a*b}, ${b} × ${a} = ${a*b}, ${a*b} ÷ ${a} = ${b}, ${a*b} ÷ ${b} = ${a}`,wide:true,space:'m'}:W(`${a*b} students are split into teams of ${b}. Write an equation with a letter for the number of teams and solve it.`,`${a*b} ÷ ${b} = ${V('t')}; ${V('t')} = ${a}`)},
+ worked(r){return{q:'6 × ? = 42',steps:['What times 6 makes 42?','Count by 6s: 6, 12, 18, 24, 30, 36, 42','That is 7 jumps, so ? = 7.'],a:''}},
+ challenge(r){return{q:'Find every whole number that can go in both boxes: □ × □ = 36 (the same number in both boxes, or different ones).',a:'1 × 36, 2 × 18, 3 × 12, 4 × 9, 6 × 6, and the reverse orders'}}},
+
+{grade:3,code:'3.NBT.A.3',im:4,domain:'Number & Operations in Base Ten',title:'Multiplying by multiples of 10',
+ ican:'multiply one-digit numbers by multiples of 10.',
+ diff:['A basic fact and its "tens" version, with a hint','Mixed practice with multiples of 10','Stories and explaining why it works'],
+ support(r){const a=r.int(2,9),b=r.int(2,9);return{q:EQ(`${a} × ${b} = ${BL(1.6)}, so ${a} × ${b*10} = ${BL(2)}`),a:`${a*b}; ${a*b*10}`,hint:`${b*10} is ${b} tens. ${a} × ${b} tens = ${a*b} tens.`}},
+ onlevel(r){const a=r.int(2,9),b=r.int(2,9)*10;return r.chance(.5)?{q:EQ(`${a} × ${b} = ${BL(2)}`),a:a*b}:{q:EQ(`${b} × ${a} = ${BL(2)}`),a:a*b}},
+ stretch(r){const n=r.int(3,9),c=r.int(2,9)*10,[p]=two(r);return W(`${p} buys ${n} boxes of crayons. Each box has ${c} crayons. How many crayons is that? Explain using tens.`,`${n*c} crayons (${n} × ${c/10} tens = ${n*c/10} tens)`)},
+ worked(r){return{q:'4 × 30',steps:['30 is 3 tens.','4 × 3 tens = 12 tens','12 tens = 120'],a:''}},
+ challenge(r){return{q:'A student says 5 × 60 = 30 because 5 × 6 = 30. Explain the mistake.',a:'5 × 6 tens = 30 tens = 300.'}}},
+
+{grade:3,code:'3.OA.D.9',im:4,domain:'Operations & Algebraic Thinking',title:'Arithmetic patterns',
+ ican:'find patterns in addition and multiplication tables and explain them.',
+ diff:['Continuing a skip-counting pattern, with a hint','Patterns in products, like odd and even','Explaining why a pattern works'],
+ support(r){const a=r.int(2,9),s0=r.int(0,3)*a+r.pick([0,0,1,2]);return{q:`Continue the pattern: ${s0}, ${s0+a}, ${s0+2*a}, ${s0+3*a}, ${BL(1.6)}, ${BL(1.6)}, ${BL(1.6)}`,a:`${s0+4*a}, ${s0+5*a}, ${s0+6*a}`,hint:`Each number is ${a} more than the one before.`}},
+ onlevel(r){if(r.chance(.5)){const a=r.int(2,9);return W(`List the first 8 multiples of ${a}. Describe a pattern in the ones digits.`,[1,2,3,4,5,6,7,8].map(i=>i*a).join(', '))}const[q,a]=r.pick([['Is 4 times any number always even? Give examples.','Yes: 4 × 3 = 12, 4 × 5 = 20; 4 is even, so the products are even.'],['What do you notice about the ones digits of the multiples of 5?','They are always 0 or 5.'],['Is the sum of two odd numbers odd or even? Give examples.','Even: 3 + 5 = 8, 7 + 9 = 16.'],['What do you notice about the multiples of 9: 9, 18, 27, 36? Add the digits of each.','The digits add to 9.'],['Is 6 times an odd number odd or even?','Even, because 6 is even.']]);return W(q,a)},
+ stretch(r){if(r.chance(.8)){const a=r.int(2,9),s0=r.int(0,9),n=r.int(8,15);return W(`A pattern starts at ${s0} and adds ${a} each time. What is the ${n}th number? Explain how you found it without listing them all.`,`${s0+(n-1)*a}`)}return W('Explain why the product of an even number and any whole number is always even. Use equal groups or an array.','An even number can be split into two equal groups, so any number of those groups can too.')},
+ worked(r){return{q:'Multiples of 2: 2, 4, 6, 8, 10',steps:['Each one is 2 more.','The ones digits repeat: 2, 4, 6, 8, 0.','All multiples of 2 are even.'],a:''}},
+ challenge(r){return{q:'Find a pattern in the multiplication table that is not about odd and even. Describe it and explain why it happens.',a:'Answers vary.'}}},
+
+{grade:3,code:'3.NF.A.1',im:5,domain:'Number & Operations — Fractions',title:'Understanding fractions',
+ ican:'name a fraction as parts of a whole split into equal parts.',
+ diff:['Naming the shaded part of a shape, with a hint','Equal or not equal parts, and fractions from words','Drawing fractions and wholes from a part'],
+ support(r){const d=r.pick([2,3,4,6,8]),k=r.int(1,d-1);return{q:'What fraction is shaded?',model:partFig(r.chance(.5)?'rect':'circle',d,k),a:F(k,d),hint:'Count the equal parts (bottom number). Count the shaded parts (top number).'}},
+ onlevel(r){if(r.chance(.4)){const d=r.pick([3,4]),eq=r.chance(.5);return{q:`Is this shape split into ${['','','halves','thirds','fourths'][d]}? Explain.`,model:partFig('rect',d,1,eq?undefined:false),a:eq?'Yes, the parts are equal.':'No, the parts are not equal.'}}const d=r.pick([2,3,4,6,8]),k=r.int(1,d-1);return{q:`A pizza is cut into ${d} equal slices. ${k} slice${k>1?'s are':' is'} eaten. What fraction of the pizza is eaten?`,a:F(k,d)}},
+ stretch(r){const d=r.pick([3,4,6]),k=r.int(2,d-1);return W(`This shape is ${F(1,d)} of a whole. Draw what the whole could look like. Then shade ${F(k,d)} of your whole.`,`The whole is ${d} of the pieces put together; shade ${k} of them.`)},
+ worked(r){return{q:'A shape split into 4 equal parts, 3 shaded',steps:['There are 4 equal parts: fourths.','3 parts are shaded.',`${F(3,4)} is shaded.`],a:''}},
+ challenge(r){return{q:'Draw a square and split it into fourths in two different ways. Are the fourths the same size in both? Explain.',a:'Yes, each is one of four equal parts of the same square.'}}},
+
+{grade:3,code:'3.NF.A.2',im:5,domain:'Number & Operations — Fractions',title:'Fractions on a number line',
+ ican:'show fractions on a number line.',
+ diff:['Naming a point between 0 and 1, with a hint','Points on number lines beyond 1','Placing several fractions and whole numbers as fractions'],
+ support(r){const d=r.pick([2,3,4,6,8]),k=r.int(1,d-1);return{q:'What fraction is at point A?',model:fracNL(d,1,k),a:F(k,d),hint:`The space from 0 to 1 is split into ${d} equal parts.`}},
+ onlevel(r){const d=r.pick([2,3,4,6]),k=r.int(1,2*d-1);return{q:'What fraction is at point A?',model:fracNL(d,2,k),a:F(k,d)}},
+ stretch(r){const d=r.pick([3,4,6]),w=r.int(1,2);return{q:`Write ${w} as a fraction with denominator ${d}. Then mark ${F(1,d)}, ${F(d-1,d)} and ${F(w*d,d)} on the number line.`,model:fracNL(d,2,null),a:`${w} = ${F(w*d,d)}`,wide:true}},
+ worked(r){return{q:'Point at the 3rd tick, 4 parts from 0 to 1',steps:['The whole is split into 4 equal parts: fourths.','The point is 3 parts from 0.',`It is ${F(3,4)}.`],a:''}},
+ challenge(r){return{q:`Explain why ${F(4,4)} and 1 are at the same point on a number line.`,a:'4 fourths fill the whole space from 0 to 1.'}}},
+
+{grade:3,code:'3.MD.A.1',im:6,domain:'Measurement & Data',title:'Telling time and elapsed time',
+ ican:'tell time to the nearest minute and solve elapsed time problems.',
+ diff:['Reading clocks to 5 minutes, with a hint','Reading clocks to the minute, and adding minutes','Elapsed time stories across the hour'],
+ support(r){const h=r.int(1,12),m=r.int(0,11)*5;return{q:'What time is it?',model:clockFig(h,m),a:hm(h,m),hint:'The short hand shows the hour. Count by 5s for the long hand.'}},
+ onlevel(r){const h=r.int(1,12),m=r.int(0,59);if(r.chance(.6))return{q:'What time is it?',model:clockFig(h,m),a:hm(h,m)};const d=r.int(10,40),t=h*60+m+d;return{q:`It is ${hm(h,m)}. What time will it be in ${d} minutes?`,a:hm(((Math.floor(t/60)-1)%12)+1,t%60)}},
+ stretch(r){const[p]=two(r),h=r.int(1,10),m=r.int(0,11)*5,d=r.int(25,95),t=h*60+m+d;return W(`${p} starts practice at ${hm(h,m)} and practices for ${d} minutes. What time does practice end?`,hm(((Math.floor(t/60)-1)%12)+1,t%60))},
+ worked(r){return{q:'3:45 plus 30 minutes',steps:['3:45 + 15 minutes = 4:00','15 more minutes to go.','4:00 + 15 = 4:15'],a:''}},
+ challenge(r){return{q:'A movie starts at 6:50 and lasts 1 hour 45 minutes. Will it end before 9:00? Show your thinking on a number line.',a:'Yes, at 8:35.'}}},
+
+{grade:3,code:'3.MD.A.2',im:6,domain:'Measurement & Data',title:'Liquid volume and mass',
+ ican:'estimate and measure liquid volume and mass, and solve word problems in liters, grams and kilograms.',
+ diff:['Choosing reasonable units, with a hint','One-step stories with liters, grams and kilograms','Two-step stories with liquid volume and mass'],
+ support(r){const[o,u,a]=r.pick([['a paper clip','grams or kilograms?','grams'],['a bicycle','grams or kilograms?','kilograms'],['a bathtub of water','liters or milliliters?','liters'],['a spoon of medicine','liters or milliliters?','milliliters'],['an apple','grams or kilograms?','grams'],['a dog','grams or kilograms?','kilograms'],['a fish tank','liters or milliliters?','liters'],['a raisin','grams or kilograms?','grams'],['a juice box','liters or milliliters?','milliliters'],['a watermelon','grams or kilograms?','kilograms'],['a swimming pool','liters or milliliters?','liters'],['a pencil','grams or kilograms?','grams']]);return{q:`Would you measure ${o} in ${u}`,a,hint:'Grams and milliliters are for small things. Kilograms and liters are for bigger things.'}},
+ onlevel(r){const[p]=two(r),a=r.int(2,9),b=r.int(2,9);return r.chance(.5)?W(`A jug holds ${a} liters of water. ${p} pours in ${b} more liters. How much water is there now?`,`${a+b} liters`):W(`${a} bags of rice each weigh ${b} kilograms. What is the total mass?`,`${a*b} kilograms`)},
+ stretch(r){const a=r.int(3,9),b=r.int(2,5),c=r.int(1,a*b-1);return W(`There are ${a} bottles with ${b} liters of juice in each. ${c} liters are poured out for a party. How much juice is left?`,`${a*b-c} liters`)},
+ worked(r){return{q:'3 bags of 4 kg',steps:['Each bag is 4 kilograms.','3 × 4 = 12','The total mass is 12 kilograms.'],a:''}},
+ challenge(r){return{q:'Name three things that weigh about 1 kilogram and three that hold about 1 liter.',a:'Answers vary.'}}},
+
+{grade:3,code:'3.MD.B.4',im:6,domain:'Measurement & Data',title:'Measuring length and line plots',
+ ican:'measure lengths to the nearest half or quarter inch and show the data on a line plot.',
+ diff:['Measuring to the nearest half inch on a ruler, with a hint','Measuring to the nearest quarter inch','Reading line plots of measurements'],
+ support(r){const L=r.int(2,10)/2;return{q:'How long is the bar, to the nearest half inch?',model:rulerFig(L,'in',2,6),a:`${fr(L*2,2)} inches`,hint:'Count the whole inches, then check whether it ends on a half-inch mark.',wide:true}},
+ onlevel(r){const L=r.int(5,22)/4;return{q:'How long is the bar, to the nearest quarter inch?',model:rulerFig(L,'in',4,6),a:`${fr(L*4,4)} inches`,wide:true}},
+ stretch(r){const data=Array.from({length:10},()=>r.int(8,14)/4),k=r.pick([...new Set(data)]);return{q:`The line plot shows the lengths of 10 shells. How many shells are ${fr(k*4,4)} inches long? What is the longest length?`,model:dotPlotF(data,4,2,4,'Shell length (inches)'),a:`${data.filter(v=>v===k).length}; ${fr(Math.max(...data)*4,4)} inches`,wide:true,space:'m'}},
+ worked(r){return{q:'Measuring to the nearest quarter inch',steps:['Line up the end of the object with 0.','Find the closest quarter-inch mark at the other end.','Read the whole inches, then the quarters.'],a:''}},
+ challenge(r){return{q:'Measure 8 objects to the nearest quarter inch. Make a line plot. Which length was most common?',a:'Answers vary.'}}},
+
+{grade:3,code:'3.MD.D.8',im:7,domain:'Measurement & Data',title:'Perimeter',
+ ican:'find the perimeter of polygons, find a missing side, and compare area and perimeter.',
+ diff:['Adding the sides of a labeled shape, with a hint','Perimeter of rectangles and finding a missing side','Rectangles with the same perimeter but different areas'],
+ support(r){const l=r.int(3,12),w=r.int(2,9),u=r.pick(UNITS);return{q:'Find the perimeter.',model:rectFig(l,w,u,false),a:`${2*(l+w)} ${u}`,hint:'Perimeter is the distance around. Add all four sides.'}},
+ onlevel(r){const l=r.int(3,15),w=r.int(2,10),u=r.pick(UNITS);return r.chance(.5)?W(`A rectangle is ${l} ${u} long and ${w} ${u} wide. What is its perimeter?`,`${2*(l+w)} ${u}`):W(`A rectangle has a perimeter of ${2*(l+w)} ${u}. One side is ${l} ${u}. How long is the other side?`,`${w} ${u}`)},
+ stretch(r){if(r.chance(.5)){const s_=r.int(3,15);return r.chance(.5)?W(`A square has a perimeter of ${4*s_} cm. How long is each side?`,`${s_} cm`):W(`A garden is shaped like a hexagon with all sides ${s_} feet long. How much fence goes around it?`,`${6*s_} feet`)}const P=r.pick([12,16,20,24]);return W(`Draw two rectangles that each have a perimeter of ${P} units but different areas. Label the sides and the area of each.`,`Answers vary, for example ${P/4} × ${P/4} (area ${P*P/16}) and 1 × ${P/2-1} (area ${P/2-1})`)},
+ worked(r){return{q:'Rectangle 6 cm by 4 cm',steps:['Sides: 6, 4, 6, 4','6 + 4 + 6 + 4','Perimeter = 20 cm'],a:''}},
+ challenge(r){return{q:'A rectangle has an area of 12 square units. What are all the possible perimeters if the sides are whole numbers?',a:'26 (1 × 12), 16 (2 × 6), 14 (3 × 4)'}}},
+
+{grade:3,code:'3.G.A.1',im:7,domain:'Geometry',title:'Shapes and their attributes',
+ ican:'sort shapes by their sides and vertices, and name quadrilaterals.',
+ diff:['Counting sides and vertices, with a hint','Naming shapes and deciding whether they are quadrilaterals','Drawing quadrilaterals that are not rhombuses, rectangles or squares'],
+ support(r){if(r.chance(.4)){const n=r.pick([3,4,5,6,8]);return{q:`Is this shape a quadrilateral?`,model:polyFig(n),a:n===4?'Yes':'No',hint:'A quadrilateral has exactly 4 sides.'}}const n=r.pick([3,4,5,6,8]);return{q:'How many sides and vertices does this shape have?',model:polyFig(n),a:`${n} sides, ${n} vertices`,hint:'A vertex is a corner where two sides meet.'}},
+ onlevel(r){if(r.chance(.4)){const n=r.int(3,8);return{q:`A shape has ${n} straight sides. What is it called? How many vertices does it have?`,a:`${['','','','Triangle','Quadrilateral','Pentagon','Hexagon','Heptagon','Octagon'][n]}; ${n} vertices`}}const n=r.pick([3,4,5,6,8,0]);return{q:'Name this shape. Is it a quadrilateral?',model:polyFig(n),a:n===0?'Circle; no, it has no straight sides':`${{3:'Triangle',4:'Square',5:'Pentagon',6:'Hexagon',8:'Octagon'}[n]}; ${n===4?'yes':'no'}`}},
+ stretch(r){if(r.chance(.75)){const t=r.int(0,2),a=r.int(3,6),b=r.int(3,6);if(t===0)return W(`A ${{3:'triangle',4:'quadrilateral',5:'pentagon',6:'hexagon'}[a]} and a ${{3:'triangle',4:'quadrilateral',5:'pentagon',6:'hexagon'}[b]} are drawn. How many sides and vertices are there in all?`,`${a+b} sides and ${a+b} vertices`);if(t===1){const k=r.int(1,4);return W(`Draw a quadrilateral with exactly ${k} square corner${k>1?'s':''}, or explain why it is impossible.`,k===3?'Impossible: three square corners force the fourth to be square too.':'Answers vary.')}const n=r.int(5,8);return W(`A shape has ${n} sides. How many vertices does it have? Draw two different shapes like this.`,`${n} vertices`)}return W('Draw a quadrilateral that is not a square, not a rectangle and not a rhombus. Explain why it still counts as a quadrilateral.','Answers vary; any 4-sided shape counts.')},
+ worked(r){return{q:'A shape with 4 sides',steps:['It has 4 straight sides.','It has 4 vertices.','It is a quadrilateral.'],a:''}},
+ challenge(r){return{q:'A shape has the same number of sides as a pentagon and a hexagon put together, minus 3. What shape is it? Draw it.',a:'8 sides: an octagon.'}}},
+
+{grade:3,code:'3.G.A.2',im:7,domain:'Geometry',title:'Partitioning shapes into equal areas',
+ ican:'split shapes into parts with equal area and name each part as a unit fraction.',
+ diff:['Naming the unit fraction for one equal part, with a hint','Deciding whether parts are equal, and splitting shapes','Splitting the same shape in different ways'],
+ support(r){if(r.chance(.5)){const d=r.pick([2,3,4,6,8]);return{q:'Each part is what fraction of the whole circle?',model:partFig('circle',d,0),a:F(1,d),hint:'Count the equal parts.'}}const d=r.pick([2,3,4,6,8]);return{q:'Each part is what fraction of the whole shape?',model:partFig('rect',d,0),a:F(1,d),hint:'Count how many equal parts there are.'}},
+ onlevel(r){if(r.chance(.5)){const d=r.pick([2,3,4,6,8]),k=r.int(1,d-1);return{q:`What fraction of the area is shaded?`,model:partFig(r.chance(.5)?'rect':'circle',d,k),a:F(k,d)}}const d=r.pick([2,3,4,6]);return W(`Draw a rectangle and split it into ${d} parts with equal area. What fraction of the area is each part?`,F(1,d))},
+ stretch(r){if(r.chance(.75)){const d=r.pick([2,3,4,6,8]),k=r.int(2,9);return r.chance(.5)?W(`A rectangle is split into ${d} parts with equal area. One part has an area of ${k} square units. What is the area of the whole rectangle?`,`${d*k} square units`):W(`Split a rectangle into ${d} equal parts in two different ways. What fraction of the area is each part in each way?`,`${F(1,d)} each way`)}return W('Show two different ways to split a square into 4 parts with equal area. Explain why the parts in both ways are fourths.','Answers vary; each part is one of 4 equal parts of the same square.')},
+ worked(r){return{q:'A rectangle split into 3 equal parts',steps:['Each part has the same area.','There are 3 parts.',`Each is ${F(1,3)} of the area.`],a:''}},
+ challenge(r){return{q:'Can a rectangle be split into 4 equal parts that are triangles? Draw it if you can.',a:'Yes, draw both diagonals.'}}},
+
+/* ---------- Grade 2: full set ---------- */
+{grade:2,code:'2.OA.B.2',im:1,domain:'Operations & Algebraic Thinking',title:'Add and subtract within 20 fluently',
+ ican:'add and subtract within 20 quickly using mental strategies.',
+ diff:['Facts with a ten-frame picture and a make-ten hint','Mixed facts within 20','Missing numbers and related facts'],
+ support(r){const a=r.int(6,9),b=r.int(11-a,9);return{q:EQ(`${a} + ${b} = ${BL()}`),a:a+b,model:tenFrame(a),hint:`${a} needs ${10-a} more to make 10. Then add the rest.`}},
+ onlevel(r){if(r.chance(.5)){const a=r.int(3,9),b=r.int(3,9);return{q:EQ(`${a} + ${b} = ${BL()}`),a:a+b}}const a=r.int(11,20),b=r.int(a-9,9);return{q:EQ(`${a} − ${b} = ${BL()}`),a:a-b}},
+ stretch(r){const s=r.int(11,20),a=r.int(2,9);return r.chance(.5)?{q:EQ(`${a} + ${BL()} = ${s}`),a:s-a}:{q:`If ${EQ(`${a} + ${s-a} = ${s}`)}, what are two subtraction facts you also know?`,a:`${s} − ${a} = ${s-a}, ${s} − ${s-a} = ${a}`,space:'m'}},
+ worked(r){return{q:'8 + 6',steps:['8 + 2 = 10','6 is 2 + 4, so 4 is left.','10 + 4 = 14'],a:''}},
+ challenge(r){return{q:'Find all the pairs of numbers from 1 to 9 that add to 13.',a:'4 + 9, 5 + 8, 6 + 7 (and the reverse)'}}},
+
+{grade:2,code:'2.MD.D.10',im:1,domain:'Measurement & Data',title:'Picture graphs and bar graphs',
+ ican:'read picture graphs and bar graphs and answer "how many more" questions.',
+ diff:['Reading one category from a picture graph, with a hint','Comparing categories on a bar graph','Totals and two-step comparisons'],
+ support(r){const cats=['Dogs','Cats','Fish','Birds'],v=cats.map(()=>r.int(1,8)),i=r.int(0,3);return{q:`How many students chose ${cats[i].toLowerCase()}?`,model:picGraph(cats,v,'Favorite pet',1),a:v[i],hint:'Each circle is 1 student. Count the circles in that row.'}},
+ onlevel(r){const cats=['Red','Blue','Green','Purple'],v=cats.map(()=>r.int(2,12)),[i,j]=r.shuffle([0,1,2,3]);return{q:`How many more students chose ${cats[i].toLowerCase()} than ${cats[j].toLowerCase()}?`,model:barGraph(cats,v,'Favorite color',2),a:v[i]>=v[j]?v[i]-v[j]:`${v[j]-v[i]} fewer`,wide:true}},
+ stretch(r){const cats=['Rain','Snow','Sun','Clouds'],v=cats.map(()=>r.int(2,10));return{q:'How many days are shown in all? How many more sunny days than snowy days?',model:barGraph(cats,v,'Weather in March',2),a:`${v.reduce((a,b)=>a+b)} days; ${v[2]-v[1]>=0?v[2]-v[1]+' more':v[1]-v[2]+' fewer'}`,wide:true,space:'m'}},
+ worked(r){return{q:'Reading a bar graph',steps:['Find the bar.','Look across to the number at the top of the bar.','Subtract to find how many more.'],a:''}},
+ challenge(r){return{q:'Ask 10 people a question with 3 or 4 choices. Make a bar graph of the answers and write one "how many more" question.',a:'Answers vary.'}}},
+
+{grade:2,code:'2.MD.A.1–4',ny:'NY-2.MD.1–4',im:3,domain:'Measurement & Data',title:'Measuring and comparing lengths',
+ ican:'measure lengths with a ruler in inches or centimeters, estimate lengths and compare them.',
+ diff:['Measuring a bar on a ruler, with a hint','Measuring and finding how much longer','Choosing units and estimating'],
+ support(r){const u=r.pick(['in','cm']),L=r.int(2,u==='in'?5:12);return{q:'How long is the bar?',model:rulerFig(L,u,1,u==='in'?6:14),a:`${L} ${u==='in'?'inches':'centimeters'}`,hint:'Start at 0. Read the number where the bar ends.',wide:true}},
+ onlevel(r){const a=r.int(3,12),b=until(()=>r.int(2,12),x=>x!==a);return{q:`A pencil is ${a} cm long. A crayon is ${b} cm long. How much longer is the ${a>b?'pencil':'crayon'}?`,a:`${Math.abs(a-b)} cm`}},
+ stretch(r){if(r.chance(.6)){const[p]=two(r),e=r.int(4,12),m=until(()=>r.int(3,14),x=>x!==e);return W(`${p} estimated a book was ${e} inches long. It measured ${m} inches. Was the estimate too long or too short? By how much?`,`Too ${e>m?'long':'short'} by ${Math.abs(e-m)} inches`)}const[o,a]=r.pick([['a door','feet or meters'],['a paper clip','inches or centimeters'],['the classroom','feet, yards or meters'],['your thumb','inches or centimeters']]);return W(`Which unit would you use to measure ${o}: ${a}? Estimate its length and explain your choice.`,'Answers vary.')},
+ worked(r){return{q:'Measuring with a ruler',steps:['Line up the end of the object with 0.','Look at the other end.','Read the number: that is the length.'],a:''}},
+ challenge(r){return{q:'Measure the same book in inches and in centimeters. Why is the number of centimeters bigger?',a:'A centimeter is smaller than an inch, so it takes more of them.'}}},
+
+{grade:2,code:'2.MD.B.5',im:3,domain:'Measurement & Data',title:'Length word problems',
+ ican:'solve word problems about lengths by adding and subtracting.',
+ diff:['One-step length stories with a hint','One-step stories with comparing lengths','Two-step length stories'],
+ support(r){const[p]=two(r),a=r.int(10,40),b=r.int(5,30);return{...W(`${p} has a ribbon that is ${a} inches long and another that is ${b} inches long. How long are they together?`,`${a+b} inches`),hint:'Together means add.'}},
+ onlevel(r){const[p,q]=two(r),a=r.int(30,90),b=r.int(10,a-5);return W(`${p} jumped ${a} inches. ${q} jumped ${b} inches. How much farther did ${p} jump?`,`${a-b} inches`)},
+ stretch(r){const a=r.int(40,90),b=r.int(10,30),c=r.int(10,30);return W(`A rope is ${a} feet long. ${b} feet are cut off, then ${c} feet are added. How long is the rope now?`,`${a-b+c} feet`)},
+ worked(r){return{q:'Two sticks: 23 cm and 15 cm',steps:['Put them end to end.','23 + 15','= 38 cm'],a:''}},
+ challenge(r){return{q:'Write a story problem about lengths where you have to subtract. Solve it.',a:'Answers vary.'}}},
+
+{grade:2,code:'2.MD.B.6',im:4,domain:'Measurement & Data',title:'Adding and subtracting on a number line',
+ ican:'show adding and subtracting on a number line.',
+ diff:['Jumps on a number line to 20, with a hint','Number lines to 100','Explaining two different ways to jump'],
+ support(r){const a=r.int(1,10),b=r.int(2,20-a);return{q:EQ(`${a} + ${b} = ${BL()}`),a:a+b,model:numberLine(0,20),hint:`Start at ${a}. Jump forward ${b}.`}},
+ onlevel(r){const a=r.int(20,70),b=r.int(10,29);return r.chance(.5)?{q:`Show ${a} + ${b} on a number line. What is the sum?`,a:a+b,space:'m'}:{q:`Show ${a+b} − ${b} on a number line. What is the difference?`,a:a,space:'m'}},
+ stretch(r){const a=r.int(30,60),b=r.int(21,39);return W(`Show two different ways to jump from ${a} to ${a+b} on a number line. How far is it?`,`${b}; for example jumps of ${b-b%10} and ${b%10}`)},
+ worked(r){return{q:'36 + 25 on a number line',steps:['Start at 36.','Jump 20 to 56.','Jump 5 to 61.'],a:''}},
+ challenge(r){return{q:'Use a number line to explain why 52 − 19 is the same as 53 − 20.',a:'Both are a distance of 33.'}}},
+
+{grade:2,code:'2.NBT.A.1',im:5,domain:'Number & Operations in Base Ten',title:'Hundreds, tens and ones',
+ ican:'show three-digit numbers as hundreds, tens and ones.',
+ diff:['Base-ten blocks to count, with a hint','Writing numbers from hundreds, tens and ones','Showing a number more than one way'],
+ support(r){const h=r.int(1,3),t=r.int(0,6),o=r.int(0,8);return{q:'What number is shown?',model:blocksFig(h,t,o),a:h*100+t*10+o,hint:'Each big square is 100. Each long is 10. Each cube is 1.'}},
+ onlevel(r){const h=r.int(1,9),t=r.int(0,9),o=r.int(0,9);return r.chance(.5)?{q:`${h} hundreds, ${t} tens and ${o} ones is ${BL(2)}.`,a:h*100+t*10+o}:{q:`How many hundreds, tens and ones are in ${h*100+t*10+o}?`,a:`${h} hundreds, ${t} tens, ${o} ones`}},
+ stretch(r){const h=r.int(2,8),t=r.int(1,9),o=r.int(1,9),n=h*100+t*10+o;return W(`Show ${n} in two ways: as hundreds, tens and ones, and as tens and ones only.`,`${h} hundreds ${t} tens ${o} ones; ${h*10+t} tens ${o} ones`)},
+ worked(r){return{q:'352',steps:['3 hundreds = 300','5 tens = 50','2 ones = 2'],a:''}},
+ challenge(r){return{q:'How many tens are in 400? How many tens are in 1,000? Explain.',a:'40; 100'}}},
+
+{grade:2,code:'2.NBT.A.2',im:5,domain:'Number & Operations in Base Ten',title:'Skip-counting',
+ ican:'count within 1,000 and skip-count by 5s, 10s and 100s.',
+ diff:['Skip-counting by 10s with a hint','Skip-counting by 5s, 10s and 100s from any number','Finding the missing numbers in a skip-counting pattern'],
+ support(r){const s=r.int(1,85);return{q:`Count by 10s: ${s}, ${s+10}, ${BL(1.6)}, ${BL(1.6)}, ${BL(1.6)}`,a:`${s+20}, ${s+30}, ${s+40}`,hint:'Add 10 each time. The tens digit goes up by 1.'}},
+ onlevel(r){const by=r.pick([5,10,100]),s=by===100?r.int(1,5)*100+r.int(0,9)*10:r.int(1,80)*5;return{q:`Count by ${by}s: ${s}, ${BL(1.6)}, ${BL(1.6)}, ${BL(1.6)}`,a:`${s+by}, ${s+2*by}, ${s+3*by}`}},
+ stretch(r){const by=r.pick([5,10,100]),s=r.int(1,4)*by+r.pick([0,3,7]),k=r.int(1,3);const seq=[0,1,2,3,4].map(i=>s+i*by);return{q:`Fill in the missing numbers: ${seq.map((v,i)=>i===k||i===k+1?BL(1.6):v).join(', ')}`,a:`${seq[k]}, ${seq[k+1]}`}},
+ worked(r){return{q:'Counting by 5s from 35',steps:['35, 40, 45, 50','Each number is 5 more.','The ones digit goes 5, 0, 5, 0.'],a:''}},
+ challenge(r){return{q:'Start at 7 and count by 10s to 107. What do you notice about the ones digit? How many jumps did you make?',a:'It is always 7; 10 jumps.'}}},
+
+{grade:2,code:'2.NBT.A.3',im:5,domain:'Number & Operations in Base Ten',title:'Reading and writing numbers to 1,000',
+ ican:'read and write numbers to 1,000 using numerals, number names and expanded form.',
+ diff:['Writing expanded form, with a hint','Number names and expanded form','Expanded form with a zero, and matching all three forms'],
+ support(r){const h=r.int(1,9),t=r.int(1,9),o=r.int(1,9);return{q:`Write ${h*100+t*10+o} in expanded form.`,a:`${h*100} + ${t*10} + ${o}`,hint:'Write the value of each digit and add them.'}},
+ onlevel(r){const n=r.int(101,999);return r.chance(.5)?{q:`Write the number name for ${n}.`,a:numName(n),wide:true}:{q:`Write the number: ${numName(n)}`,a:n,wide:true}},
+ stretch(r){const h=r.int(1,9),o=r.int(1,9),n=h*100+o;return{q:`Write ${n} in expanded form and as a number name. Why does the tens place need a 0?`,a:`${h*100} + ${o}; ${numName(n)}; there are no tens`,wide:true,space:'m'}},
+ worked(r){return{q:'607',steps:['6 hundreds, 0 tens, 7 ones','600 + 7','six hundred seven'],a:''}},
+ challenge(r){return{q:'Write a three-digit number whose number name has exactly three words. Then write one whose name has four words.',a:'Answers vary, for example "six hundred five" and "six hundred twenty-five" (hyphenated counts as one).'}}},
+
+{grade:2,code:'2.NBT.A.4',im:5,domain:'Number & Operations in Base Ten',title:'Comparing three-digit numbers',
+ ican:'compare three-digit numbers using >, = and <.',
+ diff:['Comparing with base-ten language, with a hint','Comparing three-digit numbers','Ordering numbers and explaining'],
+ support(r){const a=r.int(100,999),b=until(()=>a+r.pick([-1,1])*r.pick([1,10,100]),x=>x>=100&&x<=999);return{q:EQ(`${a}${CMP}${b}`),a:a<b?'&lt;':'&gt;',hint:'Compare the hundreds first. If they match, compare the tens.'}},
+ onlevel(r){const a=r.int(100,999),b=until(()=>r.int(100,999),x=>x!==a);return{q:EQ(`${a}${CMP}${b}`),a:a<b?'&lt;':'&gt;'}},
+ stretch(r){const xs=until(()=>[0,1,2,3].map(()=>r.int(100,999)),a=>new Set(a).size===4);return{q:`Order from least to greatest: ${xs.join(', ')}`,a:xs.slice().sort((a,b)=>a-b).join(', '),wide:true}},
+ worked(r){return{q:'435 and 453',steps:['Same hundreds: 4 and 4.','Tens: 3 and 5. 3 is less.','435 &lt; 453'],a:''}},
+ challenge(r){return{q:'Use the digits 3, 6 and 8 to make the greatest and least three-digit numbers. Compare them with > or <.',a:'863 &gt; 368'}}},
+
+{grade:2,code:'2.G.A.1',im:6,domain:'Geometry',title:'Polygons and their attributes',
+ ican:'tell polygons from non-polygons and name shapes by their sides and angles.',
+ diff:['Polygon or not? With a hint','Naming shapes by the number of sides','Drawing shapes with given attributes'],
+ support(r){const n=r.pick([3,4,5,6,0,-1,-2]);return{q:'Is this shape a polygon?',model:polyFig(n),a:n>0?'Yes':'No',hint:'A polygon is closed and has only straight sides.'}},
+ onlevel(r){if(r.chance(.4)){const n=r.int(3,8);return{q:`A polygon has ${n} sides. What is it called? How many angles does it have?`,a:`${['','','','Triangle','Quadrilateral','Pentagon','Hexagon','Heptagon','Octagon'][n]}; ${n} angles`}}const n=r.pick([3,4,5,6,8]);return{q:'How many sides does this shape have? What is it called?',model:polyFig(n),a:`${n}; ${{3:'triangle',4:'quadrilateral',5:'pentagon',6:'hexagon',8:'octagon'}[n]}`}},
+ stretch(r){if(r.chance(.5)){const a=r.int(3,6),b=r.int(3,6);return W(`How many sides do a ${['','','','triangle','quadrilateral','pentagon','hexagon'][a]} and a ${['','','','triangle','quadrilateral','pentagon','hexagon'][b]} have together? Which shape has that many sides?`,`${a+b}${a+b<=8?'; '+['','','','','','','','','octagon','',''][a+b]||'':''}`)}const n=r.pick([3,4,5,6]);return W(`Draw two different ${{3:'triangles',4:'quadrilaterals',5:'pentagons',6:'hexagons'}[n]}. How are they alike? How are they different?`,`Both have ${n} sides and ${n} angles; the side lengths and angles can differ.`)},
+ worked(r){return{q:'Is a circle a polygon?',steps:['A polygon must have straight sides.','A circle is curved.','So a circle is not a polygon.'],a:''}},
+ challenge(r){return{q:'Draw a shape with 5 sides where one angle is a square corner. What is it called?',a:'A pentagon.'}}},
+
+{grade:2,code:'2.G.A.3',im:6,domain:'Geometry',title:'Halves, thirds and fourths',
+ ican:'split shapes into equal shares and name them as halves, thirds and fourths.',
+ diff:['Naming the equal shares, with a hint','Equal or not equal shares','Equal shares that look different'],
+ support(r){const d=r.pick([2,3,4]),k=r.int(1,d-1);return{q:`What part is shaded? Use a word like "half," "a third" or "a fourth."`,model:partFig(r.chance(.5)?'circle':'rect',d,k),a:k===1?{2:'one half',3:'one third',4:'one fourth'}[d]:`${k} ${{3:'thirds',4:'fourths'}[d]}`,hint:'Count the equal parts.'}},
+ onlevel(r){if(r.chance(.4)){const d=r.pick([2,3,4]);return{q:`How many equal parts make ${{2:'halves',3:'thirds',4:'fourths'}[d]}? Draw a circle split into ${{2:'halves',3:'thirds',4:'fourths'}[d]}.`,a:`${d}`}}const d=r.pick([2,3,4]),eq=r.chance(.5);return{q:`Is this shape split into ${{2:'halves',3:'thirds',4:'fourths'}[d]}?`,model:partFig('rect',d,1,eq?undefined:false),a:eq?'Yes':'No, the parts are not equal'}},
+ stretch(r){if(r.chance(.7)){const d=r.pick([2,3,4]),k=r.int(1,d-1);return W(`A pizza is cut into ${{2:'halves',3:'thirds',4:'fourths'}[d]}. You eat ${k} piece${k>1?'s':''}. How much of the pizza is left? How many pieces make the whole pizza?`,`${d-k} ${d-k===1?{2:'half',3:'third',4:'fourth'}[d]:{3:'thirds',4:'fourths'}[d]}; ${d} pieces`)}const d=r.pick([2,4]);return W(`Show two different ways to split a square into ${{2:'halves',4:'fourths'}[d]}. Are the parts the same size? Explain.`,'Yes, equal shares of the same whole are the same size even if they look different.')},
+ worked(r){return{q:'A circle in 4 equal parts',steps:['There are 4 equal parts.','Each part is one fourth.','4 fourths make one whole.'],a:''}},
+ challenge(r){return{q:'Would you rather have one half or one fourth of the same pizza? Explain.',a:'One half, because the pizza is split into fewer, bigger parts.'}}},
+
+{grade:2,code:'2.MD.C.7',im:6,domain:'Measurement & Data',title:'Telling time to five minutes',
+ ican:'tell time to the nearest five minutes and use a.m. and p.m.',
+ diff:['Reading clocks to the hour and half hour, with a hint','Reading clocks to 5 minutes, including quarter past and quarter to','Choosing a.m. or p.m., and time words'],
+ support(r){const h=r.int(1,12),m=r.pick([0,30]);return{q:'What time is it?',model:clockFig(h,m),a:hm(h,m),hint:'The short hand shows the hour. The long hand on 6 means 30 minutes.'}},
+ onlevel(r){const h=r.int(1,12),m=r.int(0,11)*5;return{q:'What time is it?',model:clockFig(h,m),a:hm(h,m)+(m===15?' (quarter past)':m===45?` (quarter to ${h%12+1})`:'')}},
+ stretch(r){const[e,a]=r.pick([['eating breakfast','a.m.'],['eating dinner','p.m.'],['the start of school','a.m.'],['going to bed','p.m.']]);const h=r.int(1,12),m=r.pick([15,30,45]);return r.chance(.5)?W(`Would ${e} more likely happen at 7:30 a.m. or 7:30 p.m.?`,`7:30 ${a}`):{q:`Write the time in words: ${hm(h,m)}`,a:{15:`quarter past ${h}`,30:`half past ${h}`,45:`quarter to ${h%12+1}`}[m]}},
+ worked(r){return{q:'Reading 3:45',steps:['The short hand is just before 4.','The long hand is on 9: count by 5s to 45.','3:45, or quarter to 4'],a:''}},
+ challenge(r){return{q:'Draw a clock that shows a time between 2:00 and 3:00 when the hands point to numbers next to each other. What time is it?',a:'About 2:10 or 2:15 (for example).'}}},
+
+{grade:2,code:'2.MD.C.8',ny:'NY-2.MD.8',im:6,domain:'Measurement & Data',title:'Counting coins',
+ ican:'count pennies, nickels, dimes and quarters up to one dollar using the ¢ sign.',
+ diff:['Counting a few coins of two kinds, with a hint','Counting mixed coins','Coin word problems and making an amount two ways'],
+ support(r){const a=r.pick([5,10]),k=r.int(1,4),p=r.int(1,4),list=[...Array(k).fill(a),...Array(p).fill(1)];return{q:'How much money is shown?',model:coinsFig(list),a:cents(k*a+p),hint:`Count the ${a===10?'dimes by 10s':'nickels by 5s'}, then count on the pennies.`}},
+ onlevel(r){const q=r.int(0,2),d=r.int(0,3),n=r.int(0,3),p=r.int(0,4),list=[...Array(q).fill(25),...Array(d).fill(10),...Array(n).fill(5),...Array(p).fill(1)];if(!list.length)list.push(10);return{q:'How much money is shown?',model:coinsFig(list),a:cents(list.reduce((a,b)=>a+b,0)),wide:list.length>6}},
+ stretch(r){const[p]=two(r),c=r.int(30,95);return r.chance(.5)?W(`Show ${c}¢ in two different ways using quarters, dimes, nickels and pennies.`,'Answers vary.'):W(`${p} has 2 quarters and 3 dimes. A toy costs ${c}¢. Does ${p} have enough? How much more is needed, or how much is left over?`,80>=c?`Yes, ${80-c}¢ left over`:`No, ${c-80}¢ more`)},
+ worked(r){return{q:'1 quarter, 2 dimes, 3 pennies',steps:['Start with the quarter: 25¢','Count on the dimes: 35¢, 45¢','Count on the pennies: 46¢, 47¢, 48¢'],a:''}},
+ challenge(r){return{q:'What is the fewest number of coins you can use to make 68¢? Which coins?',a:'7 coins: 2 quarters, 1 dime, 1 nickel, 3 pennies'}}},
+
+{grade:2,code:'2.NBT.B.7',im:7,domain:'Number & Operations in Base Ten',title:'Add and subtract within 1,000',
+ ican:'add and subtract within 1,000 using place value strategies.',
+ diff:['No regrouping, with hundreds, tens and ones labeled','Regrouping in one place','Regrouping in more than one place, and checking'],
+ support(r){const h1=r.int(1,6),h2=r.int(1,8-h1),t1=r.int(0,8),t2=r.int(0,9-t1),o1=r.int(0,8),o2=r.int(0,9-o1),a=h1*100+t1*10+o1,b=h2*100+t2*10+o2;return{q:vert(a,b,'+',['H','T','O']),a:a+b,hint:'Add ones, then tens, then hundreds.'}},
+ onlevel(r){const a=r.int(120,700),b=r.int(110,999-a),add=r.chance(.5);return add?{q:vert(a,b,'+'),a:a+b}:{q:vert(a+b,b,'−'),a:a}},
+ stretch(r){const a=r.pick([300,400,500,600,700,800]),b=r.int(111,a-11);return{q:vert(a,b,'−'),a:a-b,space:'m'}},
+ worked(r){return{q:'256 + 178',steps:['Ones: 6 + 8 = 14. Write 4, regroup 1 ten.','Tens: 5 + 7 + 1 = 13. Write 3, regroup 1 hundred.','Hundreds: 2 + 1 + 1 = 4. Answer: 434'],a:''}},
+ challenge(r){return{q:'Find two three-digit numbers that add to 1,000. Find another pair. What do you notice?',a:'Answers vary.'}}},
+
+{grade:2,code:'2.NBT.B.8',im:7,domain:'Number & Operations in Base Ten',title:'Adding and subtracting 10 and 100 mentally',
+ ican:'mentally add or subtract 10 or 100 from a number between 100 and 900.',
+ diff:['10 more and 10 less, with a hint','10 or 100 more or less','Chains of mental steps'],
+ support(r){const n=r.int(110,890),more=r.chance(.5);return{q:`What is 10 ${more?'more':'less'} than ${n}?`,a:n+(more?10:-10),hint:'Only the tens digit changes.'}},
+ onlevel(r){const n=r.int(110,890),k=r.pick([10,100]),more=r.chance(.5);return{q:EQ(`${n} ${more?'+':'−'} ${k} = ${BL(2)}`),a:n+(more?k:-k)}},
+ stretch(r){const n=r.int(200,700),a=r.int(1,3),b=r.int(1,3);return{q:`Start at ${n}. Add 100 ${a} time${a>1?'s':''}, then subtract 10 ${b} time${b>1?'s':''}. Where do you end?`,a:n+100*a-10*b,space:'m'}},
+ worked(r){return{q:'100 more than 467',steps:['The hundreds digit goes up by 1.','4 hundreds becomes 5 hundreds.','567'],a:''}},
+ challenge(r){return{q:'What happens when you add 10 to 395? Why does more than one digit change?',a:'405; the tens go past 9, so they regroup into a hundred.'}}},
+
+{grade:2,code:'2.OA.C.3',im:8,domain:'Operations & Algebraic Thinking',title:'Odd and even numbers',
+ ican:'tell whether a number is odd or even and write an even number as a sum of two equal addends.',
+ diff:['Pairing objects to decide odd or even, with a hint','Odd or even up to 20, and doubles','Explaining odd and even with pairs'],
+ support(r){const n=r.int(2,12);return{q:'Is the number of dots odd or even?',model:dots(Math.ceil(n/2),2).replace(/<circle[^>]*\/>(?=<\/svg>)/,n%2?'':'$&'),a:n%2?'Odd':'Even',hint:'Make pairs. If one is left over, it is odd.'}},
+ onlevel(r){const n=r.int(2,20);return n%2?{q:`Is ${n} odd or even?`,a:'Odd'}:{q:`${n} is even. Write it as a sum of two equal numbers.`,a:`${n/2} + ${n/2}`}},
+ stretch(r){if(r.chance(.8)){const n=r.int(11,40);return n%2?W(`Is ${n} odd or even? Write it as a double plus 1.`,`Odd: ${(n-1)/2} + ${(n-1)/2} + 1`):W(`Is ${n} odd or even? Write it as the sum of two equal numbers.`,`Even: ${n/2} + ${n/2}`)}return W('Is the sum of two odd numbers odd or even? Try three examples and explain why.','Even; the leftover ones from each odd number make a pair.')},
+ worked(r){return{q:'Is 14 even?',steps:['Make pairs: 7 pairs.','None are left over.','14 is even: 7 + 7.'],a:''}},
+ challenge(r){return{q:'How many even numbers are there from 1 to 20? How many odd? Explain without listing them all.',a:'10 of each; they alternate.'}}},
+
+{grade:2,code:'2.OA.C.4',im:8,domain:'Operations & Algebraic Thinking',title:'Arrays and repeated addition',
+ ican:'use addition to find the total number of objects in an array.',
+ diff:['Counting rows in an array, with a hint','Repeated addition equations for arrays','Drawing arrays for a total'],
+ support(r){const a=r.int(2,4),b=r.int(2,5);return{q:`Write an addition equation for the array.`,model:dots(a,b),a:`${Array(a).fill(b).join(' + ')} = ${a*b}`,hint:`There are ${a} rows. Each row has ${b}.`}},
+ onlevel(r){const a=r.int(2,5),b=r.int(2,5);return{q:`An array has ${a} rows of ${b}. Write a repeated addition equation and find the total.`,a:`${Array(a).fill(b).join(' + ')} = ${a*b}`,space:'m'}},
+ stretch(r){if(r.chance(.5)){const rr=r.int(2,5),c=r.int(2,5);return W(`An array has ${rr} rows and ${rr*c} objects in all. How many are in each row? Write a repeated addition equation.`,`${c}; ${Array(rr).fill(c).join(' + ')} = ${rr*c}`)}const n=r.pick([12,15,16,20,24]);return W(`Draw two different arrays that each have ${n} objects. Write an addition equation for each.`,'Answers vary.')},
+ worked(r){return{q:'3 rows of 4',steps:['Row 1: 4. Row 2: 4. Row 3: 4.','4 + 4 + 4','= 12'],a:''}},
+ challenge(r){return{q:'Can 13 objects be put into an array with more than 1 row? Explain.',a:'No; 13 cannot be split into equal rows (other than 1 row of 13).'}}},
+
+/* ---------- Grade 1: full set ---------- */
+{grade:1,code:'1.MD.C.4',im:1,domain:'Measurement & Data',title:'Organizing and reading data',
+ ican:'sort data into up to three groups and answer questions about it.',
+ diff:['Counting one group on a picture graph, with a hint','How many in all, and how many more','Questions that compare all three groups'],
+ support(r){const cats=['Apples','Grapes','Bananas'],v=cats.map(()=>r.int(1,7)),i=r.int(0,2);return{q:`How many students like ${cats[i].toLowerCase()} best?`,model:picGraph(cats,v,'Favorite fruit',1),a:v[i],hint:'Count the circles in that row.'}},
+ onlevel(r){const cats=['Sunny','Rainy','Cloudy'],v=cats.map(()=>r.int(2,9)),[i,j]=r.shuffle([0,1,2]);return r.chance(.5)?{q:'How many days are shown in all?',model:picGraph(cats,v,'Weather',1),a:v.reduce((a,b)=>a+b)}:{q:`How many more ${cats[i].toLowerCase()} days than ${cats[j].toLowerCase()} days?`,model:picGraph(cats,v,'Weather',1),a:v[i]>=v[j]?v[i]-v[j]:`${v[j]-v[i]} fewer`}},
+ stretch(r){const cats=['Cars','Bikes','Buses'],v=cats.map(()=>r.int(2,9));return{q:'Which group has the most? How many fewer are in the smallest group than in the biggest?',model:picGraph(cats,v,'How we get to school',1),a:`${cats[v.indexOf(Math.max(...v))]}; ${Math.max(...v)-Math.min(...v)} fewer`,space:'m'}},
+ worked(r){return{q:'Reading a picture graph',steps:['Find the row.','Count the circles.','Compare two rows by counting the extra circles.'],a:''}},
+ challenge(r){return{q:'Ask your classmates a question with 3 answers. Make a picture graph. Write a question about it.',a:'Answers vary.'}}},
+
+{grade:1,code:'1.OA.A.1',im:2,domain:'Operations & Algebraic Thinking',title:'Story problems within 20',
+ ican:'solve addition and subtraction story problems within 20.',
+ diff:['Join and take-away stories, with a hint','Compare stories and missing parts','Stories with the start unknown'],
+ support(r){const[p]=two(r),a=r.int(2,9),b=r.int(1,Math.min(9,20-a)),th=r.pick(['apples','balls','books','shells']);return r.chance(.5)?{...W(`${p} has ${a} ${th}. ${p} gets ${b} more. How many ${th} now?`,`${a+b} ${th}`),hint:'Getting more means add.'}:{...W(`${p} has ${a+b} ${th}. ${p} gives away ${b}. How many are left?`,`${a} ${th}`),hint:'Giving away means subtract.'}},
+ onlevel(r){const[p,q]=two(r),a=r.int(8,18),b=r.int(2,a-2);return r.chance(.5)?W(`${p} has ${a} stickers. ${q} has ${b} stickers. How many more stickers does ${p} have?`,`${a-b} more`):W(`There are ${a} birds. ${b} are blue. The rest are red. How many are red?`,`${a-b} red birds`)},
+ stretch(r){const[p]=two(r),a=r.int(3,10),b=r.int(2,9);return W(`${p} had some marbles. Then ${p} found ${b} more. Now ${p} has ${a+b}. How many did ${p} have at first?`,`${a} marbles`)},
+ worked(r){return{q:'5 frogs, then 4 more hop over',steps:['Start with 5.','4 more join.','5 + 4 = 9 frogs'],a:''}},
+ challenge(r){return{q:'Write your own story problem where the answer is 12. Draw a picture to show it.',a:'Answers vary.'}}},
+
+{grade:1,code:'1.OA.A.2',im:2,domain:'Operations & Algebraic Thinking',title:'Adding three numbers',
+ ican:'add three numbers to solve story problems.',
+ diff:['Three small numbers with a make-ten hint','Three-number stories within 20','Choosing the easiest order to add'],
+ support(r){const a=r.int(1,9),b=10-a,c=r.int(1,5);return{q:EQ(`${a} + ${c} + ${b} = ${BL()}`),a:a+b+c,hint:`Look for two numbers that make 10: ${a} + ${b}.`}},
+ onlevel(r){const[p]=two(r),a=r.int(2,7),b=r.int(2,6),c=r.int(1,20-a-b);return W(`${p} has ${a} red, ${b} blue and ${c} green crayons. How many crayons in all?`,`${a+b+c} crayons`)},
+ stretch(r){const a=r.int(2,8),b=10-a,c=r.int(2,9);return W(`Add ${c} + ${a} + ${b}. Which two numbers did you add first? Why?`,`${a+b+c}; ${a} + ${b} first because they make 10`)},
+ worked(r){return{q:'4 + 7 + 6',steps:['4 + 6 = 10','10 + 7','= 17'],a:''}},
+ challenge(r){return{q:'Find three different numbers that add to 15. Find another set.',a:'Answers vary.'}}},
+
+{grade:1,code:'1.OA.B.3',im:3,domain:'Operations & Algebraic Thinking',title:'Properties of addition',
+ ican:'use turn-around facts and grouping to add.',
+ diff:['Turn-around facts, with a hint','Turn-around facts and grouping three numbers','Explaining why the order does not change the sum'],
+ support(r){const a=r.int(1,9),b=until(()=>r.int(1,9),x=>x!==a);return{q:EQ(`${a} + ${b} = ${b} + ${BL(1.6)}`),a:a,hint:'Switching the order does not change the total.'}},
+ onlevel(r){const a=r.int(1,9),b=r.int(1,9),c=r.int(1,9);return r.chance(.5)?{q:EQ(`${a} + ${b} = ${BL(1.6)} + ${a}`),a:b}:{q:EQ(`${a} + ${b} + ${c} = ${BL()}`),a:a+b+c}},
+ stretch(r){const a=r.int(2,9),b=r.int(2,9);return W(`Explain why ${a} + ${b} and ${b} + ${a} have the same answer. Use cubes or a drawing.`,`Both are ${a+b}; the same cubes are just turned around.`)},
+ worked(r){return{q:'3 + 8 and 8 + 3',steps:['3 + 8 = 11','8 + 3 = 11','The order changed, but the sum is the same.'],a:''}},
+ challenge(r){return{q:'Does switching the order work for subtraction too? Try 9 − 4 and 4 − 9 with cubes. What happens?',a:'No; you cannot take 9 away from 4 with whole numbers.'}}},
+
+{grade:1,code:'1.OA.B.4',im:3,domain:'Operations & Algebraic Thinking',title:'Subtraction as an unknown addend',
+ ican:'solve subtraction by thinking of a missing addend.',
+ diff:['Subtraction with a "think addition" hint','Missing addends and related subtraction facts','Stories you can solve either way'],
+ support(r){const a=r.int(5,15),b=r.int(1,a-1);return{q:EQ(`${a} − ${b} = ${BL()}`),a:a-b,hint:`Think: ${b} + ${BL(1.4)} = ${a}`}},
+ onlevel(r){const a=r.int(8,20),b=r.int(2,a-2);return r.chance(.5)?{q:EQ(`${b} + ${BL()} = ${a}`),a:a-b}:{q:`If ${b} + ${a-b} = ${a}, then ${a} − ${b} = ${BL()}`,a:a-b}},
+ stretch(r){const[p]=two(r),a=r.int(10,20),b=r.int(3,a-3);return W(`${p} needs ${a} points to win and has ${b}. How many more points does ${p} need? Write an addition and a subtraction equation.`,`${a-b}; ${b} + ${a-b} = ${a} and ${a} − ${b} = ${a-b}`)},
+ worked(r){return{q:'12 − 9',steps:['Think: 9 + ? = 12','9 + 3 = 12','So 12 − 9 = 3'],a:''}},
+ challenge(r){return{q:'Write all the addition and subtraction facts that use 7, 8 and 15.',a:'7 + 8, 8 + 7, 15 − 7, 15 − 8'}}},
+
+{grade:1,code:'1.OA.D.7',im:3,domain:'Operations & Algebraic Thinking',title:'The meaning of the equal sign',
+ ican:'tell whether an equation with + and − is true or false.',
+ diff:['True or false with small numbers, with a hint','Equations with operations on both sides','Writing your own true equations'],
+ support(r){const a=r.int(1,6),b=r.int(1,4),ok=r.chance(.5);return{q:`True or false? ${EQ(`${a} + ${b} = ${ok?a+b:a+b+1}`)}`,a:ok?'True':'False',hint:'The equal sign means both sides are the same amount.'}},
+ onlevel(r){const a=r.int(2,9),b=r.int(1,9),c=r.int(1,a+b-1),ok=r.chance(.5),d=ok?a+b-c:a+b-c+r.pick([1,-1]);return{q:`True or false? ${EQ(`${a} + ${b} = ${c} + ${d}`)}`,a:ok?'True':'False'}},
+ stretch(r){const a=r.int(5,12);return W(`Write three different true equations that have ${a} on one side, like ${a} = ${a-2} + 2.`,'Answers vary.')},
+ worked(r){return{q:'Is 6 = 6 true?',steps:['The left side is 6.','The right side is 6.','They are the same, so it is true.'],a:''}},
+ challenge(r){return{q:'Is 5 + 2 = 2 + 5 true? Is 5 − 2 = 2 − 5 true? Explain.',a:'The first is true; the second is false.'}}},
+
+{grade:1,code:'1.OA.D.8',im:3,domain:'Operations & Algebraic Thinking',title:'Finding the unknown number',
+ ican:'find the missing number in an addition or subtraction equation.',
+ diff:['Missing addends within 10, with a hint','Missing numbers in any position within 20','Missing numbers on both sides'],
+ support(r){const s=r.int(4,10),a=r.int(1,s-1);return{q:EQ(`${a} + ${BL()} = ${s}`),a:s-a,hint:`Count on from ${a} to ${s}.`}},
+ onlevel(r){const s=r.int(8,20),a=r.int(2,9),t=r.int(0,2);return t===0?{q:EQ(`${BL()} + ${a} = ${s}`),a:s-a}:t===1?{q:EQ(`${s} − ${BL()} = ${s-a}`),a:a}:{q:EQ(`${BL()} − ${a} = ${s-a}`),a:s}},
+ stretch(r){const a=r.int(3,9),b=r.int(3,9),c=r.int(1,a+b-1);return{q:EQ(`${a} + ${b} = ${c} + ${BL()}`),a:a+b-c}},
+ worked(r){return{q:'8 + ? = 13',steps:['Start at 8.','Count on: 9, 10, 11, 12, 13.','That is 5, so ? = 5.'],a:''}},
+ challenge(r){return{q:'Fill in the boxes with different numbers so it is true: □ + □ = □ − 2. Find two ways.',a:'Answers vary, for example 3 + 4 = 9 − 2.'}}},
+
+{grade:1,code:'1.NBT.A.1',im:4,domain:'Number & Operations in Base Ten',title:'Counting to 120',
+ ican:'count, read and write numbers to 120, starting at any number.',
+ diff:['Counting on from a number below 50, with a hint','Counting on and back, including past 100','Filling in a hundred-chart piece'],
+ support(r){const s=r.int(1,45);return{q:`Count on: ${s}, ${s+1}, ${BL(1.6)}, ${BL(1.6)}, ${BL(1.6)}`,a:`${s+2}, ${s+3}, ${s+4}`,hint:'Each number is 1 more.'}},
+ onlevel(r){const s=r.int(90,115),back=r.chance(.4);return back?{q:`Count back: ${s}, ${s-1}, ${BL(1.6)}, ${BL(1.6)}`,a:`${s-2}, ${s-3}`}:{q:`Count on: ${Math.min(s,116)}, ${BL(1.6)}, ${BL(1.6)}, ${BL(1.6)}`,a:`${Math.min(s,116)+1}, ${Math.min(s,116)+2}, ${Math.min(s,116)+3}`}},
+ stretch(r){const n=r.int(12,108);return{q:`On a hundred chart, what number is just above ${n}? Just below? Just to the left and right?`,a:`Above ${n-10}, below ${n+10}, left ${n-1}, right ${n+1}`,space:'m'}},
+ worked(r){return{q:'Counting past 100',steps:['98, 99, 100','101, 102, 103','After 109 comes 110.'],a:''}},
+ challenge(r){return{q:'Start at 75 and count by 10s. Do you reach 120? What numbers do you say?',a:'75, 85, 95, 105, 115; you do not land on 120.'}}},
+
+{grade:1,code:'1.NBT.B.2',im:4,domain:'Number & Operations in Base Ten',title:'Tens and ones',
+ ican:'show two-digit numbers as tens and ones.',
+ diff:['Counting tens and ones in blocks, with a hint','Writing numbers from tens and ones','Showing a number in more than one way'],
+ support(r){const t=r.int(1,6),o=r.int(0,9);return{q:'What number is shown?',model:blocksFig(0,t,o),a:t*10+o,hint:'Each long is 10. Each small cube is 1.'}},
+ onlevel(r){const t=r.int(1,9),o=r.int(0,9);return r.chance(.5)?{q:`${t} tens and ${o} ones is ${BL(1.6)}.`,a:t*10+o}:{q:`How many tens and ones are in ${t*10+o}?`,a:`${t} tens, ${o} ones`}},
+ stretch(r){const t=r.int(2,8),o=r.int(1,9);return W(`Show ${t*10+o} two ways: as tens and ones, and with one ten broken into ones.`,`${t} tens ${o} ones; ${t-1} tens ${o+10} ones`)},
+ worked(r){return{q:'46',steps:['4 tens = 40','6 ones = 6','40 + 6 = 46'],a:''}},
+ challenge(r){return{q:'What number has 3 more tens than 25 and the same number of ones?',a:'55'}}},
+
+{grade:1,code:'1.NBT.B.3',im:4,domain:'Number & Operations in Base Ten',title:'Comparing two-digit numbers',
+ ican:'compare two-digit numbers using >, = and <.',
+ diff:['Comparing with tens and ones, with a hint','Comparing two-digit numbers','Ordering and explaining'],
+ support(r){const a=r.int(10,99),b=until(()=>r.int(10,99),x=>x!==a&&Math.floor(x/10)!==Math.floor(a/10));return{q:EQ(`${a}${CMP}${b}`),a:a<b?'&lt;':'&gt;',hint:'Compare the tens first.'}},
+ onlevel(r){const a=r.int(10,99),b=until(()=>r.int(10,99),x=>x!==a);return{q:EQ(`${a}${CMP}${b}`),a:a<b?'&lt;':'&gt;'}},
+ stretch(r){const xs=until(()=>[0,1,2].map(()=>r.int(10,99)),a=>new Set(a).size===3);return{q:`Order from least to greatest: ${xs.join(', ')}`,a:xs.slice().sort((a,b)=>a-b).join(', ')}},
+ worked(r){return{q:'47 and 52',steps:['47 has 4 tens. 52 has 5 tens.','5 tens is more than 4 tens.','47 &lt; 52'],a:''}},
+ challenge(r){return{q:'Use the digits 3 and 8 to make two different numbers. Compare them.',a:'38 &lt; 83'}}},
+
+{grade:1,code:'1.NBT.C.4',im:5,domain:'Number & Operations in Base Ten',title:'Adding within 100',
+ ican:'add within 100 using tens and ones.',
+ diff:['Two-digit + one-digit with no regrouping, with a hint','Two-digit + multiples of 10, and making a new ten','Adding two-digit numbers and explaining'],
+ support(r){const t=r.int(1,8),o=r.int(1,7),b=r.int(1,9-o);return{q:EQ(`${t*10+o} + ${b} = ${BL()}`),a:t*10+o+b,hint:'Add the ones. The tens stay the same.'}},
+ onlevel(r){if(r.chance(.5)){const a=r.int(11,59),k=r.int(1,4)*10;return{q:EQ(`${a} + ${k} = ${BL()}`),a:a+k}}const a=r.int(11,88),o=a%10,b=r.int(10-o,9);return{q:EQ(`${a} + ${b} = ${BL()}`),a:a+b}},
+ stretch(r){const a=r.int(15,55),b=r.int(12,99-a);return W(`Find ${a} + ${b}. Explain how you added the tens and the ones.`,`${a+b}`)},
+ worked(r){return{q:'38 + 5',steps:['38 + 2 = 40 (a new ten)','5 is 2 + 3, so 3 is left.','40 + 3 = 43'],a:''}},
+ challenge(r){return{q:'Find two two-digit numbers that add to 70. Find another pair.',a:'Answers vary.'}}},
+
+{grade:1,code:'1.NBT.C.5',im:5,domain:'Number & Operations in Base Ten',title:'10 more and 10 less',
+ ican:'find 10 more or 10 less than a two-digit number in my head.',
+ diff:['10 more, with a hint','10 more and 10 less','Chains of 10 more and 10 less'],
+ support(r){const n=r.int(10,89);return{q:`What is 10 more than ${n}?`,a:n+10,hint:'The tens digit goes up by 1.'}},
+ onlevel(r){const n=r.int(20,89),more=r.chance(.5);return{q:`What is 10 ${more?'more':'less'} than ${n}?`,a:n+(more?10:-10)}},
+ stretch(r){const n=r.int(30,60),a=r.int(1,3),b=r.int(1,2);return{q:`Start at ${n}. Find 10 more ${a} time${a>1?'s':''}, then 10 less ${b} time${b>1?'s':''}.`,a:n+10*(a-b),space:'m'}},
+ worked(r){return{q:'10 less than 64',steps:['64 has 6 tens.','10 less has 5 tens.','54'],a:''}},
+ challenge(r){return{q:'What number is 10 more than 10 less than 47? Explain.',a:'47'}}},
+
+{grade:1,code:'1.NBT.C.6',im:5,domain:'Number & Operations in Base Ten',title:'Subtracting multiples of 10',
+ ican:'subtract multiples of 10 from multiples of 10.',
+ diff:['Using tens facts, with a hint','Subtracting multiples of 10','Stories and missing numbers'],
+ support(r){const a=r.int(3,9),b=r.int(1,a-1);return{q:EQ(`${a*10} − ${b*10} = ${BL()}`),a:(a-b)*10,hint:`${a} tens − ${b} tens = ${BL(1.4)} tens.`}},
+ onlevel(r){const a=r.int(2,9),b=r.int(1,a);return{q:EQ(`${a*10} − ${b*10} = ${BL()}`),a:(a-b)*10}},
+ stretch(r){const a=r.int(4,9),b=r.int(1,a-1);return r.chance(.5)?{q:EQ(`${a*10} − ${BL()} = ${(a-b)*10}`),a:b*10}:W(`There are ${a*10} pencils in boxes of 10. ${b*10} pencils are used. How many are left?`,`${(a-b)*10} pencils`)},
+ worked(r){return{q:'70 − 30',steps:['70 is 7 tens. 30 is 3 tens.','7 tens − 3 tens = 4 tens','4 tens = 40'],a:''}},
+ challenge(r){return{q:'Write all the ways to subtract a multiple of 10 from 60 and get a multiple of 10.',a:'60 − 0, 60 − 10, …, 60 − 60'}}},
+
+{grade:1,code:'1.MD.A.1–2',ny:'NY-1.MD.1–2',im:6,domain:'Measurement & Data',title:'Measuring length',
+ ican:'order objects by length and measure length with same-size units.',
+ diff:['Measuring a bar with cubes, with a hint','Comparing and ordering lengths','Explaining why units must be the same size'],
+ support(r){if(r.chance(.4)){const[p,q]=two(r),a=r.int(3,9),b=until(()=>r.int(3,9),x=>x!==a);return{q:`${p}'s crayon is ${a} cubes long. ${q}'s crayon is ${b} cubes long. Whose is longer?`,a:`${a>b?p:q}'s`,hint:'More cubes means longer.'}}const L=r.int(2,9);return{q:'How many cubes long is the bar?',model:rulerFig(L,'cubes',1,10),a:`${L} cubes`,hint:'Count the cubes from 0 to the end of the bar.',wide:true}},
+ onlevel(r){const[p,q]=two(r),a=r.int(3,12),b=until(()=>r.int(3,12),x=>x!==a);return{q:`${p}'s pencil is ${a} cubes long. ${q}'s pencil is ${b} cubes long. Whose pencil is longer? By how many cubes?`,a:`${a>b?p:q}'s, by ${Math.abs(a-b)} cubes`,wide:true}},
+ stretch(r){if(r.chance(.8)){const[p,q]=two(r),a=r.int(4,12),b=r.int(2,6);return r.chance(.5)?W(`${p}'s ribbon is ${a} cubes long. ${q}'s ribbon is ${b} cubes longer. How long is ${q}'s ribbon?`,`${a+b} cubes`):W(`A pencil is ${a} cubes long and a crayon is ${b} cubes long. Put three objects in order if a marker is ${a-1} cubes long.`,`${[['crayon',b],['marker',a-1],['pencil',a]].sort((x,y)=>x[1]-y[1]).map(x=>x[0]).join(', ')}`)}return W('A student measures a book with paper clips but leaves gaps between them. Why is the measurement wrong? How should it be done?','Gaps make it look shorter; units must touch with no gaps or overlaps.')},
+ worked(r){return{q:'Measuring with cubes',steps:['Line up the cubes from one end.','No gaps and no overlaps.','Count the cubes.'],a:''}},
+ challenge(r){return{q:'Put three objects in order from shortest to longest. Measure each with cubes.',a:'Answers vary.'}}},
+
+{grade:1,code:'1.MD.B.3',ny:'NY-1.MD.3a',im:7,domain:'Measurement & Data',title:'Telling time to the hour and half hour',
+ ican:'tell and write time to the hour and half hour.',
+ diff:['Time to the hour, with a hint','Time to the hour and half hour','Drawing hands and time words'],
+ support(r){const h=r.int(1,12);return{q:'What time is it?',model:clockFig(h,0),a:`${h}:00`,hint:'The long hand on 12 means o’clock. Read the short hand.'}},
+ onlevel(r){const h=r.int(1,12),m=r.pick([0,30]);return{q:'What time is it?',model:clockFig(h,m),a:hm(h,m)}},
+ stretch(r){const h=r.int(1,12);return r.chance(.5)?W(`Draw the hands on a clock to show half past ${h}. Where does each hand point?`,`The long hand points to 6. The short hand is between ${h} and ${h%12+1}.`):{q:`Write ${hm(h,30)} in words.`,a:`half past ${h}`}},
+ worked(r){return{q:'Reading 4:30',steps:['The long hand points to 6: 30 minutes.','The short hand is between 4 and 5.','It is 4:30, half past 4.'],a:''}},
+ challenge(r){return{q:'At half past 2, why is the short hand not pointing right at the 2?',a:'It has moved halfway toward 3.'}}},
+
+{grade:1,code:'1.MD.3b',ny:'NY-1.MD.3b',only:'ny',im:7,domain:'Measurement & Data',title:'Recognizing coins',
+ ican:'name pennies, nickels, dimes and quarters and know how much each is worth.',
+ diff:['Naming one coin and its value, with a hint','Which coin is worth more?','Counting groups of one kind of coin'],
+ support(r){if(r.chance(.5)){const v=r.pick([5,10,25]);return r.chance(.5)?{q:`How many pennies are worth the same as one ${COIN[v][0]}?`,a:v,hint:'A penny is 1¢.'}:{q:`Which coin is worth ${v}¢?`,a:`A ${COIN[v][0]}`,hint:'Penny 1¢, nickel 5¢, dime 10¢, quarter 25¢.'}}const v=r.pick([1,5,10,25]);return{q:'What is this coin called? How much is it worth?',model:coinsFig([v]),a:`${COIN[v][0]}, ${v}¢`,hint:'Penny 1¢, nickel 5¢, dime 10¢, quarter 25¢.'}},
+ onlevel(r){const[a,b]=r.shuffle([1,5,10,25]).slice(0,2);return{q:`Which is worth more: a ${COIN[a][0]} or a ${COIN[b][0]}?`,a:`A ${COIN[Math.max(a,b)][0]}`}},
+ stretch(r){const v=r.pick([1,5,10]),k=r.int(2,6);return{q:`How much money is ${k} ${COIN[v][0]==='penny'?'pennies':COIN[v][0]+'s'}?`,model:coinsFig(Array(k).fill(v)),a:`${v*k}¢`}},
+ worked(r){return{q:'A dime and a nickel',steps:['A dime is 10¢.','A nickel is 5¢.','A dime is worth more, even though it is smaller.'],a:''}},
+ challenge(r){return{q:'Which coin is the biggest? Which is worth the most? Are they the same coin?',a:'The quarter is both the biggest and worth the most; the dime is smaller than a nickel but worth more.'}}},
+
+{grade:1,code:'1.G.A.1–2',ny:'NY-1.G.1–2',im:7,domain:'Geometry',title:'Shapes and their attributes',
+ ican:'describe shapes by their sides and corners, and put shapes together to make new shapes.',
+ diff:['Counting sides and corners, with a hint','Naming shapes and sorting them','Composing new shapes from smaller ones'],
+ support(r){if(r.chance(.6)){const n=r.pick([3,4,5,6,-1,0]);return r.chance(.5)?{q:'Is this shape closed (no openings)?',model:polyFig(n),a:n===-1?'No':'Yes',hint:'Trace around it with your finger. Do you get back to the start?'}:{q:'Does this shape have straight sides or curved sides?',model:polyFig(n),a:n===0?'Curved':n===-1?'Straight, but it is not closed':'Straight',hint:'Run your finger along the sides.'}}const n=r.pick([3,4,6]);return{q:'How many sides and corners does this shape have?',model:polyFig(n),a:`${n} sides, ${n} corners`,hint:'Touch each side as you count.'}},
+ onlevel(r){if(r.chance(.6)){const a=r.pick([3,4,6]),k=r.int(2,4);return r.chance(.5)?{q:`How many sides do ${k} ${{3:'triangles',4:'squares',6:'hexagons'}[a]} have in all?`,a:a*k}:{q:`A shape has ${a} sides and ${a} corners. What could it be?`,a:{3:'A triangle',4:'A square, rectangle or other quadrilateral',6:'A hexagon'}[a]}}const n=r.pick([3,4,6,0]);return{q:'What is this shape called?',model:polyFig(n),a:{3:'Triangle',4:'Square',6:'Hexagon',0:'Circle'}[n]}},
+ stretch(r){if(r.chance(.6)){const n=r.int(3,6);return W(`Draw two different shapes that each have ${n} sides. How are they alike? How are they different?`,`Both have ${n} sides and ${n} corners; side lengths can differ.`)}const[a,b]=r.pick([['two triangles','a square (or a bigger triangle)'],['two squares','a rectangle'],['two half circles','a circle'],['six triangles','a hexagon']]);return W(`What shape can you make by putting ${a} together? Draw it.`,b)},
+ worked(r){return{q:'Is a square a rectangle?',steps:['A rectangle has 4 sides and 4 square corners.','A square has 4 sides and 4 square corners.','So a square is a special rectangle.'],a:''}},
+ challenge(r){return{q:'Draw a shape with 4 sides that is not a square or a rectangle.',a:'Answers vary.'}}},
+
+{grade:1,code:'1.G.A.3',im:7,domain:'Geometry',title:'Halves and fourths',
+ ican:'split circles and rectangles into two and four equal shares.',
+ diff:['Naming halves and fourths, with a hint','Equal or not equal shares','Which is bigger: a half or a fourth?'],
+ support(r){if(r.chance(.6)){const d=r.pick([2,4]),k=r.int(1,d);return{q:`How many equal parts? How many are shaded?`,model:partFig(r.chance(.5)?'circle':'rect',d,k),a:`${d} parts, ${k} shaded`,hint:'Count every part, then count the shaded ones.'}}const d=r.pick([2,4]);return{q:`Is this shape split into halves or fourths?`,model:partFig(r.chance(.5)?'circle':'rect',d,1),a:d===2?'Halves':'Fourths',hint:'Count the equal parts. 2 parts are halves. 4 parts are fourths.'}},
+ onlevel(r){if(r.chance(.6)){const d=r.pick([2,4]);return r.chance(.5)?{q:`How many ${d===2?'halves':'fourths'} make one whole?`,a:d}:{q:`Draw a ${r.pick(['circle','rectangle','square'])} and split it into ${d===2?'halves':'fourths'}.`,a:`${d} equal parts`}}const d=r.pick([2,4]),eq=r.chance(.5);return{q:`Is this shape split into equal shares?`,model:partFig('rect',d,0,eq?undefined:false),a:eq?'Yes':'No'}},
+ stretch(r){if(r.chance(.8)){const d=r.pick([2,4]),k=r.int(1,d-1);return W(`A sandwich is cut into ${d===2?'halves':'fourths'}. You eat ${k} piece${k>1?'s':''}. How many ${d===2?'halves':'fourths'} are left? Is that more or less than half of the sandwich?`,`${d-k}; ${(d-k)*2>d?'more than':(d-k)*2===d?'exactly':'less than'} half`)}return W('Which is bigger: half of a sandwich or a fourth of the same sandwich? Draw a picture to explain.','Half; splitting into more parts makes each part smaller.')},
+ worked(r){return{q:'A circle in 2 equal parts',steps:['There are 2 equal shares.','Each share is a half.','2 halves make 1 whole.'],a:''}},
+ challenge(r){return{q:'Show two different ways to cut a square into fourths.',a:'Answers vary, for example four strips or four small squares.'}}}
 ];
 
 {const a=STD.find(s=>s.code==='6.SP.1b'),b=STD.find(s=>s.code==='6.SP.8');
@@ -1887,6 +2742,17 @@ WARMS['8.EE.A.3']=r=>tfw(r,[[`4,000 = 4 × 10<sup>3</sup>`,1],[`500,000 = 5 × 1
 WARMS['8.EE.A.4']=WARMS['8.EE.A.3'];
 WARMS['8.G.A.5']=r=>({type:'Notice and Wonder',prompt:'What do you notice? What do you wonder?',model:parFig(r.int(45,75),'TR','BL',1)});
 WARMS['8.NS.A.1']=r=>wodb([EQ('√16'),EQ('√7'),EQ('0.75'),EQ(F(1,3))],1);
+
+WARMS['5.G.B.3–4']=r=>tfw(r,SHAPE_TF);
+WARMS['5.NBT.A.3']=r=>tfw(r,[['0.5 = 0.50',1],['0.3 &gt; 0.25',1],['0.125 &gt; 0.2',0],['1.05 &lt; 1.5',1],['0.70 &lt; 0.7',0]]);
+WARMS['5.NF.B.5']=r=>tfw(r,[[`${F(3,4)} × 20 &lt; 20`,1],[`${F(5,4)} × 20 &lt; 20`,0],[`1 × 20 = 20`,1],[`${F(1,2)} × 8 &gt; 8`,0],[`2 × ${F(3,5)} &gt; ${F(3,5)}`,1]]);
+WARMS['4.OA.B.4']=r=>tfw(r,[['7 is a prime number.',1],['9 is a prime number.',0],['1 is a factor of every whole number.',1],['24 is a multiple of 6.',1],['2 is the only even prime number.',1],['15 is a factor of 5.',0]]);
+WARMS['4.NF.C.7']=r=>tfw(r,[['0.4 = 0.40',1],['0.6 &gt; 0.58',1],['0.09 &gt; 0.4',0],['0.3 &lt; 0.31',1],['0.70 &gt; 0.7',0]]);
+WARMS['4.NBT.A.2']=r=>tfw(r,[['40,000 + 500 + 3 = 40,503',1],['6,080 &gt; 6,800',0],['The 7 in 72,000 is worth 70,000.',1],['100,000 &lt; 99,999',0],['3,005 = 3,000 + 5',1]]);
+WARMS['4.MD.A.1–2']=WARMS['6.RP.A.3d'];WARMS['5.MD.A.1']=WARMS['6.RP.A.3d'];
+WARMS['2.NBT.A.2']=r=>tfw(r,[['35, 40, 45, 50 counts by 5s.',1],['120, 130, 140, 160 counts by 10s.',0],['300, 400, 500 counts by 100s.',1],['95, 100, 105 counts by 5s.',1],['70, 80, 100 counts by 10s.',0]]);
+WARMS['2.NBT.A.3']=r=>tfw(r,[['400 + 30 + 2 = 432',1],['500 + 6 = 560',0],['six hundred eight is 608',1],['700 + 70 + 7 = 777',1],['three hundred twelve is 3,012',0]]);
+WARMS['2.NBT.A.4']=r=>tfw(r,[['345 &lt; 354',1],['601 &gt; 610',0],['299 &lt; 300',1],['478 = 487',0],['900 &gt; 899',1]]);
 function warmup(std,seed){
   const r=RNG(hash(std.code+'warm')^seed),items=[],seen=new Set(),T='Decide if each statement is true or false. Be prepared to explain your reasoning.';
   if(std.warm)return std.warm(r);
@@ -1940,7 +2806,7 @@ function renderStds(){const L=visible(S.grade),key=s=>S.style==='im'?(s.img||s.g
 function renderSheets(){
   const std=STD.find(s=>s.code===S.std);
   STYLE=S.style;SET=S.set;NAMES=S.style==='im'?IM_NAMES:GEN_NAMES;
-  TIERS.forEach(t=>{$('n-'+t.id).textContent=countFor(t,S.count)+(t.id==='stretch'?'+1':'')});
+  TIERS.forEach(t=>{$('n-'+t.id).textContent=build(std,t,S.seed,S.count).probs.length+(t.id==='stretch'?'+1':'')});
   document.querySelectorAll('input[name=view]').forEach(i=>i.checked=i.value===S.view);
   const show=S.view==='all'?TIERS:TIERS.filter(t=>t.id===S.view);
   $('sheets').classList.toggle('side',S.view==='all');

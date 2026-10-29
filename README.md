@@ -9,12 +9,9 @@ A worksheet generator for differentiated independent practice. Pick a standard a
 ## What it covers
 
 - **Standards:** New York Next Generation Mathematics Learning Standards (default) or Common Core
-- **Grades 6–8:** full coverage of the New York standards, grouped by IM unit
-  - Grade 6: 34 standards, including NY-only standards such as NY-6.G.5 and NY-6.SP.6–8
-  - Grade 7: 21 standards, including box plots and IQR (NY-7.SP.1)
-  - Grade 8: 23 standards
+- **Grades 1–8:** full coverage of the New York standards, grouped by IM unit (about 160 standards in all)
+  - New York–only standards include coins in grade 1 (NY-1.MD.3b), four-digit place value in grade 3 (NY-3.NBT.4), perfect squares and cubes and probability in grade 6, and box plots in grade 7
   - Standards that New York removed or moved are shown only when Common Core is selected
-- **Grades 1–5:** a starter set
 - **Curriculum style:** an Illustrative Mathematics–style layout with a warm-up routine, practice and a cool-down, or neutral wording
 
 ## Other features
