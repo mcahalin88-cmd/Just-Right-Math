@@ -211,12 +211,32 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
 .grp{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:8px 2px 0}
 .grp:first-child{margin-top:0}
 .aff{font-size:.6em;color:var(--p-soft);margin:0}
+.printrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn.ghost{background:var(--panel);color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent);font-size:14px;padding:9px 10px}
+#printset{display:none}
+@page{size:letter;margin:0.45in}
 @media print{
-  body{background:#fff}
+  :root{color-scheme:light}
+  body{background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .rail,.tabs,.diff{display:none!important}
-  .app{display:block;padding:0}
-  .sheets.side{display:block}.sheets.side .sheet{zoom:1}
-  .sheet{box-shadow:none;max-width:none;break-after:page}
+  .app{display:block;padding:0;max-width:none}
+  .main{display:block}
+  .sheets{display:block}.sheets.side .sheet{zoom:1}
+  .sheet{box-shadow:none;max-width:none;width:100%;padding:0;border-radius:0;break-after:page;--fs:12pt}
+  .sheet{display:block;container-type:normal}.sheet>*+*{margin-top:1em}
+  .sh-top{display:flex}
+  .sheet.t-support{--fs:13.5pt}
+  .sheet:last-child{break-after:auto}
+  .probs{display:block}
+  .pr{display:inline-grid;width:47%;margin:0 2.5% .7em 0;vertical-align:top;break-inside:avoid}
+  .pr.wide{width:97%}
+  .pr,.ex,.chal,.warm,.cool,.sh-head{break-inside:avoid}
+  .pw{height:1.2em}.pw.m{height:2.6em}.pw.l{height:4.4em}
+  .sheet.key .pw,.sheet.key .chal .pw.l,.sheet.key .cool .pw{display:none}
+  .sheet.key .warm .pw{display:none}
+  .stamp{top:auto;bottom:0;right:0;transform:none}
+  body.printing-set .sheets{display:none!important}
+  body.printing-set #printset{display:block!important}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -281,6 +301,10 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
       <label class="toggle" for="discreet">Discreet tier labels (● ▲ ■) <input type="checkbox" id="discreet"></label>
     </div>
 
+    <div class="printrow" id="printrow" hidden>
+      <button class="btn ghost" id="print1" type="button">Print this view</button>
+      <button class="btn ghost" id="printall" type="button">Print class set</button>
+    </div>
     <button class="btn" id="regen" type="button">
       <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5v3h-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       New problems
@@ -307,6 +331,7 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
     <div class="sheets" id="sheets" aria-live="polite"></div>
     <section class="diff" id="diff" aria-label="How the versions differ"></section>
   </main>
+  <div id="printset" aria-hidden="true"></div>
 </div>
 
 <script>
@@ -2826,5 +2851,13 @@ $('count').addEventListener('change',e=>{S.count=+e.target.value;renderSheets()}
 $('key').addEventListener('change',e=>{S.key=e.target.checked;renderSheets()});
 $('discreet').addEventListener('change',e=>{S.discreet=e.target.checked;renderSheets()});
 $('seed').addEventListener('change',e=>{const v=Math.round(+e.target.value);if(v>=1000&&v<=9999){S.seed=v;renderSheets()}else e.target.value=S.seed});
+/* Printing works when the page is opened directly (a hosted site), not inside a viewer frame. */
+let canPrint=false;try{canPrint=window.self===window.top&&typeof window.print==='function'}catch(e){}
+if(canPrint){$('printrow').hidden=false;
+  $('print1').addEventListener('click',()=>window.print());
+  $('printall').addEventListener('click',()=>{const std=STD.find(s=>s.code===S.std),o={discreet:S.discreet,seed:S.seed,set:S.set,style:S.style};
+    $('printset').innerHTML=TIERS.map(t=>{const d=build(std,t,S.seed,S.count);return sheetHTML(std,t,d,{...o,key:false})+sheetHTML(std,t,d,{...o,key:true})}).join('');
+    document.body.classList.add('printing-set');window.print()});
+  window.addEventListener('afterprint',()=>{document.body.classList.remove('printing-set');$('printset').innerHTML=''})}
 $('regen').addEventListener('click',()=>{let v;do{v=1000+Math.floor(Math.random()*9000)}while(v===S.seed);S.seed=v;renderSheets()});
 </script>

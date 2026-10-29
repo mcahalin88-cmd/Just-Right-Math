@@ -26,6 +26,19 @@ A worksheet generator for differentiated independent practice. Pick a standard a
 
 Open `index.html` in a web browser. It is a single file with no build step; fonts load from Google Fonts.
 
+## Printing
+
+When the page is opened directly (for example, hosted on Netlify), two print buttons appear in the sidebar:
+
+- **Print this view** prints the sheet or sheets on screen.
+- **Print class set** prints all three versions, each followed by its answer key, with each sheet starting on a new page.
+
+To save a PDF, choose "Save as PDF" in the browser's print dialog. The buttons are hidden when the page is shown inside a viewer that cannot print.
+
+## Hosting
+
+The site deploys as-is: on Netlify, import this repository with no build command and the repository root as the publish directory. Every push to `main` then updates the site.
+
 ## Notes
 
 The layout follows the IM lesson structure (warm-up, practice, cool-down). Just Right Math is not affiliated with or endorsed by Illustrative Mathematics.
