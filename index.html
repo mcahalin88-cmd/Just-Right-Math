@@ -155,6 +155,23 @@ dialog.report::backdrop{background:rgba(10,20,40,.45)}
 .pr{counter-increment:p;display:grid;grid-template-columns:1.9em minmax(0,1fr);gap:.2em .5em;align-content:start;break-inside:avoid}
 .pr::before{content:counter(p);grid-row:span 9;width:1.6em;height:1.6em;border-radius:50%;border:1.5px solid var(--p-ink);display:grid;place-items:center;font-weight:700;font-size:.85em;font-variant-numeric:tabular-nums}
 .pr.wide{grid-column:1/-1}
+.rvh{grid-column:1/-1;display:block;list-style:none;font-weight:700;font-size:.78em;letter-spacing:.06em;text-transform:uppercase;border-bottom:1.5px solid currentColor;padding-bottom:2px;margin-top:.3em;break-after:avoid}
+.rvh small{font-family:var(--f-mono);font-weight:400;font-size:1em;margin-right:.7em}
+.kstd{font-family:var(--f-mono);font-size:.75em;opacity:.6;margin-left:.45em;white-space:nowrap}
+.srow{position:relative}.srow .std{padding-right:40px}
+.ck{position:absolute;right:6px;top:50%;translate:0 -50%;width:30px;height:30px;display:grid;place-items:center;cursor:pointer;z-index:1}
+.ck input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.ck span{width:18px;height:18px;border:1.5px solid var(--muted);border-radius:5px;background:var(--panel)}
+.ck input:checked+span{background:var(--accent);border-color:var(--accent)}
+.ck input:checked+span::after{content:'✓';color:var(--accent-ink);font-size:13px;font-weight:700;display:grid;place-items:center;height:100%}
+.ck input:focus-visible+span{outline:3px solid var(--focus)}
+.ck input:disabled+span{opacity:.35}
+.std.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--panel))}
+.revbar{border:1px dashed var(--line);border-radius:9px;padding:8px 10px;font-size:12.5px;color:var(--muted);margin-top:2px}
+.revbar.act{border-color:var(--accent);color:inherit}
+.revbar b{display:block;font-size:13.5px;margin-bottom:6px}
+.revbar .rvrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.revbar button{font:inherit;font-size:12.5px;background:none;border:0;color:var(--accent);text-decoration:underline;cursor:pointer;padding:0}
 .tag{display:inline-block;font-size:.72em;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border:1.2px solid currentColor;border-radius:3px;padding:0 .4em;margin-right:.45em;vertical-align:.12em;opacity:.8}
 .pq{min-width:0;padding-top:.1em}
 .pm{min-width:0;padding-top:.3em;overflow-x:auto}
@@ -364,6 +381,7 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
     <fieldset class="field">
       <legend>Standard</legend>
       <div class="stds" id="stds"></div>
+      <div class="revbar" id="revbar"></div>
     </fieldset>
 
     <div class="field">
@@ -3097,6 +3115,23 @@ function build(std,tier,seed,N){
       if(A&&B){out.worked={q:A.q,model:A.model,steps:[A.hint,`Answer: ${A.a}`],a:A.a};out.turn={q:B.q,model:B.model,steps:[B.hint,''],a:B.a}}}}
   return out;
 }
+/* Unit review: 2–4 standards from one unit on one sheet */
+const REVIEW_DIFF=['Problems grouped by standard, with a heading and hints for each group','Problems from every standard, mixed together so students choose the strategy','Harder problems from every standard, a Find the mistake, and a closing challenge'];
+function makeReview(codes,style){const parts=codes.map(c=>STD.find(s=>s.code===c)),a=parts[0],im=style==='im';
+  return{review:true,code:'REVIEW',codes,parts,grade:a.grade,im:a.im,img:a.img,domain:a.domain,
+    title:im?`Unit ${a.im} review: ${IM_UNITS[a.img||a.grade][a.im]}`:`${a.domain} review`,
+    ican:'use what I learned in this unit: '+parts.map(p=>p.title.charAt(0).toLowerCase()+p.title.slice(1)).join('; ')+'.',diff:REVIEW_DIFF}}
+function buildReview(R,tier,seed,N,mix){const k=R.parts.length,r=RNG(hash(R.codes.join()+tier.id)^seed),st=tier.id==='stretch';
+  const per=st?Math.max(2,Math.ceil(5/k)):Math.max(2,Math.round(countFor(tier,N)/k));
+  const parts=R.parts.map(s=>draw(s[tier.id],RNG(hash(s.code+tier.id)^seed),per,1,per,true).map(p=>({...p,src:s})));
+  let probs;if(tier.id==='support'||!mix)probs=parts.flatMap(L=>L.map((p,i)=>i?p:{...p,sec:p.src}));
+  else{probs=[];for(let i=0;i<per;i++)parts.forEach(L=>{if(L[i])probs.push(L[i])})}
+  if(st){const m=R.parts.filter(s=>MOVES[s.code]);if(m.length){const s=r.pick(m);probs.push({...MOVES[s.code].mistake(r),src:s})}}
+  const cs=R.parts[seed%k];
+  return{probs,worked:null,challenge:st?{...cs.challenge(r),src:cs}:null,cool:{...R.parts[(seed+1)%k].onlevel(RNG(hash(R.codes.join()+'cool')^seed)),src:R.parts[(seed+1)%k]}}}
+const dataFor=(std,tier,seed,N,mix=S.mix!==false)=>std.review?buildReview(std,tier,seed,N,mix):build(std,tier,seed,N);
+const hdrCode=(std,set)=>std.review?std.codes.map(c=>set==='ny'?nyCode(c):c).join(', '):set==='ny'?nyCode(std.code):'CCSS.MATH.CONTENT.'+std.code;
+const stag=(p,o)=>p&&p.src?`<span class="kstd">${o.set==='ny'?nyCode(p.src.code).replace('NY-',''):p.src.code}</span>`:'';
 let STYLE='im';
 
 const TFP='Decide if each statement is true or false. Be prepared to explain your reasoning.';
@@ -3156,13 +3191,13 @@ function warmup(std,seed){
 }
 
 function keySheetHTML(std,tiers,datas,o){
-  const im=o.style==='im',all=tiers.length>1,code=o.set==='ny'?nyCode(std.code):'CCSS.MATH.CONTENT.'+std.code;
+  const im=o.style==='im',all=tiers.length>1,code=hdrCode(std,o.set);
   const warmA=w=>!w?'':w.items?`<ol class="kl kl-in">${w.items.map(i=>`<li>${i.a}</li>`).join('')}</ol>`:'<p class="kv0">Answers vary.</p>';
   const block=(lab,html)=>html?`<div class="kb"><h4>${lab}</h4>${html}</div>`:'';
   const shared=o.cool&&all?`<div class="kshared">${block('Cool-down',`<p>${datas[0].cool.a}</p>`)}<p class="knote">The cool-down is the same on all three versions.</p></div>`:'';
   const col=(t,d)=>`<section class="kcol t-${t.id}"><h3 class="tc">${t.shape} ${t.name}</h3>
-    ${block('Practice',`<ol class="kl">${d.probs.map(p=>`<li>${p.a}</li>`).join('')}</ol>`)}
-    ${d.challenge?block(im?'Are you ready for more?':'Think deeper',`<p>${d.challenge.a}</p>`):''}
+    ${block('Practice',`<ol class="kl">${d.probs.map(p=>`<li>${p.a}${stag(p,o)}</li>`).join('')}</ol>`)}
+    ${d.challenge?block(im?'Are you ready for more?':'Think deeper',`<p>${d.challenge.a}${stag(d.challenge,o)}</p>`):''}
     ${o.cool&&!all?block('Cool-down',`<p>${d.cool.a}</p>`):''}</section>`;
   return `<article class="sheet keysheet${all?' kall':''}" aria-label="Answer key">
     <div class="sh-head"><div><div class="code">${code} · GRADE ${std.grade} · ANSWER KEY</div><h2>${std.title}</h2>${im?`<div class="unit">IM Grade ${std.img||std.grade}, Unit ${std.im}: ${IM_UNITS[std.img||std.grade][std.im]}</div>`:''}</div><span class="badge kbadge">Set ${o.seed}</span></div>
@@ -3183,13 +3218,13 @@ function sheetHTML(std,tier,d,o){
   const frames=q=>false&&ell&&ELL_CUE.test(q.replace(/<[^>]+>/g,''))?`<div class="frames"><b>Start with</b>${(FRAMES[std.code]||FRAMES_DEFAULT).map(f=>`“${f}”`).join(' &nbsp;or&nbsp; ')}</div>`:'';
   const plain=(p)=>{if(!(ell&&tier.id==='support'&&p.wide))return p.q;const parts=p.q.split(/(?<=[.?!])\s+(?=[A-Z])/);if(parts.length<2)return p.q;return parts.map(x=>`<span class="sl${/\?\s*$/.test(x)?' sq':''}">${x}</span>`).join('')};
   const ch=d.challenge?`<div class="chal"><h3>${im?'Are you ready for more?':'Think deeper'}</h3><p>${d.challenge.q}</p>${frames(d.challenge.q)}<div class="pw l"></div><div class="pa">${d.challenge.a}</div></div>`:'';
-  const li=d.probs.map(p=>`<li class="pr${p.wide?' wide':''}"><div class="pq">${p.tag?`<span class="tag">${p.tag}</span>`:''}${plain(p)}${im&&p.aline?' Explain or show your reasoning.':''}</div>${frames(p.q)}${p.model?`<div class="pm">${p.model}</div>`:''}${p.hint&&tier.id==='support'?`<div class="ph"><span>Hint</span>${p.hint}</div>`:''}<div class="pw ${p.space||'s'}"></div>${p.aline?`<div class="aline">Answer:<span class="line"></span></div>`:''}<div class="pa">${p.a}</div></li>`).join('');
+  const li=d.probs.map(p=>`${p.sec?`<li class="rvh"><small>${o.set==='ny'?nyCode(p.sec.code).replace('NY-',''):p.sec.code}</small>${p.sec.title}</li>`:''}<li class="pr${p.wide?' wide':''}"><div class="pq">${p.tag?`<span class="tag">${p.tag}</span>`:''}${plain(p)}${im&&p.aline&&!/explain/i.test(p.q)?' Explain or show your reasoning.':''}</div>${frames(p.q)}${p.model?`<div class="pm">${p.model}</div>`:''}${p.hint&&tier.id==='support'?`<div class="ph"><span>Hint</span>${p.hint}</div>`:''}<div class="pw ${p.space||'s'}"></div>${p.aline?`<div class="aline">Answer:<span class="line"></span></div>`:''}<div class="pa">${p.a}</div></li>`).join('');
   const warm='';const unusedWarm=d.warm?`<div class="warm"><h3>Warm-up: ${d.warm.type}</h3><p>${d.warm.prompt}</p>${d.warm.text?`<p style="color:inherit">${d.warm.text}</p>`:''}${d.warm.model?`<div class="pm">${d.warm.model}</div><div class="pw m"></div>`:''}${d.warm.items?`<ol class="tf${d.warm.items.some(i=>i.q.replace(/<[^>]+>/g,'').length>24)?' long':''}">${d.warm.items.map(i=>`<li><span class="eq">${i.q.replace(/^<span class="eq">|<\/span>$/g,'')}</span><span class="pa">${i.a}</span></li>`).join('')}</ol>`:''}</div>`:'';
   const c=o.cool?d.cool:null,cool=c?`<div class="cool"><h3>Cool-down</h3><div class="pq">${c.q}${c.aline?' Explain or show your reasoning.':''}</div>${c.model?`<div class="pm">${c.model}</div>`:''}<div class="pw"></div><div class="pa">${c.a}</div></div>`:'';
   return `<article class="sheet t-${tier.id}${o.key?' key':''}" aria-label="${tier.name} worksheet">
     ${o.key?'<div class="stamp">Answer key</div>':''}
     <div class="sh-top"><div>Name<span class="line"></span></div><div class="dt">Date<span class="line"></span></div></div>
-    <div class="sh-head"><div><div class="code">${o.set==='ny'?nyCode(std.code)+' · NYS NEXT GENERATION':'CCSS.MATH.CONTENT.'+std.code} · GRADE ${std.grade} · ${std.domain.toUpperCase()}</div><h2>${std.title}</h2>${im?`<div class="unit">IM Grade ${std.img||std.grade}, Unit ${std.im}: ${IM_UNITS[std.img||std.grade][std.im]}${std.img?` (taught in grade ${std.grade} in New York)`:''}</div>`:''}<p class="ican"><b>I can</b> ${std.ican}</p></div>${badge}</div>
+    <div class="sh-head"><div><div class="code">${hdrCode(std,o.set)}${o.set==='ny'?' · NYS NEXT GENERATION':std.review?' · COMMON CORE':''} · GRADE ${std.grade} · ${std.domain.toUpperCase()}</div><h2>${std.title}</h2>${im?`<div class="unit">IM Grade ${std.img||std.grade}, Unit ${std.im}: ${IM_UNITS[std.img||std.grade][std.im]}${std.img?` (taught in grade ${std.grade} in New York)`:''}${std.review?' · Unit review':''}</div>`:''}<p class="ican"><b>I can</b> ${std.ican}</p></div>${badge}</div>
     ${vocabBox}
     ${ex}${im?'<h3 class="sec">Practice</h3>':''}<ol class="probs">${li}</ol>${ch}${cool}
     <div class="self"><b>How did this feel?</b><span>I've got it</span><span>Getting there</span><span>I need help</span></div>
@@ -3200,10 +3235,12 @@ function sheetHTML(std,tier,d,o){
 
 /* ================= app ================= */
 const $=id=>document.getElementById(id);
-const DEF={grade:7,std:'7.EE.B.4a',view:'support',count:12,key:false,discreet:true,seed:4821,set:'ny',style:'im',lang:'en',guide:true,vocab:false,cool:false};
+const DEF={picks:[],mix:true,grade:7,std:'7.EE.B.4a',view:'support',count:12,key:false,discreet:true,seed:4821,set:'ny',style:'im',lang:'en',guide:true,vocab:false,cool:false};
 let S={...DEF};
 try{const s=JSON.parse(localStorage.getItem('jrm-state')||'null');if(s&&STD.some(x=>x.code===s.std))S={...DEF,...s}}catch(e){}
 try{const raw=JSON.parse(localStorage.getItem('jrm-state')||'{}');if(S.lang!=='en'&&!('vocab' in raw))S.vocab=true}catch(e){}
+S.picks=(S.picks||[]).filter(c=>STD.some(s=>s.code===c)).slice(0,4);if(S.picks.length<2)S.picks=[];
+const cur=()=>S.picks.length>1?makeReview(S.picks,S.style):STD.find(s=>s.code===S.std);
 const save=()=>{try{localStorage.setItem('jrm-state',JSON.stringify(S))}catch(e){}};
 
 function renderGrades(){$('grades').innerHTML=[1,2,3,4,5,6,7,8].map(g=>`<label><input type="radio" name="grade" value="${g}"${g===S.grade?' checked':''} aria-label="Grade ${g}">${g}</label>`).join('')}
@@ -3211,20 +3248,24 @@ const visible=g=>STD.filter(s=>s.grade===g&&(!s.only||s.only===S.set));
 function unitGroups(){const L=visible(S.grade),im=S.style==='im',key=s=>im?(s.img||s.grade)*10+s.im:s.domain,groups=[];
   L.forEach(s=>{const k=String(key(s));let g=groups.find(x=>x.k===k);if(!g)groups.push(g={k,s,items:[]});g.items.push(s)});
   if(im)groups.sort((a,b)=>a.k-b.k);
+  groups.forEach(g=>g.items.sort((x,y)=>x.code.localeCompare(y.code,'en',{numeric:true})));
   groups.forEach(g=>g.label=im?`${g.s.img?`Grade ${g.s.img} `:''}Unit ${g.s.im}: ${IM_UNITS[g.s.img||g.s.grade][g.s.im]}`:g.s.domain);return groups}
 function renderStds(){const groups=unitGroups(),cur=groups.find(g=>g.items.some(s=>s.code===S.std))||groups[0];
   $('unit-lab').textContent=S.style==='im'?'Unit':'Domain';
   $('unit').innerHTML=groups.map(g=>`<option value="${g.k}"${g===cur?' selected':''}>${g.label} (${g.items.length})</option>`).join('');
-  $('stds').innerHTML=cur.items.map(s=>`<label class="std"><input type="radio" name="std" value="${s.code}"${s.code===S.std?' checked':''}><code>${S.set==='ny'?nyCode(s.code):s.code}</code><span>${s.title}</span></label>`).join('')}
+  const P=S.picks.length?S.picks:(S.pend||[]),rv=S.picks.length>1;
+  $('stds').innerHTML=cur.items.map(s=>`<div class="srow"><label class="std${rv&&P.includes(s.code)?' on':''}"><input type="radio" name="std" value="${s.code}"${!rv&&s.code===S.std?' checked':''}><code>${S.set==='ny'?nyCode(s.code):s.code}</code><span>${s.title}</span></label><label class="ck" title="Add to a unit review"><input type="checkbox" value="${s.code}" aria-label="Add ${s.title} to a unit review"${P.includes(s.code)?' checked':''}${P.length>=4&&!P.includes(s.code)?' disabled':''}><span></span></label></div>`).join('');
+  const rb=$('revbar');rb.classList.toggle('act',rv);
+  rb.innerHTML=rv?`<b>${P.length} standards · Unit review</b><div class="rvrow"><label class="tg"><input type="checkbox" id="opt-mix"${S.mix!==false?' checked':''}> Mix On Level and Stretch problems</label><button type="button" id="revclear">Clear</button></div>`:P.length===1?'Check one more standard to make a unit review sheet.':'Check 2 to 4 standards to make a unit review sheet.'}
 function renderSheets(){
-  const std=STD.find(s=>s.code===S.std);
+  const std=cur();
   STYLE=S.style;SET=S.set;NAMES=S.style==='im'?IM_NAMES:GEN_NAMES;
-  TIERS.forEach(t=>{$('n-'+t.id).textContent=build(std,t,S.seed,S.count).probs.length+(t.id==='stretch'?'+1':'')});
+  TIERS.forEach(t=>{$('n-'+t.id).textContent=dataFor(std,t,S.seed,S.count).probs.length+(t.id==='stretch'?'+1':'')});
   document.querySelectorAll('input[name=view]').forEach(i=>i.checked=i.value===S.view);
   const show=S.view==='all'?TIERS:TIERS.filter(t=>t.id===S.view);
   $('sheets').classList.toggle('side',S.view==='all');
-  $('sheets').innerHTML=show.map(t=>sheetHTML(std,t,build(std,t,S.seed,S.count),{key:S.key,discreet:S.discreet,seed:S.seed,set:S.set,style:S.style,lang:S.lang,guide:S.guide,vocab:S.vocab,cool:S.cool})).join('');
-  $('diff').innerHTML=`<h2>How the three versions of ${S.set==='ny'?nyCode(std.code):std.code} differ</h2>${S.cool?'<p class="note">The cool-down is the same on all three versions, so you can compare results across the whole class.</p>':''}<div class="cols">${TIERS.map((t,i)=>`<div class="col"><h3><span style="color:var(--${t.id==='support'?'sup':t.id==='onlevel'?'onl':'str'})">${t.shape}</span>${t.name}</h3><p>${std.diff[i]}</p><ul>${t.bullets.map(b=>`<li>${b}</li>`).join('')}</ul></div>`).join('')}</div>`;
+  $('sheets').innerHTML=show.map(t=>sheetHTML(std,t,dataFor(std,t,S.seed,S.count),{key:S.key,discreet:S.discreet,seed:S.seed,set:S.set,style:S.style,lang:S.lang,guide:S.guide,vocab:S.vocab,cool:S.cool})).join('');
+  $('diff').innerHTML=`<h2>How the three versions of ${hdrCode(std,S.set).replace('CCSS.MATH.CONTENT.','')} differ</h2>${S.cool?'<p class="note">The cool-down is the same on all three versions, so you can compare results across the whole class.</p>':''}<div class="cols">${TIERS.map((t,i)=>`<div class="col"><h3><span style="color:var(--${t.id==='support'?'sup':t.id==='onlevel'?'onl':'str'})">${t.shape}</span>${t.name}</h3><p>${std.diff[i]}</p><ul>${t.bullets.map(b=>`<li>${b}</li>`).join('')}</ul></div>`).join('')}</div>`;
   {const one=S.view!=='all',nm=one?TIERS.find(t=>t.id===S.view).name:'';$('printstudents').textContent=one?`Print ${nm} sheet`:'Print all 3 sheets';$('printkeys').textContent=one?`Print ${nm} key`:'Print all 3 keys'}
   $('opt-guide').checked=S.guide;$('opt-vocab').checked=S.vocab;$('opt-cool').checked=S.cool;$('opt-vocab').disabled=!VOCAB[S.std];
   $('lang').value=S.lang;$('langnote').textContent=VOCAB[S.std]?'Adds the key words in this language. Print once per language; the problems stay the same.':'Key words are available for grade 6 so far.';
@@ -3233,15 +3274,22 @@ function renderSheets(){
 }
 renderGrades();renderStds();renderSheets();
 
-$('grades').addEventListener('change',e=>{S.grade=+e.target.value;S.std=unitGroups()[0].items[0].code;renderStds();renderSheets()});
-$('set').addEventListener('change',e=>{S.set=e.target.value;if(!visible(S.grade).some(s=>s.code===S.std))S.std=visible(S.grade)[0].code;renderStds();renderSheets()});
+$('grades').addEventListener('change',e=>{S.picks=[];S.pend=[];S.grade=+e.target.value;S.std=unitGroups()[0].items[0].code;renderStds();renderSheets()});
+$('set').addEventListener('change',e=>{S.picks=[];S.pend=[];S.set=e.target.value;if(!visible(S.grade).some(s=>s.code===S.std))S.std=visible(S.grade)[0].code;renderStds();renderSheets()});
 $('lang').addEventListener('change',e=>{S.lang=e.target.value;if(S.lang!=='en')S.vocab=true;renderSheets()});
 $('opt-guide').addEventListener('change',e=>{S.guide=e.target.checked;renderSheets()});
 $('opt-vocab').addEventListener('change',e=>{S.vocab=e.target.checked;renderSheets()});
 $('opt-cool').addEventListener('change',e=>{S.cool=e.target.checked;renderSheets()});
-$('curr').addEventListener('change',e=>{S.style=e.target.value;renderStds();renderSheets()});
-$('stds').addEventListener('change',e=>{S.std=e.target.value;renderSheets()});
-$('unit').addEventListener('change',e=>{const g=unitGroups().find(g=>g.k===e.target.value);S.std=g.items[0].code;renderStds();renderSheets()});
+$('curr').addEventListener('change',e=>{S.picks=[];S.pend=[];S.style=e.target.value;renderStds();renderSheets()});
+$('stds').addEventListener('change',e=>{const t=e.target;
+  if(t.type==='radio'){S.std=t.value;S.picks=[]}
+  else{const P=S.picks.length?S.picks.slice():(S.pend||[]);const L=t.checked?[...P,t.value]:P.filter(c=>c!==t.value);
+    const order=unitGroups().flatMap(g=>g.items.map(s=>s.code));L.sort((a,b)=>order.indexOf(a)-order.indexOf(b));
+    if(L.length>1){S.picks=L;S.pend=[]}else{S.picks=[];S.pend=L;if(L.length===1)S.std=L[0]}}
+  renderStds();renderSheets()});
+$('revbar').addEventListener('change',e=>{if(e.target.id==='opt-mix'){S.mix=e.target.checked;renderSheets()}});
+$('revbar').addEventListener('click',e=>{if(e.target.id==='revclear'){S.std=S.picks[0];S.picks=[];S.pend=[];renderStds();renderSheets()}});
+$('unit').addEventListener('change',e=>{S.picks=[];S.pend=[];const g=unitGroups().find(g=>g.k===e.target.value);S.std=g.items[0].code;renderStds();renderSheets()});
 $('tabs').addEventListener('change',e=>{S.view=e.target.value;renderSheets()});
 $('count').addEventListener('change',e=>{S.count=+e.target.value;renderSheets()});
 $('key').addEventListener('change',e=>{S.key=e.target.checked;renderSheets()});
@@ -3250,8 +3298,8 @@ $('seed').addEventListener('change',e=>{const v=Math.round(+e.target.value);if(v
 /* Printing works when the page is opened directly (a hosted site), not inside a viewer frame. */
 let canPrint=false;try{canPrint=window.self===window.top&&typeof window.print==='function'}catch(e){}
 if(canPrint){$('printrow').hidden=false;
-  const printSet=key=>{const std=STD.find(s=>s.code===S.std),o={discreet:S.discreet,seed:S.seed,set:S.set,style:S.style,lang:S.lang,guide:S.guide,vocab:S.vocab,cool:S.cool,key};
-    const ts=TIERS.filter(t=>S.view==='all'||t.id===S.view),ds=ts.map(t=>build(std,t,S.seed,S.count));
+  const printSet=key=>{const std=cur(),o={discreet:S.discreet,seed:S.seed,set:S.set,style:S.style,lang:S.lang,guide:S.guide,vocab:S.vocab,cool:S.cool,key};
+    const ts=TIERS.filter(t=>S.view==='all'||t.id===S.view),ds=ts.map(t=>dataFor(std,t,S.seed,S.count));
     $('printset').innerHTML=key?keySheetHTML(std,ts,ds,o):ts.map((t,i)=>sheetHTML(std,t,ds[i],o)).join('');
     document.body.classList.add('printing-set');window.print()};
   $('printstudents').addEventListener('click',()=>printSet(false));
@@ -3259,7 +3307,7 @@ if(canPrint){$('printrow').hidden=false;
   window.addEventListener('afterprint',()=>{document.body.classList.remove('printing-set');$('printset').innerHTML=''})}
 /* Report a problem: a Netlify form, so it only works on the hosted site. */
 if(canPrint){const dlg=$('reportdlg'),f=$('reportform'),msg=$('reportmsg');$('reportbtn').hidden=false;
-  const ctx=()=>{const std=STD.find(s=>s.code===S.std),tier=S.view==='all'?'All three':TIERS.find(t=>t.id===S.view).name,code=S.set==='ny'?nyCode(std.code):std.code;
+  const ctx=()=>{const std=cur(),tier=S.view==='all'?'All three':TIERS.find(t=>t.id===S.view).name,code=hdrCode(std,S.set).replace('CCSS.MATH.CONTENT.','');
     return{standard:`${code} ${std.title}`,tier,setcode:String(S.seed),grade:String(std.grade),standards_set:S.set==='ny'?'NY Next Generation':'Common Core',style:S.style==='im'?'IM style':'Neutral',problem_count:String(S.count),answer_key_on:S.key?'yes':'no'}};
   $('reportbtn').addEventListener('click',()=>{const c=ctx();for(const k in c)f.elements[k].value=c[k];
     $('reportctx').textContent=`${c.standard} · ${c.tier} · Set ${c.setcode}`;msg.textContent='';msg.className='msg';$('reportsend').disabled=false;
