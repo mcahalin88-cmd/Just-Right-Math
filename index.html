@@ -212,7 +212,6 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
 .grp:first-child{margin-top:0}
 .aff{font-size:.6em;color:var(--p-soft);margin:0}
 .printrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.printrow #print1{grid-column:1/-1}
 .btn.ghost{background:var(--panel);color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent);font-size:14px;padding:9px 10px}
 #printset{display:none}
 @page{size:letter;margin:0.45in}
@@ -308,9 +307,8 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
     </div>
 
     <div class="printrow" id="printrow" hidden>
-      <button class="btn ghost" id="print1" type="button">Print this view</button>
-      <button class="btn ghost" id="printstudents" type="button">Print student sheets</button>
-      <button class="btn ghost" id="printkeys" type="button">Print answer keys</button>
+      <button class="btn ghost" id="printstudents" type="button">Print worksheet</button>
+      <button class="btn ghost" id="printkeys" type="button">Print answer key</button>
     </div>
     <button class="btn" id="regen" type="button">
       <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5v3h-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -2844,6 +2842,7 @@ function renderSheets(){
   $('sheets').classList.toggle('side',S.view==='all');
   $('sheets').innerHTML=show.map(t=>sheetHTML(std,t,build(std,t,S.seed,S.count),{key:S.key,discreet:S.discreet,seed:S.seed,set:S.set,style:S.style})).join('');
   $('diff').innerHTML=`<h2>How the three versions of ${S.set==='ny'?nyCode(std.code):std.code} differ</h2>${S.style==='im'?'<p class="note">The warm-up and cool-down are the same on all three versions, so you can compare cool-down results across the whole class.</p>':''}<div class="cols">${TIERS.map((t,i)=>`<div class="col"><h3><span style="color:var(--${t.id==='support'?'sup':t.id==='onlevel'?'onl':'str'})">${t.shape}</span>${t.name}</h3><p>${std.diff[i]}</p><ul>${t.bullets.map(b=>`<li>${b}</li>`).join('')}</ul></div>`).join('')}</div>`;
+  {const one=S.view!=='all',nm=one?TIERS.find(t=>t.id===S.view).name:'';$('printstudents').textContent=one?`Print ${nm} sheet`:'Print all 3 sheets';$('printkeys').textContent=one?`Print ${nm} key`:'Print all 3 keys'}
   $('set').value=S.set;$('curr').value=S.style;$('seed').value=S.seed;$('count').value=S.count;$('key').checked=S.key;$('discreet').checked=S.discreet;
   save();
 }
@@ -2861,9 +2860,8 @@ $('seed').addEventListener('change',e=>{const v=Math.round(+e.target.value);if(v
 /* Printing works when the page is opened directly (a hosted site), not inside a viewer frame. */
 let canPrint=false;try{canPrint=window.self===window.top&&typeof window.print==='function'}catch(e){}
 if(canPrint){$('printrow').hidden=false;
-  $('print1').addEventListener('click',()=>window.print());
   const printSet=key=>{const std=STD.find(s=>s.code===S.std),o={discreet:S.discreet,seed:S.seed,set:S.set,style:S.style,key};
-    $('printset').innerHTML=TIERS.map(t=>sheetHTML(std,t,build(std,t,S.seed,S.count),o)).join('');
+    $('printset').innerHTML=TIERS.filter(t=>S.view==='all'||t.id===S.view).map(t=>sheetHTML(std,t,build(std,t,S.seed,S.count),o)).join('');
     document.body.classList.add('printing-set');window.print()};
   $('printstudents').addEventListener('click',()=>printSet(false));
   $('printkeys').addEventListener('click',()=>printSet(true));

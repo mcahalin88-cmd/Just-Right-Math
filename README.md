@@ -28,11 +28,11 @@ Open `index.html` in a web browser. It is a single file with no build step; font
 
 ## Printing
 
-When the page is opened directly (for example, hosted on Netlify), two print buttons appear in the sidebar:
+When the page is opened directly (for example, hosted on Netlify), two print buttons appear in the sidebar. Both follow the tab you are on:
 
 - **Print this view** prints the sheet or sheets on screen.
-- **Print student sheets** prints the Support, On Level and Stretch sheets, one master of each, with no answers.
-- **Print answer keys** prints the three answer keys separately, so they never end up in the student pile.
+- **Print sheet** prints the worksheet for the tab you are on (Support, On Level or Stretch), or all three on the All three tab, with no answers.
+- **Print key** prints the matching answer key, so keys never end up in the student pile.
 
 To save a PDF, choose "Save as PDF" in the browser's print dialog. The buttons are hidden when the page is shown inside a viewer that cannot print.
 
