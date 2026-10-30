@@ -32,7 +32,7 @@ When the page is opened directly (for example, hosted on Netlify), two print but
 
 - **Print this view** prints the sheet or sheets on screen.
 - **Print sheet** prints the worksheet for the tab you are on (Support, On Level or Stretch), or all three on the All three tab, with no answers.
-- **Print key** prints the matching answer key, so keys never end up in the student pile.
+- **Print key** prints a condensed answer key for the same tab: the warm-up, every practice answer, the reasoning task and the cool-down on one page. On the All three tab, the three versions sit side by side. To print the full sheet with answers written in, turn on **Show answer key** and use the browser's print command.
 
 To save a PDF, choose "Save as PDF" in the browser's print dialog. The buttons are hidden when the page is shown inside a viewer that cannot print.
 

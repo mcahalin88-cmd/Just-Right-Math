@@ -230,6 +230,23 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
 .btn.ghost{background:var(--panel);color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent);font-size:14px;padding:9px 10px}
 #printset{display:none}
 @page{size:letter;margin:0.45in}
+.keysheet{--fs:12px;gap:.9em}
+.kcol.t-support{--tcol:var(--p-sup)}.kcol.t-onlevel{--tcol:var(--p-onl)}.kcol.t-stretch{--tcol:var(--p-str)}
+.keysheet .kfull{margin:0;font-size:.8em;color:var(--p-soft)}
+.keysheet .kbadge{border-color:var(--p-key);color:var(--p-key)}
+.kcols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.2em}
+.keysheet.kall .kcols{grid-template-columns:repeat(3,minmax(0,1fr))}
+.keysheet:not(.kall) .kcols{grid-template-columns:minmax(0,1fr)}
+.kcol{display:flex;flex-direction:column;gap:.7em;min-width:0}
+.kcol h3{margin:0;font-family:var(--f-display);font-size:1.15em;border-bottom:2px solid currentColor;padding-bottom:.2em}
+.kb h4{margin:0 0 .25em;font-size:.78em;text-transform:uppercase;letter-spacing:.07em;color:var(--p-soft)}
+.kb p{margin:0}
+.kl{margin:0;padding-left:1.8em;display:flex;flex-direction:column;gap:.25em;font-variant-numeric:tabular-nums}
+.keysheet:not(.kall) .kl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.3em 2em}
+.kl-in{display:flex!important;flex-direction:row!important;flex-wrap:wrap;gap:.3em 1.6em!important}
+.kl li::marker{color:var(--p-soft);font-weight:700}
+.kshared{display:grid;grid-template-columns:1fr 1fr;gap:.6em 1.4em;border:1px dashed var(--p-rule);border-radius:.5em;padding:.6em .8em}
+.knote{grid-column:1/-1;margin:0;font-size:.8em;color:var(--p-soft)}
 @media print{
   :root{color-scheme:light}
   body{background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -243,6 +260,8 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
   .sheet{display:block;container-type:normal}.sheet>*+*{margin-top:1em}
   .sh-top{display:flex}
   .sheet.t-support{--fs:13.5pt}
+  .sheet.keysheet{--fs:10pt}
+  .kcol,.kb,.kshared{break-inside:avoid}
   .sheet:last-child{break-after:auto}
   .probs{display:block;orphans:1;widows:1}
   .sheet,.sheet *{orphans:1;widows:1}
@@ -2861,6 +2880,23 @@ function warmup(std,seed){
   return{type:'Estimation Exploration',prompt:'Look at problem 1. Before you solve it, write an estimate that is too low, an estimate that is too high, and an estimate that is about right.'};
 }
 
+function keySheetHTML(std,tiers,datas,o){
+  const im=o.style==='im',all=tiers.length>1,code=o.set==='ny'?nyCode(std.code):'CCSS.MATH.CONTENT.'+std.code;
+  const warmA=w=>!w?'':w.items?`<ol class="kl kl-in">${w.items.map(i=>`<li>${i.a}</li>`).join('')}</ol>`:'<p class="kv0">Answers vary.</p>';
+  const block=(lab,html)=>html?`<div class="kb"><h4>${lab}</h4>${html}</div>`:'';
+  const shared=im&&all?`<div class="kshared">${block('Warm-up: '+datas[0].warm.type,warmA(datas[0].warm))}${block('Cool-down',`<p>${datas[0].cool.a}</p>`)}<p class="knote">The warm-up and cool-down are the same on all three versions.</p></div>`:'';
+  const col=(t,d)=>`<section class="kcol t-${t.id}"><h3 class="tc">${t.shape} ${t.name}</h3>
+    ${im&&!all?block('Warm-up: '+d.warm.type,warmA(d.warm)):''}
+    ${block('Practice',`<ol class="kl">${d.probs.map(p=>`<li>${p.a}</li>`).join('')}</ol>`)}
+    ${d.challenge?block(im?'Are you ready for more?':'Think deeper',`<p>${d.challenge.a}</p>`):''}
+    ${im&&!all?block('Cool-down',`<p>${d.cool.a}</p>`):''}</section>`;
+  return `<article class="sheet keysheet${all?' kall':''}" aria-label="Answer key">
+    <div class="sh-head"><div><div class="code">${code} · GRADE ${std.grade} · ANSWER KEY</div><h2>${std.title}</h2>${im?`<div class="unit">IM Grade ${std.img||std.grade}, Unit ${std.im}: ${IM_UNITS[std.img||std.grade][std.im]}</div>`:''}</div><span class="badge kbadge">Set ${o.seed}</span></div>
+    ${shared}<div class="kcols">${tiers.map((t,i)=>col(t,datas[i])).join('')}</div>
+    <p class="kfull">Want the answers written on the worksheet instead? Turn on Show answer key and print with your browser (Ctrl+P, or ⌘P on a Mac).</p>
+    <div class="sh-foot"><span>Just Right Math · For the teacher</span><span>Matches set ${o.seed}${tiers.length===1?'-'+tiers[0].letter:''}</span></div>
+  </article>`;
+}
 function sheetHTML(std,tier,d,o){
   const im=o.style==='im';
   const badge=o.discreet?`<span class="badge disc tc" title="${tier.name}">${tier.shape}</span>`:`<span class="badge tc">${tier.shape} ${tier.name}</span>`;
@@ -2921,7 +2957,8 @@ $('seed').addEventListener('change',e=>{const v=Math.round(+e.target.value);if(v
 let canPrint=false;try{canPrint=window.self===window.top&&typeof window.print==='function'}catch(e){}
 if(canPrint){$('printrow').hidden=false;
   const printSet=key=>{const std=STD.find(s=>s.code===S.std),o={discreet:S.discreet,seed:S.seed,set:S.set,style:S.style,key};
-    $('printset').innerHTML=TIERS.filter(t=>S.view==='all'||t.id===S.view).map(t=>sheetHTML(std,t,build(std,t,S.seed,S.count),o)).join('');
+    const ts=TIERS.filter(t=>S.view==='all'||t.id===S.view),ds=ts.map(t=>build(std,t,S.seed,S.count));
+    $('printset').innerHTML=key?keySheetHTML(std,ts,ds,o):ts.map((t,i)=>sheetHTML(std,t,ds[i],o)).join('');
     document.body.classList.add('printing-set');window.print()};
   $('printstudents').addEventListener('click',()=>printSet(false));
   $('printkeys').addEventListener('click',()=>printSet(true));
