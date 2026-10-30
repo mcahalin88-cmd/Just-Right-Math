@@ -219,6 +219,7 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
   :root{color-scheme:light}
   body{background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .rail,.tabs,.diff{display:none!important}
+  body>*:not(.app){display:none!important}
   .app{display:block;padding:0;max-width:none}
   .main{display:block}
   .sheets{display:block}.sheets.side .sheet{zoom:1}
@@ -227,7 +228,11 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
   .sh-top{display:flex}
   .sheet.t-support{--fs:13.5pt}
   .sheet:last-child{break-after:auto}
-  .probs{display:block}
+  .probs{display:block;orphans:1;widows:1}
+  .sheet,.sheet *{orphans:1;widows:1}
+  .self,.aff,.sh-foot{break-before:avoid}
+  .cool .pw{height:2.6em}.cool{padding:.55em .9em}.self{padding-top:.5em}
+  .aff{margin-top:.4em!important}.sh-foot{margin-top:.3em!important}
   .pr{display:inline-grid;width:47%;margin:0 2.5% .7em 0;vertical-align:top;break-inside:avoid}
   .pr.wide{width:97%}
   .pr,.ex,.chal,.warm,.cool,.sh-head{break-inside:avoid}
