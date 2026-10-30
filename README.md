@@ -5,6 +5,8 @@ A worksheet generator for differentiated independent practice. Pick a standard a
 - **Support (●)**: friendlier numbers, visual models, a hint on each problem, a worked example and larger print
 - **On Level (▲)**: grade-level practice of the standard
 - **Stretch (■)**: multi-step problems, missing values and a closing reasoning task
+  - Grade 6 Stretch sheets have six problems, each asking for a different kind of thinking: three harder applications, then **Find the mistake** (spot and fix a student's error), **Work backward** (start from the answer) and **Many answers** (more than one correct answer). Each of the last three is labeled on the sheet.
+  - On every grade, a Stretch sheet uses the same story type at most twice. It ends when it runs out of new story types, with at least 6 problems.
 
 ## What it covers
 

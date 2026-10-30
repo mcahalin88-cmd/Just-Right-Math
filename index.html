@@ -155,6 +155,7 @@ dialog.report::backdrop{background:rgba(10,20,40,.45)}
 .pr{counter-increment:p;display:grid;grid-template-columns:1.9em minmax(0,1fr);gap:.2em .5em;align-content:start;break-inside:avoid}
 .pr::before{content:counter(p);grid-row:span 9;width:1.6em;height:1.6em;border-radius:50%;border:1.5px solid var(--p-ink);display:grid;place-items:center;font-weight:700;font-size:.85em;font-variant-numeric:tabular-nums}
 .pr.wide{grid-column:1/-1}
+.tag{display:inline-block;font-size:.72em;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border:1.2px solid currentColor;border-radius:3px;padding:0 .4em;margin-right:.45em;vertical-align:.12em;opacity:.8}
 .pq{min-width:0;padding-top:.1em}
 .pm{min-width:0;padding-top:.3em;overflow-x:auto}
 .ph{font-size:.82em;color:var(--p-soft);border-left:3px solid var(--p-sup);padding:.1em 0 .1em .55em;margin-top:.25em}
@@ -887,8 +888,8 @@ const STD=[
    const n=r.int(1,3),[b,d]=until(()=>[r.pick([2,3,4,6,8]),r.pick([2,3,4,6,8])],([b,d])=>b!==d&&b>n&&d>n);return{q:EQ(`${F(n,b)}${CMP}${F(n,d)}`),a:sym(n,b,n,d)}},
  stretch(r){const t=r.int(0,2);
    if(t===0){const n=r.int(1,3),[b,d]=until(()=>[r.pick([2,3,4,6,8]),r.pick([2,3,4,6,8])],([b,d])=>b!==d&&b>n&&d>n);return{q:`${EQ(`${F(n,b)}${CMP}${F(n,d)}`)}<br>Explain how you know.`,a:`${F(n,b)} ${sym(n,b,n,d)} ${F(n,d)}`,space:'l'}}
-   if(t===1){const[b,c]=r.pick([[2,4],[3,6],[4,8],[2,6]]),a=r.int(1,b-1);return{q:`Write two fractions that are equal to ${F(a,b)}.`,a:`${F(a*c/b,c)}, ${F(a*2,b*2)===F(a*c/b,c)?F(a*3,b*3):F(a*2,b*2)}, and others`,space:'m'}}
-   const d=r.pick([2,3,4,6,8]),w=r.int(2,5);return{q:EQ(`${F(w*d,d)} = ${BL()}`),a:w}},
+   if(t===1){const[b,c]=r.pick([[2,4],[3,6],[4,8],[2,6]]),a=r.int(1,b-1);return{q:`Write two fractions that are equal to ${F(a,b)}.`,a:`${F(a*2,b*2)}, ${F(a*3,b*3)}, and others`,space:'m'}}
+   const d=r.pick([3,4,6,8]),w=r.int(1,3),a=until(()=>r.int(w*d-2,w*d+2),v=>v>0);return{q:`Is ${F(a,d)} greater than, less than or equal to ${w}? Explain how you know.`,a:`${F(a,d)} ${a>w*d?'&gt;':a<w*d?'&lt;':'='} ${w}, because ${w} = ${F(w*d,d)}.`,space:'m'}},
  worked(r){const[b,c]=r.pick([[2,4],[3,6],[4,8]]),a=1;return{q:`${F(a,b)} = ${F('?',c)}`,steps:[`Split each ${F(1,b)} piece into ${c/b} equal pieces.`,`Now there are ${c} pieces, and ${c/b} of them are shaded.`,`${F(a,b)} = ${F(c/b,c)}`],a:F(c/b,c)}},
  challenge(r){const[p]=two(r),n=1,[b,d]=r.pick([[3,2],[4,2],[6,3],[8,4]]);return{q:`${p} says ${F(n,b)} is greater than ${F(n,d)} because ${b} is greater than ${d}. Is ${p} right? Draw a picture to explain.`,a:`No. ${F(n,b)} &lt; ${F(n,d)}; more pieces in the whole means each piece is smaller.`}}},
 
@@ -1637,7 +1638,7 @@ const STD=[
    if(r.chance(.5))return{q:sys(`${V('x')} + ${V('y')} = ${I(x+y)}`,`${V('x')} − ${V('y')} = ${I(x-y)}`),a:`(${I(x)}, ${I(y)})`,space:'m'};
    const m=until(()=>r.int(-4,4),v=>v!==0),a=r.int(1,5),c=until(()=>r.int(-4,5),v=>v!==0&&a+v*m!==0);return{q:sys(`${V('y')} = ${lin(m,y-m*x)}`,lin2(a,c,a*x+c*y)),a:`(${I(x)}, ${I(y)})`,space:'m'}},
  stretch(r){const t=r.int(0,2);
-   if(t===0){const x=r.int(-5,6),y=r.int(-5,6),[a1,b1,a2,b2]=until(()=>[r.int(2,5),r.int(-5,5),r.int(2,5),r.int(-5,5)],([a,b,c,d])=>b!==0&&d!==0&&a*d-b*c!==0&&a!==c);return{q:sys(lin2(a1,b1,a1*x+b1*y),lin2(a2,b2,a2*x+b2*y)),a:`(${I(x)}, ${I(y)})`,space:'l'}}
+   if(t===0){const[x,y]=until(()=>[r.int(-5,6),r.int(-5,6)],([x,y])=>x!==0&&y!==0),[a1,b1,a2,b2]=until(()=>[r.int(2,5),r.int(-5,5),r.int(2,5),r.int(-5,5)],([a,b,c,d])=>b!==0&&d!==0&&a*d-b*c!==0&&a!==c);return{q:sys(lin2(a1,b1,a1*x+b1*y),lin2(a2,b2,a2*x+b2*y)),a:`(${I(x)}, ${I(y)})`,space:'l'}}
    if(t===1){const m=until(()=>r.int(-3,4),v=>v!==0),b=r.int(-5,5),k=r.int(2,4),kind=r.int(0,2);
      const e2=kind===0?`${k}${V('y')} = ${lin(k*m,k*b)}`:kind===1?`${V('y')} = ${lin(m,b+r.int(1,4))}`:`${V('y')} = ${lin(m+1,b-2)}`;
      return{q:`How many solutions does this system have? Explain without solving.<br>${sys(`${V('y')} = ${lin(m,b)}`,e2)}`,a:['Infinitely many (same line)','No solution (parallel lines)','One solution (different slopes)'][kind],space:'m',wide:true}}
@@ -2925,9 +2926,161 @@ const TIERS=[
   {id:'stretch',name:'Stretch',shape:'■',letter:'X',bullets:['Larger numbers and missing values','Multi-step stories','A closing reasoning task to explain or create']}
 ];
 function countFor(tier,N){return tier.id==='support'?Math.max(6,Math.round(N*.7)):tier.id==='stretch'?Math.max(6,N-2):N}
+
+/* Stretch thinking moves for grade 6: find the mistake, work backward, many answers */
+const TG=(tag,q,a)=>({...W(q,a),tag,aline:false,space:'l'});
+const MK=(q,a)=>TG('Find the mistake',q,a),BK=(q,a)=>TG('Work backward',q,a),MANY=(q,a)=>TG('Many answers',q,a);
+const MOVES={
+'6.RP.A.1':{
+ mistake(r){const[p]=two(r),a=r.int(3,9),b=until(()=>r.int(2,9),x=>x!==a);return MK(`A shelter has ${a} dogs and ${b} cats. ${p} says the ratio of cats to dogs is ${a} : ${b}. What mistake did ${p} make?`,`${p} reversed the order. Cats to dogs is ${b} : ${a}.`)},
+ backward(r){const a=r.int(2,5),b=until(()=>r.int(2,7),x=>gcd(x,a)===1),k=r.int(3,9);return BK(`A bag has red and blue marbles in the ratio ${a} : ${b}. There are ${b*k} blue marbles. How many red marbles are there?`,`${a*k} red marbles`)},
+ many(r){const a=r.int(2,5),b=until(()=>r.int(2,7),x=>x!==a);return MANY(`List three different numbers of red and blue marbles that keep the ratio of red to blue at ${a} : ${b}.`,`For example ${2*a} and ${2*b}, ${3*a} and ${3*b}, ${10*a} and ${10*b}.`)}},
+'6.RP.A.3a':{
+ mistake(r){const[p]=two(r),a=r.int(2,6),b=until(()=>r.int(2,9),x=>x!==a),k=r.int(2,6);return MK(`${p} says ${a} : ${b} is equivalent to ${a+k} : ${b+k} because ${k} was added to both numbers. Is ${p} right? Explain.`,`No. Equivalent ratios multiply both numbers by the same amount, for example ${a*k} : ${b*k}.`)},
+ backward(r){const a=r.int(2,7),b=until(()=>r.int(2,9),x=>x!==a&&gcd(x,a)===1),k=r.int(4,12);return BK(`In a ratio table, ${a*k} cups of flour goes with ${b*k} cups of sugar. What is the smallest whole-number ratio of flour to sugar?`,`${a} : ${b}`)},
+ many(r){const a=r.int(2,6),b=until(()=>r.int(3,9),x=>x!==a);return MANY(`Write two ratios equivalent to ${a} : ${b} whose two numbers add up to more than 100.`,`For example ${a*10} : ${b*10} and ${a*20} : ${b*20}.`)}},
+'6.RP.A.2':{
+ mistake(r){const[p]=two(r),[n,c]=r.pick([[8,2],[10,5],[20,5],[12,3],[20,4]]);return MK(`${n} pencils cost $${c}. ${p} says that is $${n/c} per pencil. What mistake did ${p} make? What is the cost of one pencil?`,`${p} divided ${n} ÷ ${c}, which gives pencils per dollar. Cost per pencil: $${c} ÷ ${n} = ${money(c*100/n)}.`)},
+ backward(r){const k=r.int(3,9),n=r.int(4,12);return BK(`Apples cost $${k} per pound. ${two(r)[0]} paid $${k*n}. How many pounds were bought?`,`${n} pounds`)},
+ many(r){const m=r.int(4,12)*5;return MANY(`Find two different pairs of distance and time that both have a speed of ${m} miles per hour.`,`For example ${2*m} miles in 2 hours, ${3*m} miles in 3 hours.`)}},
+'6.RP.A.3b':{
+ mistake(r){const[p]=two(r),n1=r.int(3,5),c1=r.int(8,12)*25,n2=n1*2,c2=c1-r.int(1,3)*5,t1=n1*c1,t2=n2*c2;return MK(`Store A sells ${n1} juice boxes for ${money(t1)}. Store B sells ${n2} juice boxes for ${money(t2)}. ${p} says Store A is the better buy because its price is lower. What mistake did ${p} make?`,`${p} compared total prices, not unit prices. A: ${money(c1)} each; B: ${money(c2)} each, so B is the better buy.`)},
+ backward(r){const c=r.int(3,12),n=r.int(3,6),m=until(()=>r.int(6,15),x=>x!==n);return BK(`Tickets all cost the same. ${n} tickets cost $${c*n}. How many tickets can you buy with $${c*m}?`,`${m} tickets`)},
+ many(r){const n=r.int(3,6),c=r.int(2,9);return MANY(`A store sells ${n} notebooks for $${n*c}. Describe two other packages (number of notebooks and price) with the same unit price.`,`For example ${2*n} for $${2*n*c}, 1 for $${c}.`)}},
+'6.RP.A.3c':{
+ mistake(r){const[p]=two(r),pc=r.pick([10,20,25,30]),n=r.int(4,20)*(pc===25?4:10);return MK(`${p} says ${pc}% of ${n} is ${n-pc} because ${p} subtracted ${pc} from ${n}. What is the correct answer? Explain.`,`${pc*n/100}. ${pc}% means ${pc} out of every 100, so find ${pc/100} × ${n}.`)},
+ backward(r){const pc=r.pick([10,20,30,40]),n=r.int(3,15)*10;return BK(`${pc}% of a number is ${pc*n/100}. What is ${2*pc}% of the same number?`,`${2*pc*n/100}`)},
+ many(r){return MANY('Find two different pairs of numbers where the first number is 25% of the second and the second number is more than 100.','For example 30 and 120, 50 and 200.')}},
+'6.RP.A.3d':{
+ mistake(r){const[p]=two(r),f=r.int(3,9);return MK(`${p} says ${12*f} inches = ${144*f} feet because ${p} multiplied by 12. What is the correct answer? Explain.`,`${f} feet. Feet are bigger than inches, so there are fewer of them: divide by 12.`)},
+ backward(r){const q=r.int(3,9)+.5;return BK(`Some quarts of juice fill exactly ${q*4} cups. How many quarts is that? (1 quart = 4 cups)`,`${q} quarts`)},
+ many(r){const y=r.int(2,5);return MANY(`Write ${y} yards in three different ways using feet, inches or a mix of yards and feet.`,`${3*y} feet; ${36*y} inches; ${y-1} ${y-1===1?'yard':'yards'} and 36 inches.`)}},
+'6.NS.A.1':{
+ mistake(r){const[p]=two(r),[a,b]=r.pick([[3,4],[2,3],[5,6]]),[c,d]=r.pick([[1,2],[1,3],[1,4]]);return MK(`${p} says ${F(a,b)} ÷ ${F(c,d)} = ${fr(a*c,b*d)}. What mistake did ${p} make? What is the correct answer?`,`${p} multiplied instead of dividing. ${F(a,b)} ÷ ${F(c,d)} = ${F(a,b)} × ${F(d,c)} = ${fr(a*d,b*c)}.`)},
+ backward(r){const[n,d]=r.pick([[2,3],[3,4],[1,2],[3,5]]),q=r.int(2,9);return BK(`What number divided by ${F(n,d)} gives ${q}?`,`${fr(q*n,d)}`)},
+ many(r){const q=r.int(2,6);return MANY(`Write two different division problems that use fractions and have an answer of ${q}.`,`For example ${F(q,2)} ÷ ${F(1,2)} and ${F(q,4)} ÷ ${F(1,4)}.`)}},
+'6.NS.B.2':{
+ mistake(r){const[p]=two(r),d=r.int(11,24),q=r.int(3,9)*100+r.int(1,9);return MK(`${p} divided ${d*q} ÷ ${d} and got ${Math.floor(q/100)}${q%10}. What mistake did ${p} make? What is the correct quotient?`,`${p} left out the 0 in the tens place. The answer is ${q}.`)},
+ backward(r){const d=r.int(12,40),q=r.int(20,90),rm=r.int(1,d-1);return BK(`A number divided by ${d} gives ${q} with a remainder of ${rm}. What is the number?`,`${d*q+rm}`)},
+ many(r){const d=r.pick([24,25,32,48]);return MANY(`Find two different 4-digit numbers that can be divided by ${d} with no remainder.`,`For example ${d*50} and ${d*100}.`)}},
+'6.NS.B.3':{
+ mistake(r){const[p]=two(r),a=until(()=>r.int(21,89),x=>x%10!==0)/10,b=until(()=>r.int(102,499),x=>x%10!==0)/100;return MK(`${p} added ${a} + ${b} and got ${trim(((Math.round(a*10)+Math.round(b*100))/100).toFixed(2))}. What mistake did ${p} make? What is the correct sum?`,`${p} did not line up the decimal points. The sum is ${trim((a+b).toFixed(2))}.`)},
+ backward(r){const x=r.int(12,90)/10,m=r.pick([0.5,0.2,0.4]);return BK(`A number times ${m} equals ${trim((x*m).toFixed(2))}. What is the number?`,`${trim(x.toFixed(2))}`)},
+ many(r){const t=r.pick([1.2,2.4,3.6]);return MANY(`Find two different pairs of decimals whose product is ${t}.`,`For example ${trim((t/2).toFixed(2))} × 2 and ${trim((t*10/4).toFixed(2))} × 0.4.`)}},
+'6.NS.B.4':{
+ mistake(r){const[p]=two(r),g=r.int(3,6),a=g*2,b=g*3;return MK(`${p} says the greatest common factor of ${a} and ${b} is ${lcm(a,b)}. What mistake did ${p} make?`,`${p} found the least common multiple. The GCF is ${g}.`)},
+ backward(r){const a=r.pick([4,6]),L=a*r.pick([3,5]);return BK(`The least common multiple of ${a} and a number is ${L}. What could the number be? Find all the possibilities up to ${L}.`,factors(L).filter(x=>lcm(a,x)===L).join(', '))},
+ many(r){const g=r.int(3,8);return MANY(`Find two different pairs of numbers whose greatest common factor is ${g}.`,`For example ${2*g} and ${3*g}, ${3*g} and ${5*g}.`)}},
+'6.NS.C.5':{
+ mistake(r){const[p]=two(r),a=r.int(6,15),b=r.int(1,a-2);return MK(`${p} says ${I(-a)}°F is warmer than ${I(-b)}°F because ${a} is greater than ${b}. Is ${p} right? Explain with a number line.`,`No. ${I(-a)} is farther below 0, so ${I(-b)}°F is warmer.`)},
+ backward(r){const t=-r.int(2,9),c=r.int(2,8);return BK(`The temperature now is ${I(t)}°F. An hour ago it was ${c} degrees colder. What was the temperature an hour ago?`,`${I(t-c)}°F`)},
+ many(r){const n=r.int(10,50);return MANY(`Describe two different real situations that ${I(-n)} could represent. Tell what 0 means in each.`,'Answers vary, for example a bank withdrawal or a depth below sea level.')}},
+'6.NS.C.6':{
+ mistake(r){const[p]=two(r),x=r.int(2,8),y=-r.int(2,8);return MK(`${p} says the point (${x}, ${I(y)}) reflected across the x-axis is (${I(-x)}, ${I(y)}). What mistake did ${p} make?`,`${p} reflected across the y-axis. Across the x-axis it is (${x}, ${-y}).`)},
+ backward(r){const x=r.int(2,8),y=r.int(2,8);return BK(`After a point is reflected across the y-axis, it lands at (${I(-x)}, ${y}). Where did it start?`,`(${x}, ${y})`)},
+ many(r){const d=r.int(2,7);return MANY(`Name two points in Quadrant III that are each ${d} units from the x-axis.`,`For example (−1, ${I(-d)}) and (−5, ${I(-d)}).`)}},
+'6.NS.C.7':{
+ mistake(r){const[p]=two(r),a=r.int(5,12),b=r.int(1,a-2);return MK(`${p} says ${I(-a)} &gt; ${I(-b)} because ${a} is greater than ${b}. Is ${p} right? Explain.`,`No. ${I(-a)} is farther left on the number line, so ${I(-a)} &lt; ${I(-b)}.`)},
+ backward(r){const n=r.int(3,15);return BK(`|${V('n')}| = ${n}. What could ${V('n')} be?`,`${n} or ${I(-n)}`)},
+ many(r){const a=r.int(2,6);return MANY(`Find three different numbers between ${I(-a)} and ${I(-a+1)}.`,`For example ${D(-a+.25)}, ${D(-a+.5)}, ${D(-a+.75)}.`)}},
+'6.NS.C.8':{
+ mistake(r){const[p]=two(r),x=r.int(-5,5),a=r.int(2,6),b=r.int(2,6);return MK(`${p} says the distance from (${I(x)}, ${a}) to (${I(x)}, ${I(-b)}) is ${Math.abs(a-b)} unit${Math.abs(a-b)===1?'':'s'}. What mistake did ${p} make?`,`${p} subtracted ${a} − ${b}. The points are on opposite sides of the x-axis, so add: ${a+b} units.`)},
+ backward(r){const x=r.int(-4,4),y=r.int(-4,4),d=r.int(3,7);return BK(`A point is ${d} units from (${I(x)}, ${I(y)}) and on the same vertical line. What could the point be?`,`(${I(x)}, ${I(y+d)}) or (${I(x)}, ${I(y-d)})`)},
+ many(r){const x=r.int(-4,4),y=r.int(-4,4),d=r.int(4,8);return MANY(`Find two points that are exactly ${d} units from (${I(x)}, ${I(y)}).`,`For example (${I(x+d)}, ${I(y)}) and (${I(x)}, ${I(y-d)}).`)}},
+'6.EE.A.1':{
+ mistake(r){const[p]=two(r),b=r.int(2,6),e=r.int(3,5);return MK(`${p} says ${E(b,e)} = ${b*e}. What mistake did ${p} make? What is the correct value?`,`${p} multiplied ${b} × ${e}. ${E(b,e)} means ${Array(e).fill(b).join(' × ')} = ${b**e}.`)},
+ backward(r){const s=r.int(6,15);return BK(`Which whole number squared equals ${s*s}?`,`${s}`)},
+ many(r){const n=r.pick([[64,'8<sup>2</sup>, 4<sup>3</sup>, 2<sup>6</sup>'],[81,'9<sup>2</sup>, 3<sup>4</sup>'],[16,'4<sup>2</sup>, 2<sup>4</sup>']]);return MANY(`Write ${n[0]} as a power in as many different ways as you can.`,n[1])}},
+'6.EE.A.2a':{
+ mistake(r){const[p]=two(r),k=r.int(3,9);return MK(`${p} writes "${k} less than ${V('n')}" as ${EQ(`${k} − ${V('n')}`)}. What mistake did ${p} make?`,`The order is reversed. It should be ${V('n')} − ${k}.`)},
+ backward(r){const a=r.int(2,6),b=r.int(1,9),n=r.int(3,8);return BK(`An expression has ${a} as the coefficient of ${V('n')} and a constant term. Its value is ${a*n+b} when ${V('n')} = ${n}. What is the expression?`,`${a}${V('n')} + ${b}`)},
+ many(r){const n=r.int(3,6),t=r.int(15,30);return MANY(`Write two different expressions with ${V('n')} that each equal ${t} when ${V('n')} = ${n}.`,`For example ${V('n')} + ${t-n} and ${lin(Math.floor(t/n),t-Math.floor(t/n)*n,'n')}.`)}},
+'6.EE.A.2c':{
+ mistake(r){const[p]=two(r),a=r.int(2,5),x=r.int(2,6);return MK(`${p} evaluated ${EQ(`${a}${V('x')}<sup>2</sup>`)} for ${V('x')} = ${x} and got ${(a*x)**2}. What mistake did ${p} make?`,`${p} squared ${a}${V('x')}. Only ${V('x')} is squared: ${a} × ${x*x} = ${a*x*x}.`)},
+ backward(r){const a=r.int(2,6),b=r.int(1,9),x=r.int(2,9);return BK(`For what value of ${V('x')} does ${EQ(`${a}${V('x')} + ${b}`)} equal ${a*x+b}?`,`${V('x')} = ${x}`)},
+ many(r){const a=r.int(2,5);return MANY(`Find two values of ${V('x')} that make ${EQ(`${a}${V('x')} − 1`)} a number between 20 and 40.`,`Any whole number ${V('x')} from ${Math.floor(21/a)+1} to ${Math.ceil(41/a)-1}, for example ${Math.floor(21/a)+1}.`)}},
+'6.EE.A.3':{
+ mistake(r){const[p]=two(r),a=r.int(2,9),b=r.int(2,9);return MK(`${p} says ${EQ(`${a}(${V('x')} + ${b}) = ${a}${V('x')} + ${b}`)}. What mistake did ${p} make?`,`${p} only multiplied ${V('x')} by ${a}. It should be ${a}${V('x')} + ${a*b}.`)},
+ backward(r){const a=r.int(2,6),m=r.int(2,7),c=r.int(1,9);return BK(`What number goes in the box? ${EQ(`${BOX}(${m}${V('x')} + ${c}) = ${a*m}${V('x')} + ${a*c}`)}`,`${a}`)},
+ many(r){const g=r.pick([6,12]);return MANY(`Write ${EQ(`${2*g}${V('x')} + ${3*g}`)} as a product in two different ways.`,`For example ${g}(2${V('x')} + 3) and 3(${2*g/3}${V('x')} + ${g}).`)}},
+'6.EE.A.4':{
+ mistake(r){const[p]=two(r),k=r.pick([2,3,4]);return MK(`${p} says ${EQ(`${k}${V('x')}`)} and ${EQ(`${V('x')} + ${k*k-k}`)} are equivalent because both equal ${k*k} when ${V('x')} = ${k}. Is ${p} right? Explain.`,`No. One matching value is not enough; try ${V('x')} = ${k+1}: ${k*(k+1)} and ${k+1+k*k-k}.`)},
+ backward(r){const a=r.int(2,9),b=r.int(1,9);return BK(`Write an expression equivalent to ${EQ(`${a}(${V('x')} − ${b})`)} with no parentheses.`,lin(a,-a*b))},
+ many(r){const a=r.pick([6,8,12]);return MANY(`Write three different expressions equivalent to ${EQ(lin(a,2*a))}.`,`For example ${a}(${V('x')} + 2), 2(${a/2}${V('x')} + ${a}), ${a-1}${V('x')} + ${V('x')} + ${2*a}.`)}},
+'6.EE.B.5':{
+ mistake(r){const[p]=two(r),k=r.int(3,12);return MK(`${p} says ${k} is a solution of ${EQ(`${V('x')} &gt; ${k}`)}. Is ${p} right? Explain.`,`No. ${k} is not greater than ${k}. It would be a solution of ${V('x')} ≥ ${k}.`)},
+ backward(r){const k=r.int(2,9);return BK(`Write an inequality that ${k+1}, ${k+2} and ${k+3} all make true, but ${k} does not.`,`For example ${V('x')} &gt; ${k}`)},
+ many(r){const a=r.int(2,4),c=r.int(11,25);return MANY(`List three solutions of ${EQ(`${a}${V('x')} &lt; ${c}`)}. Make one of them a fraction or decimal.`,`Any number less than ${trim((c/a).toFixed(2))}, for example 1, 2.5, ${F(1,2)}.`)}},
+'6.EE.B.6':{
+ mistake(r){const[p]=two(r),f=r.int(15,40),m=r.int(6,12);return MK(`A gym charges $${f} to join plus $${m} each month. ${p} writes ${EQ(`${f}${V('m')} + ${m}`)} for the cost of ${V('m')} months. What mistake did ${p} make?`,`${p} switched the numbers. It should be ${m}${V('m')} + ${f}.`)},
+ backward(r){const a=r.int(5,15),b=r.int(10,40);return BK(`The expression ${EQ(`${a}${V('h')} + ${b}`)} gives a total cost in dollars. Describe a situation it could represent. What do ${a}, ${b} and ${V('h')} mean?`,'Answers vary, for example a $'+b+' fee plus $'+a+' per hour.')},
+ many(r){return MANY(`Write two different expressions for the perimeter of a square with side length ${V('s')}.`,`4${V('s')} and ${V('s')} + ${V('s')} + ${V('s')} + ${V('s')}`)}},
+'6.EE.B.7':{
+ mistake(r){const[p]=two(r),k=r.int(4,15),x=r.int(5,30);return MK(`${p} solved ${EQ(`${V('x')} + ${k} = ${x+k}`)} by adding ${k} to both sides and got ${V('x')} = ${x+2*k}. What mistake did ${p} make?`,`${p} should subtract ${k} to undo + ${k}. ${V('x')} = ${x}.`)},
+ backward(r){const[n,d]=r.pick([[2,3],[3,4],[2,5],[3,5]]),k=r.int(2,6);return BK(`The solution of ${EQ(`${F(n,d)}${V('x')} = ${BOX}`)} is ${EQ(`${V('x')} = ${d*k}`)}. What number goes in the box? Then write a different equation with the same solution.`,`${n*k}; equations vary, for example ${V('x')} − 1 = ${d*k-1}.`)},
+ many(r){const x=r.int(4,15);return MANY(`Write two different equations whose solution is ${V('x')} = ${x}. Use addition in one and multiplication in the other.`,`For example ${V('x')} + 5 = ${x+5} and 3${V('x')} = ${3*x}.`)}},
+'6.EE.B.8':{
+ mistake(r){const[p]=two(r),k=r.int(-6,8);return MK(`${p} graphed ${EQ(`${V('x')} ≥ ${I(k)}`)} with an open circle at ${I(k)}, shaded to the right. What mistake did ${p} make?`,`The circle should be closed, because ${I(k)} is a solution.`)},
+ backward(r){const k=r.int(-8,8),[s,c,d]=r.pick([['≥','closed','right'],['&lt;','open','left'],['≤','closed','left'],['&gt;','open','right']]);return BK(`A number line shows a ${c} circle at ${I(k)}, shaded to the ${d}. Write the inequality.`,`${V('x')} ${s} ${I(k)}`)},
+ many(r){const k=-r.int(2,9);return MANY(`Name three solutions of ${EQ(`${V('x')} &lt; ${I(k)}`)}. Make one of them not a whole number.`,`For example ${I(k-1)}, ${I(k-10)}, ${D(k-.5)}.`)}},
+'6.EE.C.9':{
+ mistake(r){const[p]=two(r),s=r.int(40,65);return MK(`A car travels at ${s} miles per hour: ${EQ(`${V('d')} = ${s}${V('t')}`)}. ${p} says ${V('d')} is the independent variable. What mistake did ${p} make?`,`The distance depends on the time, so ${V('t')} is independent and ${V('d')} is dependent.`)},
+ backward(r){const k=r.int(3,12),xs=[1,2,3,4];return BK(`A table shows ${V('x')}: ${xs.join(', ')} and ${V('y')}: ${xs.map(x=>k*x).join(', ')}. Write an equation for ${V('y')}. Then find ${V('y')} when ${V('x')} = 10.`,`${V('y')} = ${k}${V('x')}; ${10*k}`)},
+ many(r){const k=r.int(3,9);return MANY(`Describe two different situations that ${EQ(`${V('y')} = ${k}${V('x')}`)} could represent. Name the independent variable in each.`,'Answers vary.')}},
+'6.G.A.1':{
+ mistake(r){const[p]=two(r),b=r.int(6,14),h=r.int(3,10);return MK(`${p} says a triangle with a base of ${b} cm and a height of ${h} cm has an area of ${b*h} square cm. What mistake did ${p} make?`,`${p} forgot to take half. The area is ${n2(b*h/2)} square cm.`)},
+ backward(r){const b1=r.int(4,10),b2=b1+r.int(2,8),h=r.int(3,9);return BK(`A trapezoid has an area of ${(b1+b2)*h/2} square inches. Its parallel sides are ${b1} in and ${b2} in. What is its height?`,`${h} inches`)},
+ many(r){const A=r.pick([12,18,24,30]);return MANY(`Give the base and height of two different triangles that each have an area of ${A} square units.`,`For example base ${A/3} and height 6, base ${A/2} and height 4.`)}},
+'6.G.A.2':{
+ mistake(r){const[p]=two(r),l=r.int(2,6),w=r.int(2,5);return MK(`${p} says a box that is ${l} ft by ${w} ft by ${F(1,2)} ft has a volume of ${l+w}${F(1,2)} cubic feet. What mistake did ${p} make?`,`${p} added the edges. Volume = ${l} × ${w} × ${F(1,2)} = ${fr(l*w,2)} cubic feet.`)},
+ backward(r){const l=r.int(2,6),w=r.int(2,5),[h,d]=r.pick([[1,2],[3,2],[3,4]]);return BK(`A box has a volume of ${fr(l*w*h,d)} cubic inches. Its base is ${l} in by ${w} in. How tall is it?`,`${fr(h,d)} ${h<d?'inch':'inches'}`)},
+ many(r){const V_=r.pick([6,8,12]);return MANY(`Find two different rectangular prisms with a volume of ${V_} cubic units where at least one edge is a fraction.`,`For example ${V_} × 2 × ${F(1,2)} and ${V_/2} × 4 × ${F(1,2)}.`)}},
+'6.G.A.3':{
+ mistake(r){const[p]=two(r),a=r.int(2,6),b=r.int(2,6),y=r.int(-4,4);return MK(`${p} says the side from (${I(-a)}, ${I(y)}) to (${b}, ${I(y)}) is ${Math.abs(b-a)} unit${Math.abs(b-a)===1?'':'s'} long. What mistake did ${p} make?`,`The points are on opposite sides of the y-axis, so add: ${a+b} units.`)},
+ backward(r){const x=r.int(-3,2),y=r.int(-3,2),s=r.int(3,6);return BK(`Two vertices of a square are (${I(x)}, ${I(y)}) and (${I(x)}, ${I(y+s)}). What could the other two vertices be?`,`(${I(x+s)}, ${I(y)}) and (${I(x+s)}, ${I(y+s)}), or (${I(x-s)}, ${I(y)}) and (${I(x-s)}, ${I(y+s)})`)},
+ many(r){const P=r.pick([16,20,24]);return MANY(`Give the vertices of two different rectangles with a perimeter of ${P} units that have a vertex in every quadrant.`,'Answers vary.')}},
+'6.G.A.4':{
+ mistake(r){const[p]=two(r),s=r.int(2,9);return MK(`${p} found the surface area of a cube with edges of ${s} cm by multiplying ${s} × ${s} × ${s} = ${s**3}. What mistake did ${p} make?`,`${p} found the volume. Surface area = 6 × ${s} × ${s} = ${6*s*s} square cm.`)},
+ backward(r){const s=r.int(2,9);return BK(`A cube has a surface area of ${6*s*s} square cm. How long is each edge?`,`${s} cm`)},
+ many(r){return MANY('Draw two different nets that fold into a cube.','Answers vary; there are 11 possible cube nets.')}},
+'6.G.5':{
+ mistake(r){const[p]=two(r),b=r.int(2,6);return MK(`${p} says ${E(b,3)} = ${b*3}. What mistake did ${p} make?`,`${E(b,3)} means ${b} × ${b} × ${b} = ${b**3}.`)},
+ backward(r){const s=r.int(3,9);return BK(`A cube is built from ${s**3} unit cubes. How many cubes long is each edge?`,`${s}`)},
+ many(r){return MANY('Find all the perfect squares between 1 and 100 that are even.','4, 16, 36, 64, 100')}},
+'6.SP.A.1':{
+ mistake(r){const[p]=two(r);return MK(`${p} says "How old is our principal?" is a statistical question because principals have different ages. What mistake did ${p} make?`,'There is only one principal, so there is one answer and no variability.')},
+ backward(r){const d=Array.from({length:8},()=>r.int(5,10));return BK(`A student collected this data: ${d.join(', ')} (hours). Write a statistical question that could have produced this data.`,'For example: How many hours of sleep do students in our class get on a school night?')},
+ many(r){const t=r.pick(['pets','sports','lunch','books']);return MANY(`Write two different statistical questions about ${t}.`,'Answers vary.')}},
+'6.SP.1b':{
+ mistake(r){const[p]=two(r);return MK(`To learn what all students think about recess, ${p} surveys their own friends and calls it a random sample. What mistake did ${p} make?`,'Friends are not chosen at random and may think alike, so the sample is not random or representative.')},
+ backward(r){const N=r.int(4,9)*100,k=r.pick([[1,4],[1,5],[3,10]]);return BK(`Based on a random sample, a principal predicts that ${N*k[0]/k[1]} of the ${N} students walk to school. What fraction of the sample walks to school?`,F(...k))},
+ many(r){return MANY('Describe two different ways to choose a random sample of 30 students from your school.','For example drawing names from a hat, or using a random number generator with student ID numbers.')}},
+'6.SP.B.4':{
+ mistake(r){const[p]=two(r),a=r.int(3,7)*10;return MK(`A histogram has a bar from ${a} to ${a+9} with a height of 4. ${p} says exactly 4 students scored ${a} points. What mistake did ${p} make?`,`The bar shows 4 scores somewhere from ${a} to ${a+9}, not exactly ${a}.`)},
+ backward(r){const m=r.int(4,8);return BK(`Make a data set of 8 values whose dot plot has its tallest stack at ${m} and a range of 5.`,'Answers vary.')},
+ many(r){return MANY('Write two different data sets of 6 values that make the same histogram with intervals 0–9 and 10–19.','Answers vary.')}},
+'6.SP.B.5c':{
+ mistake(r){const[p]=two(r),a=r.int(2,5),b=r.int(6,9),c=r.int(10,14);return MK(`${p} says the median of ${b}, ${c}, ${a} is ${c} because it is in the middle of the list. What mistake did ${p} make?`,`The data must be put in order first: ${a}, ${b}, ${c}. The median is ${b}.`)},
+ backward(r){const m=r.int(8,15),d=[m-2,m+3,m-4];return BK(`Four numbers have a mean of ${m}. Three of them are ${d.join(', ')}. What is the fourth number?`,`${4*m-d.reduce((a,b)=>a+b)}`)},
+ many(r){const m=r.int(5,9);return MANY(`Create two different data sets of 5 numbers that each have a mean of ${m}.`,`For example ${[m,m,m,m,m].join(', ')} and ${[m-2,m-1,m,m+1,m+2].join(', ')}.`)}},
+'6.SP.8':{
+ mistake(r){const[p]=two(r),k=r.int(2,5);return MK(`${p} says the probability of rolling a ${k} on a number cube is ${F(k,6)}. What mistake did ${p} make?`,`Only one face shows ${k}, so the probability is ${F(1,6)}.`)},
+ backward(r){const n=r.pick([12,15,20,24]),[a,b]=r.pick([[1,3],[1,4],[2,5]]);return n*a%b?BK(`A bag has 12 marbles and the probability of red is ${F(1,3)}. How many marbles are red?`,'4'):BK(`A bag has ${n} marbles and the probability of red is ${F(a,b)}. How many marbles are red?`,`${n*a/b}`)},
+ many(r){return MANY(`Design two different spinners where the probability of blue is ${F(1,2)} and the probability of red is ${F(1,4)}.`,'For example 4 equal parts (2 blue, 1 red, 1 other), or 8 equal parts (4 blue, 2 red, 2 other).')}}
+};
+
+/* template key for word problems: same story with different numbers or names counts as one template */
+const NAME_RE=new RegExp('\\b('+[...GEN_NAMES,...IM_NAMES].join('|')+')\\b','g');
+const tkey=(p,all)=>{const t=p.q.replace(/<[^>]+>/g,'');return all||p.wide||t.length>60?t.replace(NAME_RE,'@').replace(/[0-9.,]+/g,'#').replace(/[^a-z#@]/gi,'').slice(0,40):null};
+const qkey=p=>p.q.replace(/<[^>]+>/g,'')+(p.model||'');
+function draw(gen,r,n,cap,min=n,all=false){const probs=[],seen=new Set(),tc={};
+  for(const c of [cap,cap+1,99]){let g=0;while(probs.length<n&&g++<n*40){const p=gen(r),k=qkey(p),t=tkey(p,all);if(seen.has(k)||(t&&(tc[t]||0)>=c))continue;seen.add(k);if(t)tc[t]=(tc[t]||0)+1;probs.push(p)}if(probs.length>=min)break}
+  return probs}
 function build(std,tier,seed,N){
-  const r=RNG(hash(std.code+tier.id)^seed),n=countFor(tier,N),probs=[],seen=new Set();let g=0;
-  while(probs.length<n&&g++<n*40){const p=std[tier.id](r);const k=p.q+(p.model||'')+p.a;if(seen.has(k))continue;seen.add(k);probs.push(p)}
+  const r=RNG(hash(std.code+tier.id)^seed),n=countFor(tier,N),mv=tier.id==='stretch'&&MOVES[std.code];
+  let probs;
+  if(mv){probs=draw(std.stretch,r,3,1,3,true);probs.push(mv.mistake(r),mv.backward(r),mv.many(r))}
+  else probs=tier.id==='stretch'?draw(std.stretch,r,n,2,6):draw(std[tier.id],r,n,3);
   const out={probs,worked:tier.id==='support'?std.worked(r):null,challenge:tier.id==='stretch'?std.challenge(r):null};
   out.cool=std.onlevel(RNG(hash(std.code+'cool')^seed));
   if(out.worked){for(let i=1;i<12;i++){const w=std.worked(RNG(hash(std.code+'turn')^seed^i));if(w.q!==out.worked.q){out.turn=w;break}}
@@ -3024,7 +3177,7 @@ function sheetHTML(std,tier,d,o){
   const frames=q=>false&&ell&&ELL_CUE.test(q.replace(/<[^>]+>/g,''))?`<div class="frames"><b>Start with</b>${(FRAMES[std.code]||FRAMES_DEFAULT).map(f=>`“${f}”`).join(' &nbsp;or&nbsp; ')}</div>`:'';
   const plain=(p)=>{if(!(ell&&tier.id==='support'&&p.wide))return p.q;const parts=p.q.split(/(?<=[.?!])\s+(?=[A-Z])/);if(parts.length<2)return p.q;return parts.map(x=>`<span class="sl${/\?\s*$/.test(x)?' sq':''}">${x}</span>`).join('')};
   const ch=d.challenge?`<div class="chal"><h3>${im?'Are you ready for more?':'Think deeper'}</h3><p>${d.challenge.q}</p>${frames(d.challenge.q)}<div class="pw l"></div><div class="pa">${d.challenge.a}</div></div>`:'';
-  const li=d.probs.map(p=>`<li class="pr${p.wide?' wide':''}"><div class="pq">${plain(p)}${im&&p.aline?' Explain or show your reasoning.':''}</div>${frames(p.q)}${p.model?`<div class="pm">${p.model}</div>`:''}${p.hint&&tier.id==='support'?`<div class="ph"><span>Hint</span>${p.hint}</div>`:''}<div class="pw ${p.space||'s'}"></div>${p.aline?`<div class="aline">Answer:<span class="line"></span></div>`:''}<div class="pa">${p.a}</div></li>`).join('');
+  const li=d.probs.map(p=>`<li class="pr${p.wide?' wide':''}"><div class="pq">${p.tag?`<span class="tag">${p.tag}</span>`:''}${plain(p)}${im&&p.aline?' Explain or show your reasoning.':''}</div>${frames(p.q)}${p.model?`<div class="pm">${p.model}</div>`:''}${p.hint&&tier.id==='support'?`<div class="ph"><span>Hint</span>${p.hint}</div>`:''}<div class="pw ${p.space||'s'}"></div>${p.aline?`<div class="aline">Answer:<span class="line"></span></div>`:''}<div class="pa">${p.a}</div></li>`).join('');
   const warm='';const unusedWarm=d.warm?`<div class="warm"><h3>Warm-up: ${d.warm.type}</h3><p>${d.warm.prompt}</p>${d.warm.text?`<p style="color:inherit">${d.warm.text}</p>`:''}${d.warm.model?`<div class="pm">${d.warm.model}</div><div class="pw m"></div>`:''}${d.warm.items?`<ol class="tf${d.warm.items.some(i=>i.q.replace(/<[^>]+>/g,'').length>24)?' long':''}">${d.warm.items.map(i=>`<li><span class="eq">${i.q.replace(/^<span class="eq">|<\/span>$/g,'')}</span><span class="pa">${i.a}</span></li>`).join('')}</ol>`:''}</div>`:'';
   const c=o.cool?d.cool:null,cool=c?`<div class="cool"><h3>Cool-down</h3><div class="pq">${c.q}${c.aline?' Explain or show your reasoning.':''}</div>${c.model?`<div class="pm">${c.model}</div>`:''}<div class="pw"></div><div class="pa">${c.a}</div></div>`:'';
   return `<article class="sheet t-${tier.id}${o.key?' key':''}" aria-label="${tier.name} worksheet">
