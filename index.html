@@ -230,9 +230,18 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
 .btn.ghost{background:var(--panel);color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent);font-size:14px;padding:9px 10px}
 #printset{display:none}
 @page{size:letter;margin:0.45in}
-.vocab{border:1.5px solid var(--p-ink);border-radius:.6em;padding:.6em .85em;display:flex;flex-direction:column;gap:.35em}
-.vocab h3{margin:0;font-family:var(--f-display);font-size:.9em;text-transform:uppercase;letter-spacing:.08em;display:flex;justify-content:space-between;gap:1em;align-items:baseline}
+.vocab{border:1px solid var(--p-rule);border-radius:.5em;padding:.45em .75em;display:flex;flex-direction:column;gap:.35em}
+.vocab h3{margin:0;font-family:var(--f-display);font-size:.78em;text-transform:uppercase;letter-spacing:.08em;display:flex;justify-content:space-between;gap:1em;align-items:baseline}
 .vocab h3 span{font-family:var(--f-body);text-transform:none;letter-spacing:0;font-weight:400;color:var(--p-soft);font-size:.92em}
+.vl{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.2em 1.4em;font-size:.86em}
+.vsup .vl{grid-template-columns:minmax(0,1fr)}
+.vl li{display:flex;flex-wrap:wrap;align-items:baseline;gap:.15em .55em;min-width:0}
+.vl .t{color:var(--p-onl);font-weight:700}
+.vl .t[lang=ar]{color:var(--p-str);font-family:'Noto Naskh Arabic','Geeza Pro',Arial,sans-serif;font-size:1.1em}
+.vl .x{color:var(--p-soft)}
+.vl .x::before{content:"— "}
+.vframes{margin:.2em 0 0;font-size:.82em;color:var(--p-soft);border-top:1px solid var(--p-rule);padding-top:.35em}
+.vframes b{color:var(--p-onl);text-transform:uppercase;letter-spacing:.06em;font-size:.85em;margin-right:.3em}
 .vocab table{border-collapse:collapse;width:100%;font-size:.88em}
 .vocab td{padding:.28em .5em;border-top:1px solid var(--p-rule);vertical-align:middle}
 .vocab td.w{font-weight:700;width:27%}
@@ -2980,8 +2989,9 @@ function sheetHTML(std,tier,d,o){
   const badge=o.discreet?`<span class="badge disc tc" title="${tier.name}">${tier.shape}</span>`:`<span class="badge tc">${tier.shape} ${tier.name}</span>`;
   const ex=d.worked?`<div class="ex"><span class="lab">${im?'Summary':'Example'}</span><div class="q">${d.worked.q}</div><ol>${d.worked.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>`:'';
   const ell=!!VOCAB[std.code],lang=o.lang||'en',L=LANGS[lang]||LANGS.en;
-  const vocabBox=ell?`<div class="vocab"><h3>Key words${lang!=='en'?`<span>${{es:'Palabras clave',ar:'الكلمات الرئيسية'}[lang]}</span>`:''}</h3><table>${VOCAB[std.code].map(v=>`<tr><td class="w">${v[0]}</td>${lang!=='en'?`<td class="t"${L.rtl?' dir="rtl" lang="ar"':' lang="es"'}>${v[L.col]}</td>`:''}<td class="x">${v[3]}</td></tr>`).join('')}</table></div>`:'';
-  const frames=q=>ell&&ELL_CUE.test(q.replace(/<[^>]+>/g,''))?`<div class="frames"><b>Start with</b>${(FRAMES[std.code]||FRAMES_DEFAULT).map(f=>`“${f}”`).join(' &nbsp;or&nbsp; ')}</div>`:'';
+  const sup=tier.id==='support',fr=FRAMES[std.code]||FRAMES_DEFAULT,hasExplain=ell&&sup&&d.probs.some(p=>ELL_CUE.test(p.q.replace(/<[^>]+>/g,'')));
+  const vocabBox=ell?`<div class="vocab${sup?' vsup':''}"><h3>Key words${lang!=='en'?`<span>${{es:'Palabras clave',ar:'الكلمات الرئيسية'}[lang]}</span>`:''}</h3><ul class="vl">${VOCAB[std.code].map(v=>`<li><b>${v[0]}</b>${lang!=='en'?` <span class="t"${L.rtl?' dir="rtl" lang="ar"':' lang="es"'}>${v[L.col]}</span>`:''}${sup?`<span class="x">${v[3]}</span>`:''}</li>`).join('')}</ul>${hasExplain?`<p class="vframes"><b>Sentence starters</b> ${fr.map(f=>`“${f}”`).join(' &nbsp;·&nbsp; ')}</p>`:''}</div>`:'';
+  const frames=q=>false&&ell&&ELL_CUE.test(q.replace(/<[^>]+>/g,''))?`<div class="frames"><b>Start with</b>${(FRAMES[std.code]||FRAMES_DEFAULT).map(f=>`“${f}”`).join(' &nbsp;or&nbsp; ')}</div>`:'';
   const plain=(p)=>{if(!(ell&&tier.id==='support'&&p.wide))return p.q;const parts=p.q.split(/(?<=[.?!])\s+(?=[A-Z])/);if(parts.length<2)return p.q;return parts.map(x=>`<span class="sl${/\?\s*$/.test(x)?' sq':''}">${x}</span>`).join('')};
   const ch=d.challenge?`<div class="chal"><h3>${im?'Are you ready for more?':'Think deeper'}</h3><p>${d.challenge.q}</p>${frames(d.challenge.q)}<div class="pw l"></div><div class="pa">${d.challenge.a}</div></div>`:'';
   const li=d.probs.map(p=>`<li class="pr${p.wide?' wide':''}"><div class="pq">${plain(p)}${im&&p.aline?' Explain or show your reasoning.':''}</div>${frames(p.q)}${p.model?`<div class="pm">${p.model}</div>`:''}${p.hint&&tier.id==='support'?`<div class="ph"><span>Hint</span>${p.hint}</div>`:''}<div class="pw ${p.space||'s'}"></div>${p.aline?`<div class="aline">Answer:<span class="line"></span></div>`:''}<div class="pa">${p.a}</div></li>`).join('');

@@ -30,9 +30,9 @@ Open `index.html` in a web browser. It is a single file with no build step; font
 
 Every grade 6 sheet includes:
 
-- **Key words:** 4–5 words for the standard, each with a short example. The **Word list language** menu adds a translation column in Spanish or Arabic. English only is the default.
-- **Sentence starters** under questions that ask students to explain.
-- **Easier-to-read stories** on the Support version: one sentence per line, with the question in bold.
+- **Key words:** a compact list of 4–5 words for the standard. The **Word list language** menu adds the Spanish or Arabic word next to each one; English only is the default. The Support version also shows a short example for each word.
+- **Sentence starters (Support only):** one line under the key words, shown when the sheet has questions that ask students to explain.
+- **Easier-to-read stories (Support only):** one sentence per line, with the question in bold.
 
 Choose a language, print, then switch languages and print again. The problems and answer key stay the same, and each sheet's footer shows its language. Translations should be checked by a bilingual colleague before use.
 
