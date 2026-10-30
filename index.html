@@ -63,7 +63,7 @@ select,input[type=number]{background:var(--desk);border:1px solid var(--line);bo
 .seg label:has(input:checked){background:var(--accent);color:var(--accent-ink)}
 .seg label:has(input:focus-visible){outline:3px solid var(--focus)}
 .stds{display:flex;flex-direction:column;gap:6px}
-.std{position:relative;display:grid;grid-template-columns:auto 1fr;gap:2px 10px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;cursor:pointer;background:var(--panel)}
+.std{position:relative;display:grid;grid-template-columns:auto 1fr;gap:1px 10px;border:1px solid var(--line);border-radius:9px;padding:7px 10px;cursor:pointer;background:var(--panel)}
 .std input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
 .std code{font-family:var(--f-mono);font-size:12px;color:var(--accent);grid-column:1/-1}
 .std span{grid-column:1/-1;font-size:14px;line-height:1.3}
@@ -328,6 +328,21 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
       <p>One standard, three versions. Independent work for every learner in the room.</p>
     </div>
 
+    <fieldset class="field">
+      <legend>Grade</legend>
+      <div class="seg" id="grades"></div>
+    </fieldset>
+
+    <div class="field">
+      <label for="unit" id="unit-lab">Unit</label>
+      <select id="unit"></select>
+    </div>
+
+    <fieldset class="field">
+      <legend>Standard</legend>
+      <div class="stds" id="stds"></div>
+    </fieldset>
+
     <div class="field">
       <label for="set">Standards</label>
       <select id="set">
@@ -368,15 +383,6 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
       <label class="toggle" for="opt-cool">Cool-down <input type="checkbox" id="opt-cool"></label>
     </div>
 
-    <fieldset class="field">
-      <legend>Grade</legend>
-      <div class="seg" id="grades"></div>
-    </fieldset>
-
-    <fieldset class="field">
-      <legend>Standard</legend>
-      <div class="stds" id="stds"></div>
-    </fieldset>
 
     <div class="row2">
       <div class="field">
@@ -3202,10 +3208,14 @@ const save=()=>{try{localStorage.setItem('jrm-state',JSON.stringify(S))}catch(e)
 
 function renderGrades(){$('grades').innerHTML=[1,2,3,4,5,6,7,8].map(g=>`<label><input type="radio" name="grade" value="${g}"${g===S.grade?' checked':''} aria-label="Grade ${g}">${g}</label>`).join('')}
 const visible=g=>STD.filter(s=>s.grade===g&&(!s.only||s.only===S.set));
-function renderStds(){const L=visible(S.grade),key=s=>S.style==='im'?(s.img||s.grade)*10+s.im:s.domain,groups=[];
-  L.slice().sort((a,b)=>S.style==='im'?key(a)-key(b):0).forEach(s=>{const k=key(s);let g=groups.find(x=>x.k===k);if(!g)groups.push(g={k,s,items:[]});g.items.push(s)});
-  if(S.style==='im')groups.sort((a,b)=>a.k-b.k);
-  $('stds').innerHTML=groups.map(g=>`${groups.length>1?`<div class="grp">${S.style==='im'?`${g.s.img?`IM Grade ${g.s.img}, `:''}Unit ${g.s.im}: ${IM_UNITS[g.s.img||g.s.grade][g.s.im]}`:g.s.domain}</div>`:''}${g.items.map(s=>`<label class="std"><input type="radio" name="std" value="${s.code}"${s.code===S.std?' checked':''}><code>${S.set==='ny'?nyCode(s.code):s.code}</code><span>${s.title}</span></label>`).join('')}`).join('')}
+function unitGroups(){const L=visible(S.grade),im=S.style==='im',key=s=>im?(s.img||s.grade)*10+s.im:s.domain,groups=[];
+  L.forEach(s=>{const k=String(key(s));let g=groups.find(x=>x.k===k);if(!g)groups.push(g={k,s,items:[]});g.items.push(s)});
+  if(im)groups.sort((a,b)=>a.k-b.k);
+  groups.forEach(g=>g.label=im?`${g.s.img?`Grade ${g.s.img} `:''}Unit ${g.s.im}: ${IM_UNITS[g.s.img||g.s.grade][g.s.im]}`:g.s.domain);return groups}
+function renderStds(){const groups=unitGroups(),cur=groups.find(g=>g.items.some(s=>s.code===S.std))||groups[0];
+  $('unit-lab').textContent=S.style==='im'?'Unit':'Domain';
+  $('unit').innerHTML=groups.map(g=>`<option value="${g.k}"${g===cur?' selected':''}>${g.label} (${g.items.length})</option>`).join('');
+  $('stds').innerHTML=cur.items.map(s=>`<label class="std"><input type="radio" name="std" value="${s.code}"${s.code===S.std?' checked':''}><code>${S.set==='ny'?nyCode(s.code):s.code}</code><span>${s.title}</span></label>`).join('')}
 function renderSheets(){
   const std=STD.find(s=>s.code===S.std);
   STYLE=S.style;SET=S.set;NAMES=S.style==='im'?IM_NAMES:GEN_NAMES;
@@ -3223,7 +3233,7 @@ function renderSheets(){
 }
 renderGrades();renderStds();renderSheets();
 
-$('grades').addEventListener('change',e=>{S.grade=+e.target.value;S.std=visible(S.grade)[0].code;renderStds();renderSheets()});
+$('grades').addEventListener('change',e=>{S.grade=+e.target.value;S.std=unitGroups()[0].items[0].code;renderStds();renderSheets()});
 $('set').addEventListener('change',e=>{S.set=e.target.value;if(!visible(S.grade).some(s=>s.code===S.std))S.std=visible(S.grade)[0].code;renderStds();renderSheets()});
 $('lang').addEventListener('change',e=>{S.lang=e.target.value;if(S.lang!=='en')S.vocab=true;renderSheets()});
 $('opt-guide').addEventListener('change',e=>{S.guide=e.target.checked;renderSheets()});
@@ -3231,6 +3241,7 @@ $('opt-vocab').addEventListener('change',e=>{S.vocab=e.target.checked;renderShee
 $('opt-cool').addEventListener('change',e=>{S.cool=e.target.checked;renderSheets()});
 $('curr').addEventListener('change',e=>{S.style=e.target.value;renderStds();renderSheets()});
 $('stds').addEventListener('change',e=>{S.std=e.target.value;renderSheets()});
+$('unit').addEventListener('change',e=>{const g=unitGroups().find(g=>g.k===e.target.value);S.std=g.items[0].code;renderStds();renderSheets()});
 $('tabs').addEventListener('change',e=>{S.view=e.target.value;renderSheets()});
 $('count').addEventListener('change',e=>{S.count=+e.target.value;renderSheets()});
 $('key').addEventListener('change',e=>{S.key=e.target.checked;renderSheets()});
