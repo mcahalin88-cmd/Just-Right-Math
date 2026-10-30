@@ -54,7 +54,7 @@ button,select,input{font:inherit;color:inherit}
 .brand h1{font-family:var(--f-display);font-weight:800;font-size:26px;letter-spacing:-.02em;margin:6px 0 0;line-height:1.05}
 .brand p{margin:0;color:var(--muted);font-size:13.5px}
 .field{display:flex;flex-direction:column;gap:7px;border:0;margin:0;padding:0;min-width:0}
-.field>label,.field>legend{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0}
+.field>.flabel,.field>label,.field>legend{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0}
 select,input[type=number]{background:var(--desk);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
 .note{font-size:12.5px;color:var(--muted);margin:0}
 .seg{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;background:var(--desk);border:1px solid var(--line);border-radius:10px;padding:4px}
@@ -230,6 +230,22 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
 .btn.ghost{background:var(--panel);color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent);font-size:14px;padding:9px 10px}
 #printset{display:none}
 @page{size:letter;margin:0.45in}
+.guide{border:2px solid var(--p-sup);border-radius:.6em;break-inside:avoid}
+.guide>h3{margin:0;border-radius:.45em .45em 0 0;background:var(--p-sup);color:#fff;font-family:var(--f-display);font-size:.9em;text-transform:uppercase;letter-spacing:.08em;padding:.32em .9em}
+.gcols{display:grid;grid-template-columns:1fr 1fr}
+.guide.one .gcols{grid-template-columns:1fr}
+.gcol{padding:.65em .9em;display:flex;flex-direction:column;gap:.35em;min-width:0}
+.gcol+.gcol{border-left:1.5px dashed var(--p-sup);background:color-mix(in srgb,var(--p-sup) 5%,var(--paper));border-radius:0 0 .45em 0}
+.gcol h4{margin:0;font-size:.76em;text-transform:uppercase;letter-spacing:.08em;color:var(--p-sup)}
+.gcol .gq{font-weight:700;font-size:1.03em}
+.gcol ol{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:.45em}
+.gcol .bl{display:block;border-bottom:1.5px solid var(--p-ink);height:1.3em}
+.sheet.key .gcol .bl{display:none}
+.gcol .ga{display:flex;gap:.4em;align-items:flex-end;font-weight:700;margin-top:.15em;flex-wrap:wrap}
+.gcol .ga .line{flex:0 0 7em}
+.sheet.key .gcol .ga .line{display:none}
+.sheet.key .gcol .pa{display:inline}
+@container (max-width:520px){.gcols{grid-template-columns:1fr}.gcol+.gcol{border-left:0;border-top:1.5px dashed var(--p-sup)}}
 .vocab{border:1px solid var(--p-rule);border-radius:.5em;padding:.45em .75em;display:flex;flex-direction:column;gap:.35em}
 .vocab h3{margin:0;font-family:var(--f-display);font-size:.78em;text-transform:uppercase;letter-spacing:.08em;display:flex;justify-content:space-between;gap:1em;align-items:baseline}
 .vocab h3 span{font-family:var(--f-body);text-transform:none;letter-spacing:0;font-weight:400;color:var(--p-soft);font-size:.92em}
@@ -266,7 +282,7 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
 .keysheet:not(.kall) .kl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.3em 2em}
 .kl-in{display:flex!important;flex-direction:row!important;flex-wrap:wrap;gap:.3em 1.6em!important}
 .kl li::marker{color:var(--p-soft);font-weight:700}
-.kshared{display:grid;grid-template-columns:1fr 1fr;gap:.6em 1.4em;border:1px dashed var(--p-rule);border-radius:.5em;padding:.6em .8em}
+.kshared{display:grid;grid-template-columns:1fr;gap:.6em 1.4em;border:1px dashed var(--p-rule);border-radius:.5em;padding:.6em .8em}
 .knote{grid-column:1/-1;margin:0;font-size:.8em;color:var(--p-soft)}
 @media print{
   :root{color-scheme:light}
@@ -344,6 +360,13 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
       <p class="note" id="langnote">Adds the key words in this language. Print once per language; the problems stay the same.</p>
     </div>
 
+    <div class="field">
+      <span class="flabel">Extras</span>
+      <label class="toggle" for="opt-guide">Guided example (Support) <input type="checkbox" id="opt-guide"></label>
+      <label class="toggle" for="opt-vocab">Key words <input type="checkbox" id="opt-vocab"></label>
+      <label class="toggle" for="opt-cool">Cool-down <input type="checkbox" id="opt-cool"></label>
+    </div>
+
     <fieldset class="field">
       <legend>Grade</legend>
       <div class="seg" id="grades"></div>
@@ -400,7 +423,7 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
 
   <main class="main">
     <div class="tabs" role="radiogroup" aria-label="Worksheet version" id="tabs">
-      <label class="tab" data-t="support"><input type="radio" name="view" value="support"><b><span class="sh">●</span>Support<span class="n" id="n-support"></span></b><small>Models, hints and a worked example</small></label>
+      <label class="tab" data-t="support"><input type="radio" name="view" value="support"><b><span class="sh">●</span>Support<span class="n" id="n-support"></span></b><small>Models, hints and a guided example</small></label>
       <label class="tab" data-t="onlevel"><input type="radio" name="view" value="onlevel"><b><span class="sh">▲</span>On Level<span class="n" id="n-onlevel"></span></b><small>Grade-level practice of the standard</small></label>
       <label class="tab" data-t="stretch"><input type="radio" name="view" value="stretch"><b><span class="sh">■</span>Stretch<span class="n" id="n-stretch"></span></b><small>Multi-step work and a reasoning task</small></label>
       <label class="tab" data-t="all"><input type="radio" name="view" value="all"><b>All three</b><small>Side by side</small></label>
@@ -2897,7 +2920,7 @@ function perms(a){if(a.length<2)return[a];return a.flatMap((x,i)=>perms([...a.sl
 
 /* ================= tiers & building ================= */
 const TIERS=[
-  {id:'support',name:'Support',shape:'●',letter:'S',bullets:['Smaller, friendlier numbers','A visual model on most problems','A hint under each problem','Worked example at the top','Larger print, fewer problems']},
+  {id:'support',name:'Support',shape:'●',letter:'S',bullets:['Smaller, friendlier numbers','A visual model on most problems','A hint under each problem','Guided example at the top','Larger print, fewer problems']},
   {id:'onlevel',name:'On Level',shape:'▲',letter:'O',bullets:['Grade-level numbers','No models or hints','Two-column layout for fluency practice']},
   {id:'stretch',name:'Stretch',shape:'■',letter:'X',bullets:['Larger numbers and missing values','Multi-step stories','A closing reasoning task to explain or create']}
 ];
@@ -2906,7 +2929,13 @@ function build(std,tier,seed,N){
   const r=RNG(hash(std.code+tier.id)^seed),n=countFor(tier,N),probs=[],seen=new Set();let g=0;
   while(probs.length<n&&g++<n*40){const p=std[tier.id](r);const k=p.q+(p.model||'')+p.a;if(seen.has(k))continue;seen.add(k);probs.push(p)}
   const out={probs,worked:tier.id==='support'?std.worked(r):null,challenge:tier.id==='stretch'?std.challenge(r):null};
-  if(STYLE==='im'){out.warm=warmup(std,seed);out.cool=std.onlevel(RNG(hash(std.code+'cool')^seed))}
+  out.cool=std.onlevel(RNG(hash(std.code+'cool')^seed));
+  if(out.worked){for(let i=1;i<12;i++){const w=std.worked(RNG(hash(std.code+'turn')^seed^i));if(w.q!==out.worked.q){out.turn=w;break}}
+    if(!out.turn){const kk=p=>p.q+(p.model||'')+p.a,used=new Set(probs.map(kk)),cand=[];
+      for(let i=1;i<60&&cand.length<40;i++){const p=std.support(RNG(hash(std.code+'turn2')^seed^i));if(p.hint&&!used.has(kk(p))&&!cand.some(c=>kk(c)===kk(p)))cand.push(p)}
+      const key=p=>p.q.replace(/<[^>]+>/g,'').replace(/[0-9]/g,'#').slice(0,24);
+      let A=null,B=null;for(const a of cand){B=cand.find(b=>b!==a&&key(b)===key(a));if(B){A=a;break}}
+      if(A&&B){out.worked={q:A.q,model:A.model,steps:[A.hint,`Answer: ${A.a}`],a:A.a};out.turn={q:B.q,model:B.model,steps:[B.hint,''],a:B.a}}}}
   return out;
 }
 let STYLE='im';
@@ -2971,12 +3000,11 @@ function keySheetHTML(std,tiers,datas,o){
   const im=o.style==='im',all=tiers.length>1,code=o.set==='ny'?nyCode(std.code):'CCSS.MATH.CONTENT.'+std.code;
   const warmA=w=>!w?'':w.items?`<ol class="kl kl-in">${w.items.map(i=>`<li>${i.a}</li>`).join('')}</ol>`:'<p class="kv0">Answers vary.</p>';
   const block=(lab,html)=>html?`<div class="kb"><h4>${lab}</h4>${html}</div>`:'';
-  const shared=im&&all?`<div class="kshared">${block('Warm-up: '+datas[0].warm.type,warmA(datas[0].warm))}${block('Cool-down',`<p>${datas[0].cool.a}</p>`)}<p class="knote">The warm-up and cool-down are the same on all three versions.</p></div>`:'';
+  const shared=o.cool&&all?`<div class="kshared">${block('Cool-down',`<p>${datas[0].cool.a}</p>`)}<p class="knote">The cool-down is the same on all three versions.</p></div>`:'';
   const col=(t,d)=>`<section class="kcol t-${t.id}"><h3 class="tc">${t.shape} ${t.name}</h3>
-    ${im&&!all?block('Warm-up: '+d.warm.type,warmA(d.warm)):''}
     ${block('Practice',`<ol class="kl">${d.probs.map(p=>`<li>${p.a}</li>`).join('')}</ol>`)}
     ${d.challenge?block(im?'Are you ready for more?':'Think deeper',`<p>${d.challenge.a}</p>`):''}
-    ${im&&!all?block('Cool-down',`<p>${d.cool.a}</p>`):''}</section>`;
+    ${o.cool&&!all?block('Cool-down',`<p>${d.cool.a}</p>`):''}</section>`;
   return `<article class="sheet keysheet${all?' kall':''}" aria-label="Answer key">
     <div class="sh-head"><div><div class="code">${code} · GRADE ${std.grade} · ANSWER KEY</div><h2>${std.title}</h2>${im?`<div class="unit">IM Grade ${std.img||std.grade}, Unit ${std.im}: ${IM_UNITS[std.img||std.grade][std.im]}</div>`:''}</div><span class="badge kbadge">Set ${o.seed}</span></div>
     ${shared}<div class="kcols">${tiers.map((t,i)=>col(t,datas[i])).join('')}</div>
@@ -2987,33 +3015,36 @@ function keySheetHTML(std,tiers,datas,o){
 function sheetHTML(std,tier,d,o){
   const im=o.style==='im';
   const badge=o.discreet?`<span class="badge disc tc" title="${tier.name}">${tier.shape}</span>`:`<span class="badge tc">${tier.shape} ${tier.name}</span>`;
-  const ex=d.worked?`<div class="ex"><span class="lab">${im?'Summary':'Example'}</span><div class="q">${d.worked.q}</div><ol>${d.worked.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>`:'';
+  const w=d.worked,t=d.turn,ex=w&&o.guide!==false?`<div class="guide${t?'':' one'}"><h3>Guided example</h3><div class="gcols">
+    <div class="gcol"><h4>${t?'1 · Watch me':'Watch me'}</h4><div class="gq">${w.q}</div>${w.model?`<div class="pm">${w.model}</div>`:''}<ol>${w.steps.map(x=>`<li>${x}</li>`).join('')}</ol></div>
+    ${t?`<div class="gcol"><h4>2 · Your turn</h4><div class="gq">${t.q}</div>${t.model?`<div class="pm">${t.model}</div>`:''}<ol><li>${t.steps[0]}</li>${t.steps.slice(1).map(x=>`<li><span class="bl"></span><span class="pa">${x}</span></li>`).join('')}</ol><div class="ga">Answer: <span class="line"></span><span class="pa">${t.a}</span></div></div>`:''}</div></div>`:'';
   const ell=!!VOCAB[std.code],lang=o.lang||'en',L=LANGS[lang]||LANGS.en;
   const sup=tier.id==='support',fr=FRAMES[std.code]||FRAMES_DEFAULT,hasExplain=ell&&sup&&d.probs.some(p=>ELL_CUE.test(p.q.replace(/<[^>]+>/g,'')));
-  const vocabBox=ell?`<div class="vocab${sup?' vsup':''}"><h3>Key words${lang!=='en'?`<span>${{es:'Palabras clave',ar:'الكلمات الرئيسية'}[lang]}</span>`:''}</h3><ul class="vl">${VOCAB[std.code].map(v=>`<li><b>${v[0]}</b>${lang!=='en'?` <span class="t"${L.rtl?' dir="rtl" lang="ar"':' lang="es"'}>${v[L.col]}</span>`:''}${sup?`<span class="x">${v[3]}</span>`:''}</li>`).join('')}</ul>${hasExplain?`<p class="vframes"><b>Sentence starters</b> ${fr.map(f=>`“${f}”`).join(' &nbsp;·&nbsp; ')}</p>`:''}</div>`:'';
+  const vocabBox=ell&&o.vocab?`<div class="vocab${sup?' vsup':''}"><h3>Key words${lang!=='en'?`<span>${{es:'Palabras clave',ar:'الكلمات الرئيسية'}[lang]}</span>`:''}</h3><ul class="vl">${VOCAB[std.code].map(v=>`<li><b>${v[0]}</b>${lang!=='en'?` <span class="t"${L.rtl?' dir="rtl" lang="ar"':' lang="es"'}>${v[L.col]}</span>`:''}${sup?`<span class="x">${v[3]}</span>`:''}</li>`).join('')}</ul>${hasExplain?`<p class="vframes"><b>Sentence starters</b> ${fr.map(f=>`“${f}”`).join(' &nbsp;·&nbsp; ')}</p>`:''}</div>`:'';
   const frames=q=>false&&ell&&ELL_CUE.test(q.replace(/<[^>]+>/g,''))?`<div class="frames"><b>Start with</b>${(FRAMES[std.code]||FRAMES_DEFAULT).map(f=>`“${f}”`).join(' &nbsp;or&nbsp; ')}</div>`:'';
   const plain=(p)=>{if(!(ell&&tier.id==='support'&&p.wide))return p.q;const parts=p.q.split(/(?<=[.?!])\s+(?=[A-Z])/);if(parts.length<2)return p.q;return parts.map(x=>`<span class="sl${/\?\s*$/.test(x)?' sq':''}">${x}</span>`).join('')};
   const ch=d.challenge?`<div class="chal"><h3>${im?'Are you ready for more?':'Think deeper'}</h3><p>${d.challenge.q}</p>${frames(d.challenge.q)}<div class="pw l"></div><div class="pa">${d.challenge.a}</div></div>`:'';
   const li=d.probs.map(p=>`<li class="pr${p.wide?' wide':''}"><div class="pq">${plain(p)}${im&&p.aline?' Explain or show your reasoning.':''}</div>${frames(p.q)}${p.model?`<div class="pm">${p.model}</div>`:''}${p.hint&&tier.id==='support'?`<div class="ph"><span>Hint</span>${p.hint}</div>`:''}<div class="pw ${p.space||'s'}"></div>${p.aline?`<div class="aline">Answer:<span class="line"></span></div>`:''}<div class="pa">${p.a}</div></li>`).join('');
-  const warm=d.warm?`<div class="warm"><h3>Warm-up: ${d.warm.type}</h3><p>${d.warm.prompt}</p>${d.warm.text?`<p style="color:inherit">${d.warm.text}</p>`:''}${d.warm.model?`<div class="pm">${d.warm.model}</div><div class="pw m"></div>`:''}${d.warm.items?`<ol class="tf${d.warm.items.some(i=>i.q.replace(/<[^>]+>/g,'').length>24)?' long':''}">${d.warm.items.map(i=>`<li><span class="eq">${i.q.replace(/^<span class="eq">|<\/span>$/g,'')}</span><span class="pa">${i.a}</span></li>`).join('')}</ol>`:''}</div>`:'';
-  const c=d.cool,cool=c?`<div class="cool"><h3>Cool-down</h3><div class="pq">${c.q}${c.aline?' Explain or show your reasoning.':''}</div>${c.model?`<div class="pm">${c.model}</div>`:''}<div class="pw"></div><div class="pa">${c.a}</div></div>`:'';
+  const warm='';const unusedWarm=d.warm?`<div class="warm"><h3>Warm-up: ${d.warm.type}</h3><p>${d.warm.prompt}</p>${d.warm.text?`<p style="color:inherit">${d.warm.text}</p>`:''}${d.warm.model?`<div class="pm">${d.warm.model}</div><div class="pw m"></div>`:''}${d.warm.items?`<ol class="tf${d.warm.items.some(i=>i.q.replace(/<[^>]+>/g,'').length>24)?' long':''}">${d.warm.items.map(i=>`<li><span class="eq">${i.q.replace(/^<span class="eq">|<\/span>$/g,'')}</span><span class="pa">${i.a}</span></li>`).join('')}</ol>`:''}</div>`:'';
+  const c=o.cool?d.cool:null,cool=c?`<div class="cool"><h3>Cool-down</h3><div class="pq">${c.q}${c.aline?' Explain or show your reasoning.':''}</div>${c.model?`<div class="pm">${c.model}</div>`:''}<div class="pw"></div><div class="pa">${c.a}</div></div>`:'';
   return `<article class="sheet t-${tier.id}${o.key?' key':''}" aria-label="${tier.name} worksheet">
     ${o.key?'<div class="stamp">Answer key</div>':''}
     <div class="sh-top"><div>Name<span class="line"></span></div><div class="dt">Date<span class="line"></span></div></div>
     <div class="sh-head"><div><div class="code">${o.set==='ny'?nyCode(std.code)+' · NYS NEXT GENERATION':'CCSS.MATH.CONTENT.'+std.code} · GRADE ${std.grade} · ${std.domain.toUpperCase()}</div><h2>${std.title}</h2>${im?`<div class="unit">IM Grade ${std.img||std.grade}, Unit ${std.im}: ${IM_UNITS[std.img||std.grade][std.im]}${std.img?` (taught in grade ${std.grade} in New York)`:''}</div>`:''}<p class="ican"><b>I can</b> ${std.ican}</p></div>${badge}</div>
     ${vocabBox}
-    ${warm}${ex}${im?'<h3 class="sec">Practice</h3>':''}<ol class="probs">${li}</ol>${ch}${cool}
+    ${ex}${im?'<h3 class="sec">Practice</h3>':''}<ol class="probs">${li}</ol>${ch}${cool}
     <div class="self"><b>How did this feel?</b><span>I've got it</span><span>Getting there</span><span>I need help</span></div>
-    ${im?'<p class="aff">Layout follows the IM lesson structure (warm-up, practice, cool-down). Not affiliated with or endorsed by Illustrative Mathematics.</p>':''}
+    ${im?'<p class="aff">Style modeled on Illustrative Mathematics. Not affiliated with or endorsed by Illustrative Mathematics.</p>':''}
     <div class="sh-foot"><span>Just Right Math</span><span>Set ${o.seed}-${tier.letter}${ell&&lang!=='en'?' · '+L.label:''}</span></div>
   </article>`;
 }
 
 /* ================= app ================= */
 const $=id=>document.getElementById(id);
-const DEF={grade:7,std:'7.EE.B.4a',view:'support',count:12,key:false,discreet:true,seed:4821,set:'ny',style:'im',lang:'en'};
+const DEF={grade:7,std:'7.EE.B.4a',view:'support',count:12,key:false,discreet:true,seed:4821,set:'ny',style:'im',lang:'en',guide:true,vocab:false,cool:false};
 let S={...DEF};
 try{const s=JSON.parse(localStorage.getItem('jrm-state')||'null');if(s&&STD.some(x=>x.code===s.std))S={...DEF,...s}}catch(e){}
+try{const raw=JSON.parse(localStorage.getItem('jrm-state')||'{}');if(S.lang!=='en'&&!('vocab' in raw))S.vocab=true}catch(e){}
 const save=()=>{try{localStorage.setItem('jrm-state',JSON.stringify(S))}catch(e){}};
 
 function renderGrades(){$('grades').innerHTML=[1,2,3,4,5,6,7,8].map(g=>`<label><input type="radio" name="grade" value="${g}"${g===S.grade?' checked':''} aria-label="Grade ${g}">${g}</label>`).join('')}
@@ -3029,10 +3060,11 @@ function renderSheets(){
   document.querySelectorAll('input[name=view]').forEach(i=>i.checked=i.value===S.view);
   const show=S.view==='all'?TIERS:TIERS.filter(t=>t.id===S.view);
   $('sheets').classList.toggle('side',S.view==='all');
-  $('sheets').innerHTML=show.map(t=>sheetHTML(std,t,build(std,t,S.seed,S.count),{key:S.key,discreet:S.discreet,seed:S.seed,set:S.set,style:S.style,lang:S.lang})).join('');
-  $('diff').innerHTML=`<h2>How the three versions of ${S.set==='ny'?nyCode(std.code):std.code} differ</h2>${S.style==='im'?'<p class="note">The warm-up and cool-down are the same on all three versions, so you can compare cool-down results across the whole class.</p>':''}<div class="cols">${TIERS.map((t,i)=>`<div class="col"><h3><span style="color:var(--${t.id==='support'?'sup':t.id==='onlevel'?'onl':'str'})">${t.shape}</span>${t.name}</h3><p>${std.diff[i]}</p><ul>${t.bullets.map(b=>`<li>${b}</li>`).join('')}</ul></div>`).join('')}</div>`;
+  $('sheets').innerHTML=show.map(t=>sheetHTML(std,t,build(std,t,S.seed,S.count),{key:S.key,discreet:S.discreet,seed:S.seed,set:S.set,style:S.style,lang:S.lang,guide:S.guide,vocab:S.vocab,cool:S.cool})).join('');
+  $('diff').innerHTML=`<h2>How the three versions of ${S.set==='ny'?nyCode(std.code):std.code} differ</h2>${S.cool?'<p class="note">The cool-down is the same on all three versions, so you can compare results across the whole class.</p>':''}<div class="cols">${TIERS.map((t,i)=>`<div class="col"><h3><span style="color:var(--${t.id==='support'?'sup':t.id==='onlevel'?'onl':'str'})">${t.shape}</span>${t.name}</h3><p>${std.diff[i]}</p><ul>${t.bullets.map(b=>`<li>${b}</li>`).join('')}</ul></div>`).join('')}</div>`;
   {const one=S.view!=='all',nm=one?TIERS.find(t=>t.id===S.view).name:'';$('printstudents').textContent=one?`Print ${nm} sheet`:'Print all 3 sheets';$('printkeys').textContent=one?`Print ${nm} key`:'Print all 3 keys'}
-  $('lang').value=S.lang;$('langnote').textContent=VOCAB[S.std]?'Adds the key words in this language. Print once per language; the problems stay the same.':'Key words and sentence starters are available for grade 6 so far.';
+  $('opt-guide').checked=S.guide;$('opt-vocab').checked=S.vocab;$('opt-cool').checked=S.cool;$('opt-vocab').disabled=!VOCAB[S.std];
+  $('lang').value=S.lang;$('langnote').textContent=VOCAB[S.std]?'Adds the key words in this language. Print once per language; the problems stay the same.':'Key words are available for grade 6 so far.';
   $('set').value=S.set;$('curr').value=S.style;$('seed').value=S.seed;$('count').value=S.count;$('key').checked=S.key;$('discreet').checked=S.discreet;
   save();
 }
@@ -3040,7 +3072,10 @@ renderGrades();renderStds();renderSheets();
 
 $('grades').addEventListener('change',e=>{S.grade=+e.target.value;S.std=visible(S.grade)[0].code;renderStds();renderSheets()});
 $('set').addEventListener('change',e=>{S.set=e.target.value;if(!visible(S.grade).some(s=>s.code===S.std))S.std=visible(S.grade)[0].code;renderStds();renderSheets()});
-$('lang').addEventListener('change',e=>{S.lang=e.target.value;renderSheets()});
+$('lang').addEventListener('change',e=>{S.lang=e.target.value;if(S.lang!=='en')S.vocab=true;renderSheets()});
+$('opt-guide').addEventListener('change',e=>{S.guide=e.target.checked;renderSheets()});
+$('opt-vocab').addEventListener('change',e=>{S.vocab=e.target.checked;renderSheets()});
+$('opt-cool').addEventListener('change',e=>{S.cool=e.target.checked;renderSheets()});
 $('curr').addEventListener('change',e=>{S.style=e.target.value;renderStds();renderSheets()});
 $('stds').addEventListener('change',e=>{S.std=e.target.value;renderSheets()});
 $('tabs').addEventListener('change',e=>{S.view=e.target.value;renderSheets()});
@@ -3051,7 +3086,7 @@ $('seed').addEventListener('change',e=>{const v=Math.round(+e.target.value);if(v
 /* Printing works when the page is opened directly (a hosted site), not inside a viewer frame. */
 let canPrint=false;try{canPrint=window.self===window.top&&typeof window.print==='function'}catch(e){}
 if(canPrint){$('printrow').hidden=false;
-  const printSet=key=>{const std=STD.find(s=>s.code===S.std),o={discreet:S.discreet,seed:S.seed,set:S.set,style:S.style,lang:S.lang,key};
+  const printSet=key=>{const std=STD.find(s=>s.code===S.std),o={discreet:S.discreet,seed:S.seed,set:S.set,style:S.style,lang:S.lang,guide:S.guide,vocab:S.vocab,cool:S.cool,key};
     const ts=TIERS.filter(t=>S.view==='all'||t.id===S.view),ds=ts.map(t=>build(std,t,S.seed,S.count));
     $('printset').innerHTML=key?keySheetHTML(std,ts,ds,o):ts.map((t,i)=>sheetHTML(std,t,ds[i],o)).join('');
     document.body.classList.add('printing-set');window.print()};

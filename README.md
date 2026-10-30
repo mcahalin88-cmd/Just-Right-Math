@@ -12,7 +12,7 @@ A worksheet generator for differentiated independent practice. Pick a standard a
 - **Grades 1–8:** full coverage of the New York standards, grouped by IM unit (about 160 standards in all)
   - New York–only standards include coins in grade 1 (NY-1.MD.3b), four-digit place value in grade 3 (NY-3.NBT.4), perfect squares and cubes and probability in grade 6, and box plots in grade 7
   - Standards that New York removed or moved are shown only when Common Core is selected
-- **Curriculum style:** an Illustrative Mathematics–style layout with a warm-up routine, practice and a cool-down, or neutral wording
+- **Curriculum style:** Illustrative Mathematics–style wording, names and representations, or neutral wording
 
 ## Other features
 
@@ -25,6 +25,14 @@ A worksheet generator for differentiated independent practice. Pick a standard a
 ## Using it
 
 Open `index.html` in a web browser. It is a single file with no build step; fonts load from Google Fonts.
+
+## Extras
+
+Three switches in the sidebar let each teacher choose what goes on the sheet:
+
+- **Guided example (Support)**, on by default: a box at the top of every Support sheet. *Watch me* works one problem step by step; *Your turn* gives a matching problem with the first step done and blank lines for the rest.
+- **Key words**, off by default (grade 6 so far). Choosing Spanish or Arabic turns it on.
+- **Cool-down**, off by default: one problem at the end that is the same on all three versions, useful as an exit ticket.
 
 ## Supports for English learners (grade 6)
 
