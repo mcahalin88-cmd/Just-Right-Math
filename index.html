@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Just Right Math</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -78,6 +79,20 @@ select,input[type=number]{background:var(--desk);border:1px solid var(--line);bo
 .btn:hover{filter:brightness(1.07)}
 .roadmap{border-top:1px dashed var(--line);padding-top:16px;display:flex;flex-direction:column;gap:6px}
 .roadmap h3{margin:0;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.reportlink{display:flex;align-items:center;gap:6px;background:none;border:0;padding:4px 0;color:var(--accent);font-weight:700;font-size:13.5px;cursor:pointer;text-align:left}
+.reportlink:hover{text-decoration:underline}
+dialog.report{border:1px solid var(--line);border-radius:14px;padding:0;background:var(--panel);color:var(--fg);width:min(460px,calc(100vw - 32px));box-shadow:0 20px 60px rgba(10,20,40,.25)}
+dialog.report::backdrop{background:rgba(10,20,40,.45)}
+.report form{display:flex;flex-direction:column;gap:14px;padding:20px}
+.report h2{margin:0;font-family:var(--f-display);font-size:20px}
+.report .ctx{font-family:var(--f-mono);font-size:12px;color:var(--muted);background:var(--desk);border-radius:8px;padding:8px 10px;line-height:1.5}
+.report textarea{background:var(--desk);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-height:90px;resize:vertical;font:inherit;color:inherit}
+.report input[type=email],.report input[type=text]{background:var(--desk);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+.report .actions{display:flex;gap:8px;justify-content:flex-end}
+.report .hp{position:absolute;left:-9999px}
+.report .msg{margin:0;font-size:13.5px}
+.report .msg.err{color:#C9302A}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--panel);padding:10px 16px;border-radius:999px;font-weight:700;font-size:14px;z-index:20}
 .roadmap ul{margin:0;padding-left:18px;font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
 
 /* ---------- main ---------- */
@@ -220,6 +235,7 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
   body{background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .rail,.tabs,.diff{display:none!important}
   body>*:not(.app){display:none!important}
+  dialog.report{display:none!important}
   .app{display:block;padding:0;max-width:none}
   .main{display:block}
   .sheets{display:block}.sheets.side .sheet{zoom:1}
@@ -315,12 +331,17 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
       New problems
     </button>
 
+    <button class="reportlink" id="reportbtn" type="button" hidden>
+      <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 14V2.5M3 3h8l-1.5 3L11 9H3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Report a problem with this sheet
+    </button>
+
     <div class="roadmap">
       <h3>Coming next</h3>
       <ul>
         <li>State standard sets beyond Common Core</li>
         <li>Matching each IM lesson, not just the unit</li>
-        <li>PDF export and print-ready packets</li>
+        <li>A condensed one-page answer key</li>
         <li>More standards in every grade, and kindergarten</li>
       </ul>
     </div>
@@ -337,6 +358,45 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
     <section class="diff" id="diff" aria-label="How the versions differ"></section>
   </main>
   <div id="printset" aria-hidden="true"></div>
+  <dialog class="report" id="reportdlg" aria-labelledby="reporttitle">
+    <form name="report-problem" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="reportform">
+      <input type="hidden" name="form-name" value="report-problem">
+      <p class="hp"><label>Leave this empty <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+      <h2 id="reporttitle">Report a problem</h2>
+      <div class="ctx" id="reportctx"></div>
+      <input type="hidden" name="standard"><input type="hidden" name="tier"><input type="hidden" name="setcode"><input type="hidden" name="grade"><input type="hidden" name="standards_set"><input type="hidden" name="style"><input type="hidden" name="problem_count"><input type="hidden" name="answer_key_on">
+      <div class="field">
+        <label for="r-reason">What's wrong?</label>
+        <select id="r-reason" name="reason" required>
+          <option value="Wrong answer in the key">Wrong answer in the key</option>
+          <option value="Confusing or unclear wording">Confusing or unclear wording</option>
+          <option value="Too easy or too hard for this version">Too easy or too hard for this version</option>
+          <option value="Picture or diagram problem">Picture or diagram problem</option>
+          <option value="Doesn't match the standard or curriculum">Doesn't match the standard or curriculum</option>
+          <option value="Printing problem">Printing problem</option>
+          <option value="Something else">Something else</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="r-num">Problem number (optional)</label>
+        <input type="text" id="r-num" name="problem_number" inputmode="numeric" placeholder="For example: 4, or warm-up, or cool-down">
+      </div>
+      <div class="field">
+        <label for="r-details">Details</label>
+        <textarea id="r-details" name="details" required placeholder="What did you notice? What should it say instead?"></textarea>
+        <p class="note">Please don't include student names or other student information.</p>
+      </div>
+      <div class="field">
+        <label for="r-email">Your email (optional, only if you'd like a reply)</label>
+        <input type="email" id="r-email" name="email" autocomplete="email">
+      </div>
+      <p class="msg" id="reportmsg" role="status"></p>
+      <div class="actions">
+        <button class="btn ghost" type="button" id="reportcancel">Cancel</button>
+        <button class="btn" type="submit" id="reportsend">Send report</button>
+      </div>
+    </form>
+  </dialog>
 </div>
 
 <script>
@@ -2866,5 +2926,19 @@ if(canPrint){$('printrow').hidden=false;
   $('printstudents').addEventListener('click',()=>printSet(false));
   $('printkeys').addEventListener('click',()=>printSet(true));
   window.addEventListener('afterprint',()=>{document.body.classList.remove('printing-set');$('printset').innerHTML=''})}
+/* Report a problem: a Netlify form, so it only works on the hosted site. */
+if(canPrint){const dlg=$('reportdlg'),f=$('reportform'),msg=$('reportmsg');$('reportbtn').hidden=false;
+  const ctx=()=>{const std=STD.find(s=>s.code===S.std),tier=S.view==='all'?'All three':TIERS.find(t=>t.id===S.view).name,code=S.set==='ny'?nyCode(std.code):std.code;
+    return{standard:`${code} ${std.title}`,tier,setcode:String(S.seed),grade:String(std.grade),standards_set:S.set==='ny'?'NY Next Generation':'Common Core',style:S.style==='im'?'IM style':'Neutral',problem_count:String(S.count),answer_key_on:S.key?'yes':'no'}};
+  $('reportbtn').addEventListener('click',()=>{const c=ctx();for(const k in c)f.elements[k].value=c[k];
+    $('reportctx').textContent=`${c.standard} · ${c.tier} · Set ${c.setcode}`;msg.textContent='';msg.className='msg';$('reportsend').disabled=false;
+    if(dlg.showModal)dlg.showModal();else dlg.setAttribute('open','')});
+  $('reportcancel').addEventListener('click',()=>dlg.close());
+  f.addEventListener('submit',async e=>{e.preventDefault();$('reportsend').disabled=true;msg.className='msg';msg.textContent='Sending…';
+    const body=new URLSearchParams(new FormData(f)).toString();
+    try{const r=await fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});if(!r.ok)throw new Error(r.status);
+      dlg.close();f.reset();toast('Report sent. Thank you!')}
+    catch(err){msg.className='msg err';msg.textContent='The report did not send. Check your internet connection and try again.';$('reportsend').disabled=false}})}
+function toast(t){const d=document.createElement('div');d.className='toast';d.setAttribute('role','status');d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),3200)}
 $('regen').addEventListener('click',()=>{let v;do{v=1000+Math.floor(Math.random()*9000)}while(v===S.seed);S.seed=v;renderSheets()});
 </script>

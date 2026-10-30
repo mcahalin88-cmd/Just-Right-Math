@@ -36,9 +36,15 @@ When the page is opened directly (for example, hosted on Netlify), two print but
 
 To save a PDF, choose "Save as PDF" in the browser's print dialog. The buttons are hidden when the page is shown inside a viewer that cannot print.
 
+## Reporting problems
+
+On the hosted site, **Report a problem with this sheet** (below the print buttons) opens a short form. It records the standard, tier, set code and settings automatically, plus what is wrong, the problem number and details. Reports are collected by Netlify Forms. The form asks people not to include student information.
+
 ## Hosting
 
 The site deploys as-is: on Netlify, import this repository with no build command and the repository root as the publish directory. Every push to `main` then updates the site.
+
+To receive problem reports, turn on form detection in Netlify (**Site configuration → Forms → Enable form detection**), deploy again, and add an email notification under **Forms → Form notifications**.
 
 ## Notes
 
