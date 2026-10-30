@@ -26,6 +26,16 @@ A worksheet generator for differentiated independent practice. Pick a standard a
 
 Open `index.html` in a web browser. It is a single file with no build step; fonts load from Google Fonts.
 
+## Supports for English learners (grade 6)
+
+Every grade 6 sheet includes:
+
+- **Key words:** 4–5 words for the standard, each with a short example. The **Word list language** menu adds a translation column in Spanish or Arabic. English only is the default.
+- **Sentence starters** under questions that ask students to explain.
+- **Easier-to-read stories** on the Support version: one sentence per line, with the question in bold.
+
+Choose a language, print, then switch languages and print again. The problems and answer key stay the same, and each sheet's footer shows its language. Translations should be checked by a bilingual colleague before use.
+
 ## Printing
 
 When the page is opened directly (for example, hosted on Netlify), two print buttons appear in the sidebar. Both follow the tab you are on:

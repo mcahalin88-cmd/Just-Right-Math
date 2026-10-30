@@ -3,7 +3,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=Noto+Naskh+Arabic:wght@400;700&display=swap">
 <style>
 /* Layout: a control rail on the left, paper worksheets laid out on a graph-paper desk */
 :root{
@@ -230,6 +230,18 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
 .btn.ghost{background:var(--panel);color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent);font-size:14px;padding:9px 10px}
 #printset{display:none}
 @page{size:letter;margin:0.45in}
+.vocab{border:1.5px solid var(--p-ink);border-radius:.6em;padding:.6em .85em;display:flex;flex-direction:column;gap:.35em}
+.vocab h3{margin:0;font-family:var(--f-display);font-size:.9em;text-transform:uppercase;letter-spacing:.08em;display:flex;justify-content:space-between;gap:1em;align-items:baseline}
+.vocab h3 span{font-family:var(--f-body);text-transform:none;letter-spacing:0;font-weight:400;color:var(--p-soft);font-size:.92em}
+.vocab table{border-collapse:collapse;width:100%;font-size:.88em}
+.vocab td{padding:.28em .5em;border-top:1px solid var(--p-rule);vertical-align:middle}
+.vocab td.w{font-weight:700;width:27%}
+.vocab td.t{color:var(--p-onl);font-weight:700;width:30%}
+.vocab td.t[lang=ar]{color:var(--p-str);font-family:'Noto Naskh Arabic','Geeza Pro',Arial,sans-serif;font-size:1.12em;text-align:right}
+.vocab td.x{color:var(--p-soft);font-variant-numeric:tabular-nums}
+.frames{margin-top:.3em;font-size:.82em;color:var(--p-soft);border-left:3px solid var(--p-onl);padding:.12em 0 .12em .55em}
+.frames b{color:var(--p-onl);text-transform:uppercase;letter-spacing:.06em;font-size:.85em;margin-right:.3em}
+.pq .sl{display:block}.pq .sl+.sl{margin-top:.15em}.pq .sq{font-weight:700}
 .keysheet{--fs:12px;gap:.9em}
 .kcol.t-support{--tcol:var(--p-sup)}.kcol.t-onlevel{--tcol:var(--p-onl)}.kcol.t-stretch{--tcol:var(--p-str)}
 .keysheet .kfull{margin:0;font-size:.8em;color:var(--p-soft)}
@@ -262,6 +274,7 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
   .sheet.t-support{--fs:13.5pt}
   .sheet.keysheet{--fs:10pt}
   .kcol,.kb,.kshared{break-inside:avoid}
+  .vocab{break-inside:avoid}
   .sheet:last-child{break-after:auto}
   .probs{display:block;orphans:1;widows:1}
   .sheet,.sheet *{orphans:1;widows:1}
@@ -310,6 +323,16 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
         <option disabled>enVision Mathematics (coming soon)</option>
         <option disabled>Bridges in Mathematics (coming soon)</option>
       </select>
+    </div>
+
+    <div class="field">
+      <label for="lang">Word list language</label>
+      <select id="lang">
+        <option value="en">English only</option>
+        <option value="es">Spanish · Español</option>
+        <option value="ar">Arabic · العربية</option>
+      </select>
+      <p class="note" id="langnote">Adds the key words in this language. Print once per language; the problems stay the same.</p>
     </div>
 
     <fieldset class="field">
@@ -687,6 +710,61 @@ const areaModel=(a,b)=>{const p=parts(a);return`<table class="amod"><tr><th>×</
 /* ================= standards ================= */
 const THINGS=['stickers','marbles','seashells','crayons','trading cards','beads','acorns','toy cars'];
 const UNITS=['cm','m','in','ft'];
+
+
+/* ELL supports: key words (English, Spanish, Arabic) and sentence starters, grade 6 */
+const LANGS={en:{name:'English only'},es:{name:'Spanish · Español',label:'Español',col:1},ar:{name:'Arabic · العربية',label:'العربية',col:2,rtl:true}};
+const VOCAB={
+'6.RP.A.1':[['ratio','razón','نسبة','3 circles for every 2 squares → 3 : 2'],['for every','por cada','لكل','for every 3 apples, 1 pear'],['part','parte','جزء','red marbles are part of the bag'],['whole','total','الكل','all the marbles together']],
+'6.RP.A.3a':[['ratio','razón','نسبة','3 cups flour for every 2 cups sugar → 3 : 2'],['equivalent ratios','razones equivalentes','نسب متكافئة','3 : 2 and 6 : 4'],['ratio table','tabla de razones','جدول النسب','every column is an equivalent ratio'],['double number line','diagrama de recta numérica doble','خط الأعداد المزدوج','two number lines that line up equivalent ratios']],
+'6.RP.A.2':[['rate','tasa','معدل','60 miles in 2 hours'],['unit rate','tasa unitaria','معدل الوحدة','30 miles per 1 hour'],['per','por','لكل','$3 per pound'],['divide','dividir','يقسم','12 ÷ 4 = 3']],
+'6.RP.A.3b':[['unit price','precio unitario','سعر الوحدة','$2.50 for 1 notebook'],['unit rate','tasa unitaria','معدل الوحدة','45 miles per 1 hour'],['speed','rapidez','السرعة','miles per hour'],['better buy','mejor compra','الشراء الأفضل','the lower price for 1 item']],
+'6.RP.A.3c':[['percent','porcentaje','نسبة مئوية','25% means 25 out of 100'],['part','parte','جزء','15 is part of 60'],['whole','total','الكل','60 is the whole (100%)'],['of','de','من','25% of 60 = 15']],
+'6.RP.A.3d':[['convert','convertir','يحوّل','3 feet = 36 inches'],['unit of measure','unidad de medida','وحدة قياس','inches, feet, meters'],['conversion factor','factor de conversión','معامل التحويل','1 foot = 12 inches'],['length','longitud','الطول','how long something is']],
+'6.NS.A.1':[['fraction','fracción','كسر',F(3,4)],['quotient','cociente','ناتج القسمة',`in 6 ÷ ${F(1,2)} = 12, 12 is the quotient`],['reciprocal','recíproco','مقلوب العدد',`the reciprocal of ${F(2,3)} is ${F(3,2)}`],['how many groups?','¿cuántos grupos?','كم مجموعة؟',`how many ${F(1,2)}s are in 6?`]],
+'6.NS.B.2':[['dividend','dividendo','المقسوم','in 84 ÷ 4, 84 is the dividend'],['divisor','divisor','المقسوم عليه','in 84 ÷ 4, 4 is the divisor'],['quotient','cociente','ناتج القسمة','84 ÷ 4 = 21'],['remainder','residuo','الباقي','17 ÷ 5 = 3 R2']],
+'6.NS.B.3':[['decimal','número decimal','عدد عشري','3.75'],['decimal point','punto decimal','الفاصلة العشرية','the dot in 3.75'],['place value','valor posicional','القيمة المكانية','in 3.75, the 7 means 7 tenths'],['product','producto','ناتج الضرب','1.5 × 2 = 3']],
+'6.NS.B.4':[['factor','factor','عامل','3 is a factor of 12'],['multiple','múltiplo','مضاعف','12 is a multiple of 3'],['greatest common factor (GCF)','máximo común divisor','القاسم المشترك الأكبر','GCF of 12 and 18 is 6'],['least common multiple (LCM)','mínimo común múltiplo','المضاعف المشترك الأصغر','LCM of 4 and 6 is 12']],
+'6.NS.C.5':[['positive number','número positivo','عدد موجب','+5, above zero'],['negative number','número negativo','عدد سالب','−5, below zero'],['zero','cero','صفر','sea level, or no change'],['opposite','opuesto','العدد المقابل','the opposite of 5 is −5']],
+'6.NS.C.6':[['opposite','opuesto','العدد المقابل','−4 and 4'],['number line','recta numérica','خط الأعداد','−3 −2 −1 0 1 2 3'],['coordinate plane','plano de coordenadas','المستوى الإحداثي','a grid with an x-axis and a y-axis'],['ordered pair','par ordenado','زوج مرتب','(3, −2)'],['quadrant','cuadrante','ربع','one of the four parts of the plane']],
+'6.NS.C.7':[['absolute value','valor absoluto','القيمة المطلقة','|−7| = 7'],['greater than','mayor que','أكبر من','5 > −2'],['less than','menor que','أصغر من','−8 < −3'],['order','ordenar','يرتّب','−3, 0, 2.5, 4']],
+'6.NS.C.8':[['distance','distancia','المسافة','from (2, 3) to (2, −1) is 4 units'],['coordinates','coordenadas','الإحداثيات','(x, y)'],['x-axis','eje x','المحور السيني','the line across'],['y-axis','eje y','المحور الصادي','the line up and down']],
+'6.EE.A.1':[['exponent','exponente','الأس','in 2<sup>3</sup>, 3 is the exponent'],['base','base','الأساس','in 2<sup>3</sup>, 2 is the base'],['power','potencia','قوة','2<sup>3</sup> = 2 × 2 × 2 = 8'],['squared','al cuadrado','تربيع','5<sup>2</sup> = 25']],
+'6.EE.A.2a':[['expression','expresión','عبارة جبرية',`${V('n')} + 5`],['variable','variable','متغير',`a letter like ${V('n')} that stands for a number`],['term','término','حد',`in 3${V('x')} + 7, the terms are 3${V('x')} and 7`],['coefficient','coeficiente','معامل',`in 3${V('x')}, 3 is the coefficient`]],
+'6.EE.A.2c':[['evaluate','evaluar','يجد القيمة','find the value'],['substitute','sustituir','يعوّض',`put 4 in for ${V('x')}`],['variable','variable','متغير',V('x')],['order of operations','orden de las operaciones','ترتيب العمليات','parentheses, exponents, × ÷, + −']],
+'6.EE.A.3':[['equivalent expressions','expresiones equivalentes','عبارات متكافئة',`3(${V('x')} + 2) and 3${V('x')} + 6`],['distributive property','propiedad distributiva','خاصية التوزيع',`3(${V('x')} + 2) = 3${V('x')} + 6`],['like terms','términos semejantes','حدود متشابهة',`2${V('x')} and 5${V('x')}`],['factor','factorizar','يحلّل',`12${V('x')} + 18 = 6(2${V('x')} + 3)`]],
+'6.EE.A.4':[['equivalent','equivalente','متكافئ','always equal, for every value'],['expression','expresión','عبارة جبرية',`${V('y')} + ${V('y')} + ${V('y')}`],['test a value','probar un valor','اختبار قيمة',`try ${V('x')} = 2 in both`],['always / never','siempre / nunca','دائمًا / أبدًا','for every value / for no value']],
+'6.EE.B.5':[['solution','solución','حل',`4 is a solution of ${V('x')} + 3 = 7`],['equation','ecuación','معادلة',`${V('x')} + 3 = 7`],['inequality','desigualdad','متباينة',`${V('x')} > 5`],['substitute','sustituir','يعوّض',`put the number in for ${V('x')}`]],
+'6.EE.B.6':[['expression','expresión','عبارة جبرية',`8${V('t')} for the cost of ${V('t')} tickets`],['variable','variable','متغير','a letter for an unknown number'],['each','cada','كل','$8 each → multiply'],['total','total','المجموع','the amount for all of them']],
+'6.EE.B.7':[['equation','ecuación','معادلة',`${V('x')} + 7 = 12`],['solve','resolver','يحل','find the value that makes it true'],['inverse operation','operación inversa','العملية العكسية','+ and − undo each other'],['both sides','ambos lados','كلا الطرفين','do the same thing to each side']],
+'6.EE.B.8':[['inequality','desigualdad','متباينة',`${V('x')} > 4`],['at least','por lo menos','على الأقل','≥ (that number or more)'],['at most','como máximo','على الأكثر','≤ (that number or less)'],['open / closed circle','círculo abierto / cerrado','دائرة مفتوحة / مغلقة','open: not included; closed: included']],
+'6.EE.C.9':[['independent variable','variable independiente','المتغير المستقل','hours worked'],['dependent variable','variable dependiente','المتغير التابع','money earned (depends on hours)'],['table','tabla','جدول','x: 1, 2, 3 → y: 5, 10, 15'],['equation','ecuación','معادلة',`${V('y')} = 5${V('x')}`]],
+'6.G.A.1':[['area','área','المساحة','square units inside a shape'],['base','base','القاعدة','the bottom side of the shape'],['height','altura','الارتفاع','straight up from the base, at a right angle'],['parallelogram','paralelogramo','متوازي الأضلاع','two pairs of parallel sides'],['trapezoid','trapecio','شبه المنحرف','at least one pair of parallel sides']],
+'6.G.A.2':[['volume','volumen','الحجم','cubic units inside a solid'],['rectangular prism','prisma rectangular','متوازي المستطيلات','a box shape'],['edge length','longitud de la arista','طول الحرف',`${MX(2,1,2)} inches`],['cubic units','unidades cúbicas','وحدات مكعبة','cubic inches, cubic feet']],
+'6.G.A.3':[['polygon','polígono','مضلع','a closed shape with straight sides'],['vertex (vertices)','vértice (vértices)','رأس (رؤوس)','a corner point like (2, 3)'],['coordinate plane','plano de coordenadas','المستوى الإحداثي','a grid with x and y axes'],['side length','longitud del lado','طول الضلع','the distance between two vertices']],
+'6.G.A.4':[['surface area','área de superficie','مساحة السطح','the area of all the faces added up'],['net','red','شبكة المجسم','a flat pattern that folds into the solid'],['face','cara','وجه','a flat side of a solid'],['prism','prisma','منشور','a solid with two matching bases']],
+'6.G.5':[['perfect square','cuadrado perfecto','مربع كامل','25 = 5 × 5'],['perfect cube','cubo perfecto','مكعب كامل','27 = 3 × 3 × 3'],['squared','al cuadrado','تربيع','6<sup>2</sup> = 36'],['cubed','al cubo','تكعيب','2<sup>3</sup> = 8']],
+'6.SP.A.1':[['statistical question','pregunta estadística','سؤال إحصائي','expects answers that vary'],['data','datos','بيانات','the answers you collect'],['variability','variabilidad','التباين','how much the answers differ'],['survey','encuesta','استطلاع','asking people the same question']],
+'6.SP.1b':[['population','población','المجتمع الإحصائي','everyone you want to learn about'],['sample','muestra','عينة','the group you actually ask'],['representative','representativa','ممثِّلة','like the whole population'],['random','aleatoria','عشوائية','everyone has the same chance']],
+'6.SP.B.4':[['dot plot','diagrama de puntos','مخطط النقاط','one dot for each data value'],['histogram','histograma','المدرج التكراري','bars that show groups of data'],['frequency','frecuencia','التكرار','how many times something happens'],['data set','conjunto de datos','مجموعة بيانات','all the values together']],
+'6.SP.B.5c':[['mean','media','المتوسط الحسابي','add, then divide by how many'],['median','mediana','الوسيط','the middle value in order'],['mode','moda','المنوال','the value that happens most'],['range','rango','المدى','greatest − least']],
+'6.SP.8':[['probability','probabilidad','الاحتمال',`a number from 0 to 1, like ${F(1,4)}`],['outcome','resultado','نتيجة','one possible result'],['likely / unlikely','probable / improbable','مرجَّح / غير مرجَّح','close to 1 / close to 0'],['impossible / certain','imposible / seguro','مستحيل / مؤكد','0 / 1']]
+};
+const FRAMES={
+'6.RP.A.3a':['The ratios are / are not equivalent because ___.','I multiplied both numbers by ___, so ___.'],
+'6.RP.A.1':['I agree / disagree because ___.','For every ___, there are ___.'],
+'6.NS.C.5':['___ is colder / closer to the surface because ___.','0 means ___ in this situation.'],
+'6.NS.C.6':['___ is right / wrong because ___.','For example, ___.'],
+'6.NS.C.7':['___ is less than ___ because ___.','The absolute value is ___ because it is ___ units from 0.'],
+'6.EE.A.4':['They are / are not equivalent because when ___ = ___, ___.','I tested ___ and got ___.'],
+'6.EE.B.5':['___ is / is not a solution because ___.','When I substitute ___, I get ___.'],
+'6.SP.A.1':['This is / is not a statistical question because the answers would / would not vary.','A statistical question about ___ is ___.'],
+'6.SP.1b':['The sample is / is not representative because ___.','A better way to choose the sample is ___.'],
+'6.SP.B.5c':['The ___ better describes a typical value because ___.','The data is spread out / close together because ___.'],
+'6.G.5':['___ is / is not a perfect square because ___ × ___ = ___.','The side length is between ___ and ___ because ___.']
+};
+const FRAMES_DEFAULT=['I know ___ because ___.','First I ___. Then I ___.'];
+const ELL_CUE=/explain|how do you know|how you know|why\b|justify|describe/i;
 
 const STD=[
 /* ---------- Grade 1 ---------- */
@@ -2901,24 +2979,29 @@ function sheetHTML(std,tier,d,o){
   const im=o.style==='im';
   const badge=o.discreet?`<span class="badge disc tc" title="${tier.name}">${tier.shape}</span>`:`<span class="badge tc">${tier.shape} ${tier.name}</span>`;
   const ex=d.worked?`<div class="ex"><span class="lab">${im?'Summary':'Example'}</span><div class="q">${d.worked.q}</div><ol>${d.worked.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>`:'';
-  const ch=d.challenge?`<div class="chal"><h3>${im?'Are you ready for more?':'Think deeper'}</h3><p>${d.challenge.q}</p><div class="pw l"></div><div class="pa">${d.challenge.a}</div></div>`:'';
-  const li=d.probs.map(p=>`<li class="pr${p.wide?' wide':''}"><div class="pq">${p.q}${im&&p.aline?' Explain or show your reasoning.':''}</div>${p.model?`<div class="pm">${p.model}</div>`:''}${p.hint&&tier.id==='support'?`<div class="ph"><span>Hint</span>${p.hint}</div>`:''}<div class="pw ${p.space||'s'}"></div>${p.aline?`<div class="aline">Answer:<span class="line"></span></div>`:''}<div class="pa">${p.a}</div></li>`).join('');
+  const ell=!!VOCAB[std.code],lang=o.lang||'en',L=LANGS[lang]||LANGS.en;
+  const vocabBox=ell?`<div class="vocab"><h3>Key words${lang!=='en'?`<span>${{es:'Palabras clave',ar:'الكلمات الرئيسية'}[lang]}</span>`:''}</h3><table>${VOCAB[std.code].map(v=>`<tr><td class="w">${v[0]}</td>${lang!=='en'?`<td class="t"${L.rtl?' dir="rtl" lang="ar"':' lang="es"'}>${v[L.col]}</td>`:''}<td class="x">${v[3]}</td></tr>`).join('')}</table></div>`:'';
+  const frames=q=>ell&&ELL_CUE.test(q.replace(/<[^>]+>/g,''))?`<div class="frames"><b>Start with</b>${(FRAMES[std.code]||FRAMES_DEFAULT).map(f=>`“${f}”`).join(' &nbsp;or&nbsp; ')}</div>`:'';
+  const plain=(p)=>{if(!(ell&&tier.id==='support'&&p.wide))return p.q;const parts=p.q.split(/(?<=[.?!])\s+(?=[A-Z])/);if(parts.length<2)return p.q;return parts.map(x=>`<span class="sl${/\?\s*$/.test(x)?' sq':''}">${x}</span>`).join('')};
+  const ch=d.challenge?`<div class="chal"><h3>${im?'Are you ready for more?':'Think deeper'}</h3><p>${d.challenge.q}</p>${frames(d.challenge.q)}<div class="pw l"></div><div class="pa">${d.challenge.a}</div></div>`:'';
+  const li=d.probs.map(p=>`<li class="pr${p.wide?' wide':''}"><div class="pq">${plain(p)}${im&&p.aline?' Explain or show your reasoning.':''}</div>${frames(p.q)}${p.model?`<div class="pm">${p.model}</div>`:''}${p.hint&&tier.id==='support'?`<div class="ph"><span>Hint</span>${p.hint}</div>`:''}<div class="pw ${p.space||'s'}"></div>${p.aline?`<div class="aline">Answer:<span class="line"></span></div>`:''}<div class="pa">${p.a}</div></li>`).join('');
   const warm=d.warm?`<div class="warm"><h3>Warm-up: ${d.warm.type}</h3><p>${d.warm.prompt}</p>${d.warm.text?`<p style="color:inherit">${d.warm.text}</p>`:''}${d.warm.model?`<div class="pm">${d.warm.model}</div><div class="pw m"></div>`:''}${d.warm.items?`<ol class="tf${d.warm.items.some(i=>i.q.replace(/<[^>]+>/g,'').length>24)?' long':''}">${d.warm.items.map(i=>`<li><span class="eq">${i.q.replace(/^<span class="eq">|<\/span>$/g,'')}</span><span class="pa">${i.a}</span></li>`).join('')}</ol>`:''}</div>`:'';
   const c=d.cool,cool=c?`<div class="cool"><h3>Cool-down</h3><div class="pq">${c.q}${c.aline?' Explain or show your reasoning.':''}</div>${c.model?`<div class="pm">${c.model}</div>`:''}<div class="pw"></div><div class="pa">${c.a}</div></div>`:'';
   return `<article class="sheet t-${tier.id}${o.key?' key':''}" aria-label="${tier.name} worksheet">
     ${o.key?'<div class="stamp">Answer key</div>':''}
     <div class="sh-top"><div>Name<span class="line"></span></div><div class="dt">Date<span class="line"></span></div></div>
     <div class="sh-head"><div><div class="code">${o.set==='ny'?nyCode(std.code)+' · NYS NEXT GENERATION':'CCSS.MATH.CONTENT.'+std.code} · GRADE ${std.grade} · ${std.domain.toUpperCase()}</div><h2>${std.title}</h2>${im?`<div class="unit">IM Grade ${std.img||std.grade}, Unit ${std.im}: ${IM_UNITS[std.img||std.grade][std.im]}${std.img?` (taught in grade ${std.grade} in New York)`:''}</div>`:''}<p class="ican"><b>I can</b> ${std.ican}</p></div>${badge}</div>
+    ${vocabBox}
     ${warm}${ex}${im?'<h3 class="sec">Practice</h3>':''}<ol class="probs">${li}</ol>${ch}${cool}
     <div class="self"><b>How did this feel?</b><span>I've got it</span><span>Getting there</span><span>I need help</span></div>
     ${im?'<p class="aff">Layout follows the IM lesson structure (warm-up, practice, cool-down). Not affiliated with or endorsed by Illustrative Mathematics.</p>':''}
-    <div class="sh-foot"><span>Just Right Math</span><span>Set ${o.seed}-${tier.letter}</span></div>
+    <div class="sh-foot"><span>Just Right Math</span><span>Set ${o.seed}-${tier.letter}${ell&&lang!=='en'?' · '+L.label:''}</span></div>
   </article>`;
 }
 
 /* ================= app ================= */
 const $=id=>document.getElementById(id);
-const DEF={grade:7,std:'7.EE.B.4a',view:'support',count:12,key:false,discreet:true,seed:4821,set:'ny',style:'im'};
+const DEF={grade:7,std:'7.EE.B.4a',view:'support',count:12,key:false,discreet:true,seed:4821,set:'ny',style:'im',lang:'en'};
 let S={...DEF};
 try{const s=JSON.parse(localStorage.getItem('jrm-state')||'null');if(s&&STD.some(x=>x.code===s.std))S={...DEF,...s}}catch(e){}
 const save=()=>{try{localStorage.setItem('jrm-state',JSON.stringify(S))}catch(e){}};
@@ -2936,9 +3019,10 @@ function renderSheets(){
   document.querySelectorAll('input[name=view]').forEach(i=>i.checked=i.value===S.view);
   const show=S.view==='all'?TIERS:TIERS.filter(t=>t.id===S.view);
   $('sheets').classList.toggle('side',S.view==='all');
-  $('sheets').innerHTML=show.map(t=>sheetHTML(std,t,build(std,t,S.seed,S.count),{key:S.key,discreet:S.discreet,seed:S.seed,set:S.set,style:S.style})).join('');
+  $('sheets').innerHTML=show.map(t=>sheetHTML(std,t,build(std,t,S.seed,S.count),{key:S.key,discreet:S.discreet,seed:S.seed,set:S.set,style:S.style,lang:S.lang})).join('');
   $('diff').innerHTML=`<h2>How the three versions of ${S.set==='ny'?nyCode(std.code):std.code} differ</h2>${S.style==='im'?'<p class="note">The warm-up and cool-down are the same on all three versions, so you can compare cool-down results across the whole class.</p>':''}<div class="cols">${TIERS.map((t,i)=>`<div class="col"><h3><span style="color:var(--${t.id==='support'?'sup':t.id==='onlevel'?'onl':'str'})">${t.shape}</span>${t.name}</h3><p>${std.diff[i]}</p><ul>${t.bullets.map(b=>`<li>${b}</li>`).join('')}</ul></div>`).join('')}</div>`;
   {const one=S.view!=='all',nm=one?TIERS.find(t=>t.id===S.view).name:'';$('printstudents').textContent=one?`Print ${nm} sheet`:'Print all 3 sheets';$('printkeys').textContent=one?`Print ${nm} key`:'Print all 3 keys'}
+  $('lang').value=S.lang;$('langnote').textContent=VOCAB[S.std]?'Adds the key words in this language. Print once per language; the problems stay the same.':'Key words and sentence starters are available for grade 6 so far.';
   $('set').value=S.set;$('curr').value=S.style;$('seed').value=S.seed;$('count').value=S.count;$('key').checked=S.key;$('discreet').checked=S.discreet;
   save();
 }
@@ -2946,6 +3030,7 @@ renderGrades();renderStds();renderSheets();
 
 $('grades').addEventListener('change',e=>{S.grade=+e.target.value;S.std=visible(S.grade)[0].code;renderStds();renderSheets()});
 $('set').addEventListener('change',e=>{S.set=e.target.value;if(!visible(S.grade).some(s=>s.code===S.std))S.std=visible(S.grade)[0].code;renderStds();renderSheets()});
+$('lang').addEventListener('change',e=>{S.lang=e.target.value;renderSheets()});
 $('curr').addEventListener('change',e=>{S.style=e.target.value;renderStds();renderSheets()});
 $('stds').addEventListener('change',e=>{S.std=e.target.value;renderSheets()});
 $('tabs').addEventListener('change',e=>{S.view=e.target.value;renderSheets()});
@@ -2956,7 +3041,7 @@ $('seed').addEventListener('change',e=>{const v=Math.round(+e.target.value);if(v
 /* Printing works when the page is opened directly (a hosted site), not inside a viewer frame. */
 let canPrint=false;try{canPrint=window.self===window.top&&typeof window.print==='function'}catch(e){}
 if(canPrint){$('printrow').hidden=false;
-  const printSet=key=>{const std=STD.find(s=>s.code===S.std),o={discreet:S.discreet,seed:S.seed,set:S.set,style:S.style,key};
+  const printSet=key=>{const std=STD.find(s=>s.code===S.std),o={discreet:S.discreet,seed:S.seed,set:S.set,style:S.style,lang:S.lang,key};
     const ts=TIERS.filter(t=>S.view==='all'||t.id===S.view),ds=ts.map(t=>build(std,t,S.seed,S.count));
     $('printset').innerHTML=key?keySheetHTML(std,ts,ds,o):ts.map((t,i)=>sheetHTML(std,t,ds[i],o)).join('');
     document.body.classList.add('printing-set');window.print()};
