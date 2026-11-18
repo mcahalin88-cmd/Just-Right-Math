@@ -8,6 +8,7 @@ A worksheet generator for differentiated independent practice. Pick a standard a
   - Grade 6 Stretch sheets have six problems, each asking for a different kind of thinking: three harder applications, then **Find the mistake** (spot and fix a student's error), **Work backward** (start from the answer) and **Many answers** (more than one correct answer). Each of the last three is labeled on the sheet.
   - On every grade, a Stretch sheet uses the same story type at most twice. It ends when it runs out of new story types, with at least 6 problems.
 
+- **Tools** (Extras): add a blank ratio table or double number line under each grade 6 ratio problem (6.RP.1–3). Support fills in the row labels and the first pair from the story, On Level fills in the labels only, and Stretch students label it themselves.
 - **Unit review**: check 2 to 4 standards from the same unit to get one sheet that covers all of them. Support groups the problems under a heading for each standard. On Level and Stretch mix them together (turn off *Mix On Level and Stretch problems* to keep them grouped). Stretch adds a Find the mistake problem and one challenge. The answer key shows which standard each answer comes from.
 
 ## What it covers

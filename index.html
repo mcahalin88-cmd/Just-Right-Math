@@ -155,6 +155,9 @@ dialog.report::backdrop{background:rgba(10,20,40,.45)}
 .pr{counter-increment:p;display:grid;grid-template-columns:1.9em minmax(0,1fr);gap:.2em .5em;align-content:start;break-inside:avoid}
 .pr::before{content:counter(p);grid-row:span 9;width:1.6em;height:1.6em;border-radius:50%;border:1.5px solid var(--p-ink);display:grid;place-items:center;font-weight:700;font-size:.85em;font-variant-numeric:tabular-nums}
 .pr.wide{grid-column:1/-1}
+.ptool{overflow:visible}
+table.rt.rtb th{min-width:7em;text-align:left}table.rt.rtb td{min-width:3.4em;height:2.2em}
+.tlab{font-size:.7em;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.75;margin:.15em 0 .2em}
 .rvh{grid-column:1/-1;display:block;list-style:none;font-weight:700;font-size:.78em;letter-spacing:.06em;text-transform:uppercase;border-bottom:1.5px solid currentColor;padding-bottom:2px;margin-top:.3em;break-after:avoid}
 .rvh small{font-family:var(--f-mono);font-weight:400;font-size:1em;margin-right:.7em}
 .kstd{font-family:var(--f-mono);font-size:.75em;opacity:.6;margin-left:.45em;white-space:nowrap}
@@ -399,6 +402,7 @@ sup .box{width:.75em;height:.8em;vertical-align:baseline}
       <label class="toggle" for="opt-guide">Guided example (Support) <input type="checkbox" id="opt-guide"></label>
       <label class="toggle" for="opt-vocab">Key words <input type="checkbox" id="opt-vocab"></label>
       <label class="toggle" for="opt-cool">Cool-down <input type="checkbox" id="opt-cool"></label>
+      <div class="field toolf"><label for="opt-tool">Tools</label><select id="opt-tool"><option value="off">None</option><option value="rt">Ratio table</option><option value="dnl">Double number line</option></select><p class="note" id="toolnote"></p></div>
     </div>
 
 
@@ -629,6 +633,20 @@ const TOPICS=['screen time','sleep','favorite foods','sports','pets','music','tr
 const SAMPLES=[['To learn what all students at school think about lunch, # surveys the first 30 students in the lunch line.',0,'Students who buy lunch may feel differently than students who bring lunch.'],['To find the favorite sport of students at school, # asks the members of the soccer team.',0,'Soccer players are likely to choose soccer.'],['To learn how much time sixth graders spend on homework, # puts every sixth grader’s name in a hat and draws 40 names.',1,'Every sixth grader has the same chance of being picked.'],['To find the most popular book among students, # surveys students leaving the library after school.',0,'Students at the library may read more than other students.'],['To estimate how many students ride the bus, # has a computer randomly pick 50 student ID numbers from the whole school.',1,'Every student has an equal chance of being chosen.'],['To learn whether town residents want a new park, # asks people at the playground on Saturday.',0,'People at a playground are more likely to want parks.'],['To learn the favorite music of students at school, # picks every 10th name on an alphabetical list of all students.',1,'The sample is spread across the whole school.'],['To find how far students live from school, # asks only the students who walk to school.',0,'Walkers likely live closer than other students.']];
 function shapesFig(a,b){const W=(a+b)*26+8;let s=`<svg class="mdl" viewBox="0 0 ${W} 32" style="width:${(W/22).toFixed(2)}em" role="img" aria-label="${a} circles and ${b} squares">`;for(let i=0;i<a;i++)s+=`<circle cx="${17+i*26}" cy="16" r="10" class="sh1"/>`;for(let j=0;j<b;j++)s+=`<rect x="${(a+j)*26+7}" y="6" width="20" height="20" class="un"/>`;return s+'</svg>'}
 function grid100(n){const c=17;let s=`<svg class="mdl" viewBox="0 0 ${10*c+4} ${10*c+4}" style="width:9em" role="img" aria-label="Hundred grid">`;for(let i=0;i<100;i++){const col=Math.floor(i/10),row=i%10;s+=`<rect x="${2+col*c}" y="${2+row*c}" width="${c}" height="${c}" class="${i<n?'sh1':'un'}"/>`}return s+'</svg>'}
+/* Optional student tools (Extras > Tools). A problem carries tool:{l:[label1,label2],f:[a,b]} */
+const TOOL_STDS=new Set(['6.RP.A.1','6.RP.A.3a','6.RP.A.2','6.RP.A.3b','6.RP.A.3c','6.RP.A.3d']);
+const TL=(p,l1,l2,a,b)=>({...p,tool:{l:[l1,l2],f:a==null?null:[a,b]}});
+function toolHTML(t,tier,kind){const sup=tier==='support',st=tier==='stretch',L=st?['','']:t.l,f=sup?t.f:null;
+  if(kind==='dnl'){const W=470,ox=st?14:128,n=5,stp=(W-ox-14)/n,lab=(x,y,v)=>v==null||v===''?'':`<text x="${x}" y="${y}" text-anchor="middle" class="svt">${v}</text>`;
+    let s=`<div class="tlab">${st?'Make a double number line. Label both lines.':'Use the double number line'}</div><svg class="mdl" viewBox="0 0 ${W} 118" style="width:26em" role="img" aria-label="Blank double number line">`;
+    if(!st)s+=`<text x="4" y="40" class="svt">${L[0]}</text><text x="4" y="86" class="svt">${L[1]}</text>`;
+    s+=`<line x1="${ox}" y1="35" x2="${W-6}" y2="35" class="stk"/><line x1="${ox}" y1="81" x2="${W-6}" y2="81" class="stk"/>`;
+    for(let i=0;i<=n;i++){const x=ox+i*stp;s+=`<line x1="${x}" y1="27" x2="${x}" y2="43" class="stk"/><line x1="${x}" y1="73" x2="${x}" y2="89" class="stk"/>`;
+      if(!st&&i===0)s+=lab(x,19,0)+lab(x,109,0);if(f&&i===1)s+=lab(x,19,f[0])+lab(x,109,f[1])}
+    return s+'</svg>'}
+  const cols=5,cell=(i,r)=>`<td>${f&&i===0?f[r]:''}</td>`;
+  return `<div class="tlab">${st?'Make a ratio table. Label both rows.':'Use the ratio table'}</div><table class="rt rtb"><tr><th>${L[0]}</th>${Array.from({length:cols},(_,i)=>cell(i,0)).join('')}</tr><tr><th>${L[1]}</th>${Array.from({length:cols},(_,i)=>cell(i,1)).join('')}</tr></table>`}
+const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
 function dnl(a,b,n,hide,l1,l2){const W=460,ox=110,st=(W-ox-16)/n;let s=`<svg class="mdl" viewBox="0 0 ${W} 96" style="width:24em" role="img" aria-label="Double number line"><text x="4" y="34" class="svt sm">${l1}</text><text x="4" y="70" class="svt sm">${l2}</text><line x1="${ox}" y1="30" x2="${W-8}" y2="30" class="stk"/><line x1="${ox}" y1="66" x2="${W-8}" y2="66" class="stk"/>`;
   for(let i=0;i<=n;i++){const x=ox+i*st;s+=`<line x1="${x}" y1="24" x2="${x}" y2="36" class="stk"/><line x1="${x}" y1="60" x2="${x}" y2="72" class="stk"/>`;
     s+=hide.has('t'+i)?`<rect x="${x-13}" y="4" width="26" height="16" class="un"/>`:`<text x="${x}" y="17" text-anchor="middle" class="svt">${a*i}</text>`;
@@ -1018,10 +1036,10 @@ const STD=[
  onlevel(r){const t=r.int(0,2),a=r.int(2,15),b=until(()=>r.int(2,15),x=>x!==a),[c1,c2]=r.pick([['red','blue'],['green','yellow'],['black','white']]);
    if(t===0)return{q:`A bag has ${a} ${c1} marbles and ${b} ${c2} marbles. Write the ratio of ${c1} marbles to ${c2} marbles in two different ways.`,a:`${a} : ${b} and ${a} to ${b}`,wide:true,space:'m'};
    if(t===1)return{q:`A bag has ${a} ${c1} marbles and ${b} ${c2} marbles. What is the ratio of ${c2} marbles to all the marbles?`,a:`${b} : ${a+b}`,wide:true,space:'m'};
-   const[x,y]=r.pick([['cups of oats','cups of raisins'],['scoops of drink mix','cups of water'],['laps walked','laps run']]);return{q:`For every ${a} ${x}, there are ${b} ${y}. What is the ratio of ${y} to ${x}?`,a:`${b} : ${a}`,wide:true,space:'m'}},
+   const[x,y]=r.pick([['cups of oats','cups of raisins'],['scoops of drink mix','cups of water'],['laps walked','laps run']]);return TL({q:`For every ${a} ${x}, there are ${b} ${y}. What is the ratio of ${y} to ${x}?`,a:`${b} : ${a}`,wide:true,space:'m'},cap(x),cap(y),a,b)},
  stretch(r){const t=r.int(0,2),[p]=two(r),a=r.int(2,5),b=until(()=>r.int(2,7),x=>x!==a&&gcd(x,a)===1);
    if(t===0)return W(`In a class, the ratio of students who walk to school to students who ride the bus is ${a} : ${b}. ${p} says that ${a} out of ${b} students walk. Do you agree?`,`No. ${a} out of every ${a+b} students walk.`);
-   if(t===1){const k=r.int(2,6);return W(`The ratio of dogs to cats at a shelter is ${a} : ${b}. There are ${(a+b)*k} dogs and cats in all. How many cats are there?`,`${b*k} cats`)}
+   if(t===1){const k=r.int(2,6);return TL(W(`The ratio of dogs to cats at a shelter is ${a} : ${b}. There are ${(a+b)*k} dogs and cats in all. How many cats are there?`,`${b*k} cats`),'Dogs','Cats',a,b)}
    const c=r.int(1,4);return W(`A trail mix has ${a} cups of nuts, ${b} cups of raisins and ${c} cups of seeds. What is the ratio of nuts to the whole mix? What is the ratio of raisins to seeds?`,`${a} : ${a+b+c}; ${b} : ${c}`)},
  worked(r){const a=r.int(2,4),b=until(()=>r.int(2,5),x=>x!==a);return{q:`${a} circles and ${b} squares`,steps:[`For every ${a} circles, there are ${b} squares.`,`The ratio of circles to squares is ${a} : ${b}, or ${a} to ${b}.`,`The ratio of squares to circles is ${b} : ${a}.`],a:''}},
  challenge(r){const a=r.int(2,4),b=r.int(5,7);return{q:`Describe a situation where the ratio ${a} : ${b} makes sense. Then describe one where ${b} : ${a} makes sense. What changes when you switch the order?`,a:'Answers vary. The order tells which quantity is named first.'}}},
@@ -1034,39 +1052,39 @@ const STD=[
      return{q:`For every ${a} ${w1} there are ${b} ${w2}. Complete the ratio table.`,model:`<table class="rt"><tr><th>${l1}</th>${ks.map((k,i)=>cell(a*k,hide[i]!==0)).join('')}</tr><tr><th>${l2}</th>${ks.map((k,i)=>cell(b*k,hide[i]!==1)).join('')}</tr></table>`,a:ks.map(k=>`${a*k} : ${b*k}`).join(', '),hint:'Multiply both numbers in the first column by the same amount.',wide:true}}
    const hide=new Set();for(let i=1;i<=4;i++)hide.add((r.chance(.5)?'t':'b')+i);return{q:`For every ${a} ${w1} there are ${b} ${w2}. Fill in the missing numbers on the double number line.`,model:dnl(a,b,4,hide,l1,l2),a:[1,2,3,4].map(i=>`${a*i} : ${b*i}`).join(', '),hint:`Each tick mark adds ${a} on the top line and ${b} on the bottom line.`,wide:true}},
  onlevel(r){const t=r.int(0,2),a=r.int(2,9),b=until(()=>r.int(2,9),x=>x!==a&&gcd(x,a)===1),k1=r.int(2,5),k2=until(()=>r.int(3,12),x=>x!==k1);
-   if(t===0)return{q:EQ(`${a*k1} : ${b*k1} = ${a*k2} : ${BL(2)}`),a:b*k2,space:'m'};
+   if(t===0)return TL({q:EQ(`${a*k1} : ${b*k1} = ${a*k2} : ${BL(2)}`),a:b*k2,space:'m'},'First number','Second number',a*k1,b*k1);
    if(t===1){const cols=[k1,k2,k1+k2],h=r.int(0,2);return{q:'Complete the ratio table.',model:`<table class="rt"><tr><th>Apples</th>${cols.map(k=>`<td>${a*k}</td>`).join('')}</tr><tr><th>Dollars</th>${cols.map((k,i)=>i===h?`<td><span class="kv">${b*k}</span></td>`:`<td>${b*k}</td>`).join('')}</tr></table>`,a:b*cols[h]}}
-   const eq=r.chance(.5),c2=eq?b*k2:b*k2+r.pick([1,-1]);return{q:`Are ${a*k1} : ${b*k1} and ${a*k2} : ${c2} equivalent ratios? Explain how you know.`,a:eq?'Yes':'No',space:'m'}},
+   const eq=r.chance(.5),c2=eq?b*k2:b*k2+r.pick([1,-1]);return TL({q:`Are ${a*k1} : ${b*k1} and ${a*k2} : ${c2} equivalent ratios? Explain how you know.`,a:eq?'Yes':'No',space:'m'},'First number','Second number',a*k1,b*k1)},
  stretch(r){const a=r.int(1,5),b=until(()=>r.int(2,7),x=>x!==a),k=r.int(2,8);
-   if(r.chance(.5)){const[c1,c2]=r.pick([['red','white'],['blue','yellow']]);return W(`A paint mix uses ${c1} and ${c2} paint in a ratio of ${a} : ${b}. You need ${(a+b)*k} cups of paint in all. How many cups of each color do you need?`,`${a*k} cups ${c1}, ${b*k} cups ${c2}`)}
+   if(r.chance(.5)){const[c1,c2]=r.pick([['red','white'],['blue','yellow']]);return TL(W(`A paint mix uses ${c1} and ${c2} paint in a ratio of ${a} : ${b}. You need ${(a+b)*k} cups of paint in all. How many cups of each color do you need?`,`${a*k} cups ${c1}, ${b*k} cups ${c2}`),`Cups of ${c1}`,`Cups of ${c2}`,a,b)}
    const[[x1,y1],[x2,y2]]=until(()=>[[r.int(2,5),r.int(3,8)],[r.int(2,5),r.int(3,8)]],([[a,b],[c,d]])=>a*d!==b*c),[p,q]=two(r);
-   return W(`${p} mixes ${x1} scoops of drink mix with ${y1} cups of water. ${q} mixes ${x2} scoops with ${y2} cups of water. Whose drink tastes stronger? Use a ratio table or a double number line.`,`${x1*y2>x2*y1?p:q}'s (${p}: ${fr(x1,y1)} scoop per cup, ${q}: ${fr(x2,y2)} scoop per cup)`)},
+   return TL(W(`${p} mixes ${x1} scoops of drink mix with ${y1} cups of water. ${q} mixes ${x2} scoops with ${y2} cups of water. Whose drink tastes stronger? Use a ratio table or a double number line.`,`${x1*y2>x2*y1?p:q}'s (${p}: ${fr(x1,y1)} scoop per cup, ${q}: ${fr(x2,y2)} scoop per cup)`),'Scoops of mix','Cups of water',x1,y1)},
  worked(r){const a=r.int(2,4),b=r.int(3,7);return{q:`${a} cups of flour for every ${b} cups of sugar`,steps:[`Start with ${a} : ${b}.`,`Multiply both by 2: ${2*a} : ${2*b}. Multiply both by 3: ${3*a} : ${3*b}.`,`All of these ratios are equivalent.`],a:''}},
  challenge(r){const a=r.int(2,5),b=r.int(6,9);return{q:`Write three ratios that are equivalent to ${a} : ${b}. Make one of them have a number greater than 100. Explain how you know they are all equivalent.`,a:`Answers vary, for example ${2*a} : ${2*b}, ${5*a} : ${5*b}, ${20*a} : ${20*b}.`}}},
 
 {grade:6,code:'6.RP.A.2',im:3,domain:'Ratios & Proportional Relationships',title:'Unit rates',
  ican:'find the two unit rates for a ratio and explain what each one means.',
  diff:['Whole-number unit rates, with a hint to divide','Both unit rates for a ratio, including fractions','Comparing rates and choosing the more useful unit rate'],
- support(r){if(r.chance(.5)){const n=r.int(2,8),u=r.int(2,12);return{q:`${n} notebooks cost $${n*u}. How much does 1 notebook cost?`,a:`$${u}`,hint:`Divide the cost by ${n}.`,space:'m'}}
-   const h=r.int(2,6),m=r.int(3,12)*5;return{q:`A car travels ${h*m} miles in ${h} hours. How many miles is that per hour?`,a:`${m} miles per hour`,hint:`Divide ${h*m} by ${h}.`,space:'m'}},
- onlevel(r){if(r.chance(.5)){const a=r.int(2,9),b=until(()=>r.int(2,9),x=>x!==a&&gcd(a,x)===1),k=r.int(2,5);return W(`A recipe uses ${a*k} cups of flour for ${b*k} cups of milk. How many cups of flour is that per cup of milk? How many cups of milk per cup of flour?`,`${fr(a,b)} cup flour per cup milk; ${fr(b,a)} cup milk per cup flour`)}
-   const g=r.int(5,15),m=r.int(20,40);return W(`A car goes ${g*m} miles on ${g} gallons of gas. Find the miles per gallon and the gallons per mile.`,`${m} miles per gallon; ${F(1,m)} gallon per mile`)},
+ support(r){if(r.chance(.5)){const n=r.int(2,8),u=r.int(2,12);return TL({q:`${n} notebooks cost $${n*u}. How much does 1 notebook cost?`,a:`$${u}`,hint:`Divide the cost by ${n}.`,space:'m'},'Notebooks','Dollars',n,n*u)}
+   const h=r.int(2,6),m=r.int(3,12)*5;return TL({q:`A car travels ${h*m} miles in ${h} hours. How many miles is that per hour?`,a:`${m} miles per hour`,hint:`Divide ${h*m} by ${h}.`,space:'m'},'Miles','Hours',h*m,h)},
+ onlevel(r){if(r.chance(.5)){const a=r.int(2,9),b=until(()=>r.int(2,9),x=>x!==a&&gcd(a,x)===1),k=r.int(2,5);return TL(W(`A recipe uses ${a*k} cups of flour for ${b*k} cups of milk. How many cups of flour is that per cup of milk? How many cups of milk per cup of flour?`,`${fr(a,b)} cup flour per cup milk; ${fr(b,a)} cup milk per cup flour`),'Cups of flour','Cups of milk',a*k,b*k)}
+   const g=r.int(5,15),m=r.int(20,40);return TL(W(`A car goes ${g*m} miles on ${g} gallons of gas. Find the miles per gallon and the gallons per mile.`,`${m} miles per gallon; ${F(1,m)} gallon per mile`),'Miles','Gallons',g*m,g)},
  stretch(r){const[p,q]=two(r);
-   if(r.chance(.5)){const t1=r.int(3,8),d1=t1*r.int(4,9),t2=until(()=>r.int(3,8),x=>x!==t1),d2=until(()=>t2*r.int(4,9),x=>x*t1!==d1*t2);return W(`${p} runs ${d1} laps in ${t1} minutes. ${q} runs ${d2} laps in ${t2} minutes. Who runs faster? Find both unit rates.`,`${d1/t1>d2/t2?p:q} (${p}: ${d1/t1} laps per minute, ${q}: ${d2/t2} laps per minute)`)}
-   const c=r.int(15,60)*5,n=r.int(3,8);return W(`${n} pounds of grapes cost ${money(c*n)}. Find the price per pound and the pounds per dollar. Which unit rate helps you find the cost of 10 pounds?`,`${money(c)} per pound; ${fr(100,c)} pound per dollar. Price per pound gives the cost: ${money(c*10)}.`)},
+   if(r.chance(.5)){const t1=r.int(3,8),d1=t1*r.int(4,9),t2=until(()=>r.int(3,8),x=>x!==t1),d2=until(()=>t2*r.int(4,9),x=>x*t1!==d1*t2);return TL(W(`${p} runs ${d1} laps in ${t1} minutes. ${q} runs ${d2} laps in ${t2} minutes. Who runs faster? Find both unit rates.`,`${d1/t1>d2/t2?p:q} (${p}: ${d1/t1} laps per minute, ${q}: ${d2/t2} laps per minute)`),'Laps','Minutes',d1,t1)}
+   const c=r.int(15,60)*5,n=r.int(3,8);return TL(W(`${n} pounds of grapes cost ${money(c*n)}. Find the price per pound and the pounds per dollar. Which unit rate helps you find the cost of 10 pounds?`,`${money(c)} per pound; ${fr(100,c)} pound per dollar. Price per pound gives the cost: ${money(c*10)}.`),'Pounds','Dollars',n,(c*n/100).toFixed(2))},
  worked(r){const n=r.int(3,6),u=r.int(2,9);return{q:`${n} pens cost $${n*u}.`,steps:[`Dollars per pen: ${n*u} ÷ ${n} = ${u}`,`Pens per dollar: ${n} ÷ ${n*u} = ${fr(n,n*u)}`,`Both unit rates describe the same ratio.`],a:''}},
  challenge(r){const m=r.int(25,35);return{q:`${m} miles per gallon and ${F(1,m)} gallon per mile describe the same car. Explain how both can be true, and describe a question each rate would help answer.`,a:'Answers vary. They are reciprocal unit rates for the same ratio.'}}},
 
 {grade:6,code:'6.RP.A.3b',im:3,domain:'Ratios & Proportional Relationships',title:'Unit price and speed problems',
  ican:'use unit rates to solve unit pricing and constant speed problems.',
  diff:['Unit price stories with friendly numbers and a "find 1 first" hint','Unit price, speed, and "at the same rate" problems','Better-buy comparisons and multi-step rate stories'],
- support(r){const n=r.int(2,5),c=r.int(1,9),m=until(()=>r.int(2,10),x=>x!==n);return{...W(`${n} bags of popcorn cost $${n*c}. At the same price, how much do ${m} bags cost?`,`$${m*c}`),hint:`Find the cost of 1 bag first: $${n*c} ÷ ${n}.`}},
+ support(r){const n=r.int(2,5),c=r.int(1,9),m=until(()=>r.int(2,10),x=>x!==n);return TL({...W(`${n} bags of popcorn cost $${n*c}. At the same price, how much do ${m} bags cost?`,`$${m*c}`),hint:`Find the cost of 1 bag first: $${n*c} ÷ ${n}.`},'Bags','Dollars',n,n*c)},
  onlevel(r){const t=r.int(0,2),[p]=two(r);
-   if(t===0){const n=r.int(3,8),c=r.int(5,60)*5;return W(`${n} notebooks cost ${money(n*c)}. What is the cost of one notebook?`,money(c))}
-   if(t===1){const h=r.int(2,6),m=r.int(35,70),h2=until(()=>r.int(2,9),x=>x!==h);return W(`A train travels ${h*m} miles in ${h} hours at a steady speed. At this speed, how far does it travel in ${h2} hours?`,`${m*h2} miles`)}
-   const n=r.int(2,5),c=r.int(8,60)*5,m=until(()=>r.int(3,12),m=>m!==n);return W(`${p} buys ${n} smoothies for ${money(n*c)}. At the same price, how much would ${m} smoothies cost?`,money(m*c))},
- stretch(r){if(r.chance(.5)){const[c1,c2]=until(()=>[r.int(20,90)*5,r.int(20,90)*5],([x,y])=>x!==y),n1=r.int(2,6),n2=until(()=>r.int(3,8),n=>n!==n1);return W(`Store A sells ${n1} granola bars for ${money(c1*n1)}. Store B sells ${n2} granola bars for ${money(c2*n2)}. Which store has the better buy? Show the unit prices.`,`Store ${c1<c2?'A':'B'} (A: ${money(c1)} each, B: ${money(c2)} each)`)}
-   const ppm=r.int(4,12),t0=r.int(2,5),m=r.int(6,20);return W(`A printer prints ${ppm*t0} pages in ${t0} minutes. At this rate, how long will it take to print ${ppm*m} pages? How many pages can it print in an hour?`,`${m} minutes; ${ppm*60} pages`)},
+   if(t===0){const n=r.int(3,8),c=r.int(5,60)*5;return TL(W(`${n} notebooks cost ${money(n*c)}. What is the cost of one notebook?`,money(c)),'Notebooks','Dollars',n,(n*c/100).toFixed(2))}
+   if(t===1){const h=r.int(2,6),m=r.int(35,70),h2=until(()=>r.int(2,9),x=>x!==h);return TL(W(`A train travels ${h*m} miles in ${h} hours at a steady speed. At this speed, how far does it travel in ${h2} hours?`,`${m*h2} miles`),'Miles','Hours',h*m,h)}
+   const n=r.int(2,5),c=r.int(8,60)*5,m=until(()=>r.int(3,12),m=>m!==n);return TL(W(`${p} buys ${n} smoothies for ${money(n*c)}. At the same price, how much would ${m} smoothies cost?`,money(m*c)),'Smoothies','Dollars',n,(n*c/100).toFixed(2))},
+ stretch(r){if(r.chance(.5)){const[c1,c2]=until(()=>[r.int(20,90)*5,r.int(20,90)*5],([x,y])=>x!==y),n1=r.int(2,6),n2=until(()=>r.int(3,8),n=>n!==n1);return TL(W(`Store A sells ${n1} granola bars for ${money(c1*n1)}. Store B sells ${n2} granola bars for ${money(c2*n2)}. Which store has the better buy? Show the unit prices.`,`Store ${c1<c2?'A':'B'} (A: ${money(c1)} each, B: ${money(c2)} each)`),'Granola bars','Dollars',n1,(c1*n1/100).toFixed(2))}
+   const ppm=r.int(4,12),t0=r.int(2,5),m=r.int(6,20);return TL(W(`A printer prints ${ppm*t0} pages in ${t0} minutes. At this rate, how long will it take to print ${ppm*m} pages? How many pages can it print in an hour?`,`${m} minutes; ${ppm*60} pages`),'Pages','Minutes',ppm*t0,t0)},
  worked(r){const n=r.int(3,5),c=r.int(2,8),m=r.int(6,10);return{q:`${n} bags cost $${n*c}. Cost of ${m} bags?`,steps:[`1 bag: $${n*c} ÷ ${n} = $${c}`,`${m} bags: ${m} × $${c}`,`= $${m*c}`],a:`$${m*c}`}},
  challenge(r){return{q:'A 12-pack of juice boxes costs $9.00. A 20-pack costs $14.00. Which is the better buy? Describe a reason someone might still choose the other pack.',a:'The 20-pack ($0.70 each vs $0.75 each). Reasons vary, such as not needing 20.'}}},
 
@@ -1074,30 +1092,30 @@ const STD=[
  ican:'find a percent of a quantity, and find the whole when I know a part and the percent.',
  diff:['Percents shown on a 10 × 10 grid, and benchmark percents','Percent of a number, what percent one number is of another, and finding the whole','Percent stories about tests, sales, and surveys'],
  support(r){if(r.chance(.5)){const n=r.int(5,95);return{q:`What percent of the grid is shaded? ${BL(2)}%`,a:`${n}%`,model:grid100(n),hint:'There are 100 small squares. Count the shaded ones.'}}
-   const p=r.pick([10,25,50,75]),N=r.int(2,20)*(p===10?10:4);return{q:`What is ${p}% of ${N}?`,a:p*N/100,hint:{10:'10% means 1 out of every 10. Divide by 10.',25:'25% is one fourth. Divide by 4.',50:'50% is half. Divide by 2.',75:'75% is three fourths. Find one fourth, then multiply by 3.'}[p]}},
+   const p=r.pick([10,25,50,75]),N=r.int(2,20)*(p===10?10:4);return TL({q:`What is ${p}% of ${N}?`,a:p*N/100,hint:{10:'10% means 1 out of every 10. Divide by 10.',25:'25% is one fourth. Divide by 4.',50:'50% is half. Divide by 2.',75:'75% is three fourths. Find one fourth, then multiply by 3.'}[p]},'Number','Percent',N,100)},
  onlevel(r){const t=r.int(0,2),p=r.pick([10,20,25,30,40,60,75,80]),n=r.int(2,12)*(100/gcd(p,100));
-   if(t===0)return{q:`What is ${p}% of ${n}?`,a:p*n/100,space:'m'};
-   if(t===1)return{q:`${p*n/100} is what percent of ${n}?`,a:`${p}%`,space:'m'};
-   return{q:`${p*n/100} is ${p}% of what number?`,a:n,space:'m'}},
+   if(t===0)return TL({q:`What is ${p}% of ${n}?`,a:p*n/100,space:'m'},'Number','Percent',n,100);
+   if(t===1)return TL({q:`${p*n/100} is what percent of ${n}?`,a:`${p}%`,space:'m'},'Number','Percent',n,100);
+   return TL({q:`${p*n/100} is ${p}% of what number?`,a:n,space:'m'},'Number','Percent',p*n/100,p)},
  stretch(r){const t=r.int(0,2),[p]=two(r);
-   if(t===0){const tot=r.pick([20,25,40,50]),c=r.int(Math.ceil(tot*.6),tot-1);return W(`${p} answered ${c} out of ${tot} questions correctly. What percent is that?`,`${c*100/tot}%`)}
-   if(t===1){const o=r.int(3,25)*20,d=r.pick([10,20,25,30,40]);return W(`A bike helmet costs $${o}. It is on sale for ${d}% off. How much do you save, and what is the sale price?`,`Save $${o*d/100}; sale price $${o*(100-d)/100}`)}
-   const pc=r.pick([20,25,40,60,75]),k=r.int(2,12)*(100/gcd(pc,100));return W(`In a survey, ${pc*k/100} students said summer is their favorite season. That is ${pc}% of the students surveyed. How many students were surveyed?`,`${k} students`)},
+   if(t===0){const tot=r.pick([20,25,40,50]),c=r.int(Math.ceil(tot*.6),tot-1);return TL(W(`${p} answered ${c} out of ${tot} questions correctly. What percent is that?`,`${c*100/tot}%`),'Questions','Percent',tot,100)}
+   if(t===1){const o=r.int(3,25)*20,d=r.pick([10,20,25,30,40]);return TL(W(`A bike helmet costs $${o}. It is on sale for ${d}% off. How much do you save, and what is the sale price?`,`Save $${o*d/100}; sale price $${o*(100-d)/100}`),'Dollars','Percent',o,100)}
+   const pc=r.pick([20,25,40,60,75]),k=r.int(2,12)*(100/gcd(pc,100));return TL(W(`In a survey, ${pc*k/100} students said summer is their favorite season. That is ${pc}% of the students surveyed. How many students were surveyed?`,`${k} students`),'Students','Percent',pc*k/100,pc)},
  worked(r){const p=r.pick([30,40,60]),N=r.int(3,9)*10;return{q:`What is ${p}% of ${N}?`,steps:[`10% of ${N} is ${N/10}.`,`${p}% is ${p/10} groups of 10%.`,`${p/10} × ${N/10} = ${p*N/100}`],a:p*N/100}},
  challenge(r){const a=r.int(2,9)*10,b=r.int(2,9)*10;return{q:`Find ${a}% of ${b} and ${b}% of ${a}. Try two more pairs. What do you notice? Explain why it happens.`,a:`They are equal (${a*b/100}). Both are ${a} × ${b} ÷ 100.`}}},
 
 {grade:6,code:'6.RP.A.3d',im:3,domain:'Ratios & Proportional Relationships',title:'Converting units',
  ican:'use ratio reasoning to convert measurement units within the same system.',
  diff:['Converting to a smaller unit, with the conversion fact given','Converting in both directions, including halves and mixed units','Two-step conversions and converting rates'],
- support(r){const[big,small,f]=r.pick(CONV),n=r.int(2,9);return{q:EQ(`${n} ${big} = ${BL(3)} ${small}`),a:`${n*f} ${small}`,hint:`1 ${one(big)} = ${f} ${small}. Multiply by ${n}.`,space:'m'}},
+ support(r){const[big,small,f]=r.pick(CONV),n=r.int(2,9);return TL({q:EQ(`${n} ${big} = ${BL(3)} ${small}`),a:`${n*f} ${small}`,hint:`1 ${one(big)} = ${f} ${small}. Multiply by ${n}.`,space:'m'},cap(big),cap(small),1,f)},
  onlevel(r){const[big,small,f]=r.pick(CONV),t=r.int(0,2);
-   if(t===0){const n=r.int(2,15);return{q:EQ(`${n*f} ${small} = ${BL(2)} ${big}`),a:`${n} ${big}`,space:'m'}}
-   if(t===1){const n=r.int(1,9)+.5;return{q:EQ(`${n} ${big} = ${BL(3)} ${small}`),a:`${n*f} ${small}`,space:'m'}}
+   if(t===0){const n=r.int(2,15);return TL({q:EQ(`${n*f} ${small} = ${BL(2)} ${big}`),a:`${n} ${big}`,space:'m'},cap(big),cap(small),1,f)}
+   if(t===1){const n=r.int(1,9)+.5;return TL({q:EQ(`${n} ${big} = ${BL(3)} ${small}`),a:`${n*f} ${small}`,space:'m'},cap(big),cap(small),1,f)}
    const n=r.int(2,9),x=r.int(1,f-1);return{q:EQ(`${n*f+x} ${small} = ${BL(1.6)} ${big} ${BL(1.6)} ${small}`),a:`${n} ${big} ${x} ${small}`,space:'m'}},
  stretch(r){const t=r.int(0,2),[p]=two(r);
-   if(t===0){const n=r.int(2,9);return W(`A ribbon is ${n} yards long. How many inches long is it?`,`${n*36} inches`)}
-   if(t===1){const s=r.int(2,9);return W(`A snail moves ${s} centimeters per second. How many meters does it move per minute?`,`${trim((s*60/100).toFixed(2))} meters per minute`)}
-   const c=r.int(10,40);return W(`${p} needs ${c} cups of lemonade for a party. Lemonade is sold in quart bottles, and 1 quart is 4 cups. How many bottles should ${p} buy?`,`${Math.ceil(c/4)} bottles (${c} ÷ 4 = ${c/4})`)},
+   if(t===0){const n=r.int(2,9);return TL(W(`A ribbon is ${n} yards long. How many inches long is it?`,`${n*36} inches`),'Yards','Inches',1,36)}
+   if(t===1){const s=r.int(2,9);return TL(W(`A snail moves ${s} centimeters per second. How many meters does it move per minute?`,`${trim((s*60/100).toFixed(2))} meters per minute`),'Centimeters','Seconds',s,1)}
+   const c=r.int(10,40);return TL(W(`${p} needs ${c} cups of lemonade for a party. Lemonade is sold in quart bottles, and 1 quart is 4 cups. How many bottles should ${p} buy?`,`${Math.ceil(c/4)} bottles (${c} ÷ 4 = ${c/4})`),'Quarts','Cups',1,4)},
  worked(r){const n=r.int(3,7);return{q:`${n} feet = ? inches`,steps:['1 foot = 12 inches',`${n} feet is ${n} groups of 12 inches.`,`${n} × 12 = ${n*12} inches`],a:''}},
  challenge(r){return{q:'When you convert to a smaller unit, you multiply. When you convert to a larger unit, you divide. Explain why, using feet and inches as an example.',a:'Answers vary. Smaller units need more of them to cover the same length.'}}},
 
@@ -3218,7 +3236,7 @@ function sheetHTML(std,tier,d,o){
   const frames=q=>false&&ell&&ELL_CUE.test(q.replace(/<[^>]+>/g,''))?`<div class="frames"><b>Start with</b>${(FRAMES[std.code]||FRAMES_DEFAULT).map(f=>`“${f}”`).join(' &nbsp;or&nbsp; ')}</div>`:'';
   const plain=(p)=>{if(!(ell&&tier.id==='support'&&p.wide))return p.q;const parts=p.q.split(/(?<=[.?!])\s+(?=[A-Z])/);if(parts.length<2)return p.q;return parts.map(x=>`<span class="sl${/\?\s*$/.test(x)?' sq':''}">${x}</span>`).join('')};
   const ch=d.challenge?`<div class="chal"><h3>${im?'Are you ready for more?':'Think deeper'}</h3><p>${d.challenge.q}</p>${frames(d.challenge.q)}<div class="pw l"></div><div class="pa">${d.challenge.a}</div></div>`:'';
-  const li=d.probs.map(p=>`${p.sec?`<li class="rvh"><small>${o.set==='ny'?nyCode(p.sec.code).replace('NY-',''):p.sec.code}</small>${p.sec.title}</li>`:''}<li class="pr${p.wide?' wide':''}"><div class="pq">${p.tag?`<span class="tag">${p.tag}</span>`:''}${plain(p)}${im&&p.aline&&!/explain/i.test(p.q)?' Explain or show your reasoning.':''}</div>${frames(p.q)}${p.model?`<div class="pm">${p.model}</div>`:''}${p.hint&&tier.id==='support'?`<div class="ph"><span>Hint</span>${p.hint}</div>`:''}<div class="pw ${p.space||'s'}"></div>${p.aline?`<div class="aline">Answer:<span class="line"></span></div>`:''}<div class="pa">${p.a}</div></li>`).join('');
+  const li=d.probs.map(p=>`${p.sec?`<li class="rvh"><small>${o.set==='ny'?nyCode(p.sec.code).replace('NY-',''):p.sec.code}</small>${p.sec.title}</li>`:''}<li class="pr${p.wide?' wide':''}"><div class="pq">${p.tag?`<span class="tag">${p.tag}</span>`:''}${plain(p)}${im&&p.aline&&!/explain/i.test(p.q)?' Explain or show your reasoning.':''}</div>${frames(p.q)}${p.model?`<div class="pm">${p.model}</div>`:o.tools&&o.tools!=='off'&&p.tool?`<div class="pm ptool">${toolHTML(p.tool,tier.id,o.tools)}</div>`:''}${p.hint&&tier.id==='support'?`<div class="ph"><span>Hint</span>${p.hint}</div>`:''}<div class="pw ${p.space||'s'}"></div>${p.aline?`<div class="aline">Answer:<span class="line"></span></div>`:''}<div class="pa">${p.a}</div></li>`).join('');
   const warm='';const unusedWarm=d.warm?`<div class="warm"><h3>Warm-up: ${d.warm.type}</h3><p>${d.warm.prompt}</p>${d.warm.text?`<p style="color:inherit">${d.warm.text}</p>`:''}${d.warm.model?`<div class="pm">${d.warm.model}</div><div class="pw m"></div>`:''}${d.warm.items?`<ol class="tf${d.warm.items.some(i=>i.q.replace(/<[^>]+>/g,'').length>24)?' long':''}">${d.warm.items.map(i=>`<li><span class="eq">${i.q.replace(/^<span class="eq">|<\/span>$/g,'')}</span><span class="pa">${i.a}</span></li>`).join('')}</ol>`:''}</div>`:'';
   const c=o.cool?d.cool:null,cool=c?`<div class="cool"><h3>Cool-down</h3><div class="pq">${c.q}${c.aline?' Explain or show your reasoning.':''}</div>${c.model?`<div class="pm">${c.model}</div>`:''}<div class="pw"></div><div class="pa">${c.a}</div></div>`:'';
   return `<article class="sheet t-${tier.id}${o.key?' key':''}" aria-label="${tier.name} worksheet">
@@ -3235,7 +3253,7 @@ function sheetHTML(std,tier,d,o){
 
 /* ================= app ================= */
 const $=id=>document.getElementById(id);
-const DEF={picks:[],mix:true,grade:7,std:'7.EE.B.4a',view:'support',count:12,key:false,discreet:true,seed:4821,set:'ny',style:'im',lang:'en',guide:true,vocab:false,cool:false};
+const DEF={tools:'off',picks:[],mix:true,grade:7,std:'7.EE.B.4a',view:'support',count:12,key:false,discreet:true,seed:4821,set:'ny',style:'im',lang:'en',guide:true,vocab:false,cool:false};
 let S={...DEF};
 try{const s=JSON.parse(localStorage.getItem('jrm-state')||'null');if(s&&STD.some(x=>x.code===s.std))S={...DEF,...s}}catch(e){}
 try{const raw=JSON.parse(localStorage.getItem('jrm-state')||'{}');if(S.lang!=='en'&&!('vocab' in raw))S.vocab=true}catch(e){}
@@ -3264,10 +3282,10 @@ function renderSheets(){
   document.querySelectorAll('input[name=view]').forEach(i=>i.checked=i.value===S.view);
   const show=S.view==='all'?TIERS:TIERS.filter(t=>t.id===S.view);
   $('sheets').classList.toggle('side',S.view==='all');
-  $('sheets').innerHTML=show.map(t=>sheetHTML(std,t,dataFor(std,t,S.seed,S.count),{key:S.key,discreet:S.discreet,seed:S.seed,set:S.set,style:S.style,lang:S.lang,guide:S.guide,vocab:S.vocab,cool:S.cool})).join('');
+  $('sheets').innerHTML=show.map(t=>sheetHTML(std,t,dataFor(std,t,S.seed,S.count),{key:S.key,discreet:S.discreet,seed:S.seed,set:S.set,style:S.style,lang:S.lang,guide:S.guide,vocab:S.vocab,cool:S.cool,tools:S.tools})).join('');
   $('diff').innerHTML=`<h2>How the three versions of ${hdrCode(std,S.set).replace('CCSS.MATH.CONTENT.','')} differ</h2>${S.cool?'<p class="note">The cool-down is the same on all three versions, so you can compare results across the whole class.</p>':''}<div class="cols">${TIERS.map((t,i)=>`<div class="col"><h3><span style="color:var(--${t.id==='support'?'sup':t.id==='onlevel'?'onl':'str'})">${t.shape}</span>${t.name}</h3><p>${std.diff[i]}</p><ul>${t.bullets.map(b=>`<li>${b}</li>`).join('')}</ul></div>`).join('')}</div>`;
   {const one=S.view!=='all',nm=one?TIERS.find(t=>t.id===S.view).name:'';$('printstudents').textContent=one?`Print ${nm} sheet`:'Print all 3 sheets';$('printkeys').textContent=one?`Print ${nm} key`:'Print all 3 keys'}
-  $('opt-guide').checked=S.guide;$('opt-vocab').checked=S.vocab;$('opt-cool').checked=S.cool;$('opt-vocab').disabled=!VOCAB[S.std];
+  $('opt-guide').checked=S.guide;$('opt-vocab').checked=S.vocab;$('opt-cool').checked=S.cool;{const has=(std.review?std.parts:[std]).some(s=>TOOL_STDS.has(s.code));$('opt-tool').value=S.tools;$('opt-tool').disabled=!has;$('toolnote').textContent=has?'Adds a blank tool under each ratio problem. Support fills in the labels and the first pair; Stretch students label it themselves.':'Tools are available for the grade 6 ratio standards so far.'}$('opt-vocab').disabled=!VOCAB[S.std];
   $('lang').value=S.lang;$('langnote').textContent=VOCAB[S.std]?'Adds the key words in this language. Print once per language; the problems stay the same.':'Key words are available for grade 6 so far.';
   $('set').value=S.set;$('curr').value=S.style;$('seed').value=S.seed;$('count').value=S.count;$('key').checked=S.key;$('discreet').checked=S.discreet;
   save();
@@ -3280,6 +3298,7 @@ $('lang').addEventListener('change',e=>{S.lang=e.target.value;if(S.lang!=='en')S
 $('opt-guide').addEventListener('change',e=>{S.guide=e.target.checked;renderSheets()});
 $('opt-vocab').addEventListener('change',e=>{S.vocab=e.target.checked;renderSheets()});
 $('opt-cool').addEventListener('change',e=>{S.cool=e.target.checked;renderSheets()});
+$('opt-tool').addEventListener('change',e=>{S.tools=e.target.value;renderSheets()});
 $('curr').addEventListener('change',e=>{S.picks=[];S.pend=[];S.style=e.target.value;renderStds();renderSheets()});
 $('stds').addEventListener('change',e=>{const t=e.target;
   if(t.type==='radio'){S.std=t.value;S.picks=[]}
@@ -3298,7 +3317,7 @@ $('seed').addEventListener('change',e=>{const v=Math.round(+e.target.value);if(v
 /* Printing works when the page is opened directly (a hosted site), not inside a viewer frame. */
 let canPrint=false;try{canPrint=window.self===window.top&&typeof window.print==='function'}catch(e){}
 if(canPrint){$('printrow').hidden=false;
-  const printSet=key=>{const std=cur(),o={discreet:S.discreet,seed:S.seed,set:S.set,style:S.style,lang:S.lang,guide:S.guide,vocab:S.vocab,cool:S.cool,key};
+  const printSet=key=>{const std=cur(),o={discreet:S.discreet,seed:S.seed,set:S.set,style:S.style,lang:S.lang,guide:S.guide,vocab:S.vocab,cool:S.cool,tools:S.tools,key};
     const ts=TIERS.filter(t=>S.view==='all'||t.id===S.view),ds=ts.map(t=>dataFor(std,t,S.seed,S.count));
     $('printset').innerHTML=key?keySheetHTML(std,ts,ds,o):ts.map((t,i)=>sheetHTML(std,t,ds[i],o)).join('');
     document.body.classList.add('printing-set');window.print()};
